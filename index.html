@@ -135,7 +135,7 @@
         .screen { display:none; flex:1; padding:20px 16px; animation: fadeInUp 0.4s ease; }
         .screen.active { display:block; }
         
-        /* بقية التصميمات المتناسقة للمحافظ والقوائم */
+        /* تصميم كروت المحافظ والقوائم */
         .wallet-card { background:var(--gradient-card); border-radius:var(--radius-lg); padding:22px 20px; border:1px solid rgba(139,92,246,0.3); box-shadow:var(--shadow-glow-purple); margin-bottom:20px; position:relative; overflow:hidden; }
         .wallet-row { display:flex; justify-content:space-between; align-items:center; position:relative; z-index:1; flex-wrap:wrap; gap:12px; }
         .wallet-item { text-align:center; flex:1; min-width:80px; }
@@ -161,6 +161,15 @@
         .platform-card span { font-size:0.78rem; font-weight:600; color:var(--text-secondary); }
         .platform-card.coming-soon { opacity:0.5; cursor:default; }
         
+        /* تصميم صفحة الطلبات الاحترافي المتناسق لمنع الشاشة السوداء */
+        .order-list-item { background: var(--bg-card); border-radius: var(--radius-md); padding: 16px; margin-bottom: 12px; border: 1px solid var(--border-subtle); display: flex; align-items: center; justify-content: space-between; gap: 12px; animation: fadeInUp 0.3s ease; }
+        .order-icon { width: 42px; height: 42px; border-radius: var(--radius-sm); background: rgba(139,92,246,0.15); display: flex; align-items: center; justify-content: center; color: var(--purple-glow); font-size: 1.1rem; }
+        .order-info { flex: 1; text-align: right; }
+        .order-platform { font-weight: 700; font-size: 0.95rem; color: var(--text-primary); margin-bottom: 4px; }
+        .order-price { font-size: 0.78rem; color: var(--text-secondary); }
+        .order-badge { padding: 6px 14px; border-radius: 20px; font-size: 0.75rem; font-weight: 700; min-width: 90px; text-align: center; }
+        .badge-pending { background: rgba(245, 158, 11, 0.15); color: var(--yellow); border: 1px solid rgba(245, 158, 11, 0.3); }
+        
         /* واجهة الأدمن */
         #admin-panel.active { display: block !important; min-height: 100vh; background: #0c0f1c; padding: 20px; color: #fff; }
         .admin-table { width:100%; border-collapse:collapse; font-size:0.82rem; margin-bottom:16px; background: var(--bg-card); }
@@ -172,10 +181,10 @@
         .toggle-switch input:checked+.toggle-slider { background:var(--purple); border-color:var(--purple-glow); }
         .toggle-switch input:checked+.toggle-slider::before { transform:translateX(24px); }
         
-        /* التنبيهات */
-        .toast { position:fixed; top:20px; left:50%; transform:translateX(-50%); z-index:9999; background:var(--bg-card); color:#fff; padding:12px 24px; border-radius:30px; font-weight:600; box-shadow:0 10px 40px rgba(0,0,0,0.6); border:1px solid var(--purple); }
+        /* التنبيهات والمودال */
+        .toast { position:fixed; top:20px; left:50%; transform:translateX(-50%); z-index:9999; background:var(--bg-card); color:#fff; padding:12px 24px; border-radius:30px; font-weight:600; box-shadow:0 10px 40px rgba(0,0,0,0.6); border:1px solid var(--purple); text-align: center; max-width: 90%; }
         .modal-overlay { position:fixed; inset:0; z-index:500; background:rgba(0,0,0,0.8); backdrop-filter:blur(6px); display:none; align-items:center; justify-content:center; padding:20px; }
-        .modal { background:var(--bg-card); border-radius:var(--radius-lg); padding:28px 22px; width:100%; max-width:440px; border:1px solid var(--border-subtle); }
+        .modal { background:var(--bg-card); border-radius:var(--radius-lg); padding:28px 22px; width:100%; max-width:440px; border:1px solid var(--border-subtle); max-height: 85vh; overflow-y: auto; }
         .price-display { text-align:center; font-size:1.5rem; font-weight:900; background:var(--gradient-purple-pink); -webkit-background-clip:text; -webkit-text-fill-color:transparent; margin:12px 0; }
         .admin-logout-btn { position:fixed; top:16px; left:16px; z-index:300; background:rgba(239,68,68,0.2); border:1px solid var(--red); color:var(--red); padding:8px 14px; border-radius:20px; font-weight:700; cursor:pointer; }
         #avatarInput { display: none; }
@@ -188,8 +197,11 @@
         .stat-label { font-size:0.7rem; color:var(--text-muted); }
         .profile-buttons { display:flex; gap:10px; margin-bottom:20px; }
         .menu-list { list-style:none; text-align: right; }
-        .menu-list li { padding:14px 16px; cursor:pointer; display:flex; align-items:center; gap:12px; color:var(--text-secondary); }
+        .menu-list li { padding:14px 16px; cursor:pointer; display:flex; align-items:center; gap:12px; color:var(--text-secondary); border-bottom: 1px solid rgba(255,255,255,0.02); }
         .badge-count { background:var(--pink); color:#fff; font-size:0.7rem; padding:2px 8px; border-radius:10px; margin-right:auto; }
+        
+        /* سياسة الخصوصية الاحترافية */
+        .privacy-box { background: var(--bg-input); border-radius: var(--radius-sm); padding: 14px; font-size: 0.8rem; color: var(--text-secondary); line-height: 1.6; max-height: 160px; overflow-y: auto; text-align: justify; margin-bottom: 16px; border: 1px solid var(--border-subtle); }
     </style>
 </head>
 <body>
@@ -272,7 +284,7 @@
         </div>
         <ul class="menu-list">
             <li onclick="navigateTo('orders')"><i class="fa-solid fa-box"></i> طلباتي وتتبعها 📦 <span class="badge-count" id="activeOrdersBadge">0</span></li>
-            <li onclick="handleLogout()"><i class="fa-solid fa-right-from-bracket" style="color:var(--red);"></i> تسجيل الخروج</li>
+            <li onclick="openSettingsModal()"><i class="fa-solid fa-gear" style="color:var(--purple-glow);"></i> الإعدادات العامة ⚙️</li>
         </ul>
     </div>
     
@@ -322,6 +334,32 @@
         <div class="input-group"><input id="editUsername" placeholder="اسم المستخدم" dir="ltr"></div>
         <button class="btn btn-primary" onclick="saveProfileChanges()">حفظ التعديلات</button>
         <button class="btn btn-ghost" onclick="closeModal('editProfileModal')">إلغاء</button>
+    </div>
+</div>
+
+<div id="settingsModal" class="modal-overlay" onclick="closeModalOutside(event,'settingsModal')">
+    <div class="modal" onclick="event.stopPropagation()">
+        <h3 style="margin-bottom:14px;"><i class="fa-solid fa-gear"></i> الإعدادات العامة للمتجر</h3>
+        
+        <div class="section-title" style="font-size:0.9rem; margin-bottom:6px;"><i class="fa-solid fa-shield-halved"></i> سياسة الخصوصية وشروط الاستخدام</div>
+        <div class="privacy-box">
+            يرجى قراءة شروط الخدمة بدقة قبل إرسال الطلبات:<br>
+            1. يتم معالجة وتنفيذ طلبات الرشق بصورة تلقائية وفورية من خلال السيرفر الذكي للمتجر.<br>
+            2. يلتزم المستخدم بتقديم روابط صحيحة وعامة (Public) للحسابات، والمتجر غير مسؤول عن أي رابط خاطئ أو حساب خاص (Private).<br>
+            3. يمنع منعاً باتاً طلب رشق متداخل للحساب نفسه من مصادر متعددة في نفس الوقت تجنباً لخلل العدادات وسقوط الرشق.<br>
+            4. المبالغ المشحونة في محفظتك الإلكترونية داخل التطبيق مخصصة للاستخدام وشراء الخدمات المتاحة فقط ولا يمكن استردادها نقداً.<br>
+            5. يلتزم المتجر بحماية وتعمية كامل بيانات مستخدمينا وضمان خصوصيتهم وعدم مشاركتها مع أي جهة خارجية.
+        </div>
+
+        <button class="btn btn-glow" style="margin-bottom:12px; background:linear-gradient(135deg, #0088cc 0%, #00c6ff 100%); box-shadow:0 0 15px rgba(0,136,204,0.3);" onclick="window.location.href='https://t.me/I_17g'">
+            <i class="fa-brands fa-telegram"></i> قناة التطبيق الرسمية 📢
+        </button>
+        
+        <button class="btn btn-outline" style="border-color:var(--red); color:var(--red); font-weight:700; margin-bottom:12px;" onclick="handleLogout()">
+            <i class="fa-solid fa-right-from-bracket"></i> تسجيل الخروج من الحساب
+        </button>
+        
+        <button class="btn btn-ghost" onclick="closeModal('settingsModal')">إغلاق النافذة</button>
     </div>
 </div>
 
@@ -381,7 +419,8 @@
         carouselInterval: null,
         carouselIndex: 0,
         maintenanceMode: false,
-        isAdmin: false
+        isAdmin: false,
+        currentUserOrders: []
     };
 
     function formatNumber(num) { return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ','); }
@@ -396,7 +435,6 @@
         window.location.href = `tg://resolve?domain=${TELEGRAM_USERNAME}`;
     }
 
-    // إدارة الفصل القاطع للواجهات وإلغاء التداخل الشريطي
     function hideAllPanels() {
         document.getElementById('auth-panel').style.setProperty('display', 'none', 'important');
         document.getElementById('user-panel').style.setProperty('display', 'none', 'important');
@@ -404,21 +442,17 @@
         document.getElementById('maintenanceOverlay').style.setProperty('display', 'none', 'important');
     }
 
-    // ميكانيكية التحقق الصارم والبوابات الإلكترونية للتطبيق
     auth.onAuthStateChanged(async (user) => {
-        // ننتظر انتهاء شاشة التحميل أولاً لمنع الفليكر
         setTimeout(async () => {
             document.getElementById('splashScreen').classList.remove('visible');
             hideAllPanels();
 
             if (user) {
                 if (user.email === ADMIN_EMAIL) {
-                    // توجيه الأدمن الفوري والكامل
                     APP_STATE.isAdmin = true;
                     document.getElementById('admin-panel').style.setProperty('display', 'block', 'important');
                     attachAdminListeners();
                 } else {
-                    // فحص وضع الصيانة للمستخدمين العاديين أولاً
                     const maintenanceSnap = await database.ref('maintenanceMode').once('value');
                     if (maintenanceSnap.val() === true) {
                         document.getElementById('maintenanceOverlay').style.setProperty('display', 'flex', 'important');
@@ -430,7 +464,6 @@
                     if (snapshot.exists()) {
                         APP_STATE.userData = snapshot.val();
                     } else {
-                        // معالجة المستخدمين الجدد وحفظهم برصيد 0
                         APP_STATE.userData = {
                             fullName: document.getElementById('regFullName').value.trim() || 'مستخدم جديد',
                             username: document.getElementById('regUsername').value.trim() || user.email.split('@')[0],
@@ -448,7 +481,6 @@
                     startCarousel();
                 }
             } else {
-                // تصفية كافّة الجلسات وتوجيه لصفحة تسجيل الدخول
                 document.getElementById('auth-panel').style.setProperty('display', 'flex', 'important');
             }
         }, 2500);
@@ -500,12 +532,20 @@
 
     async function handleRegister() {
         const fullName = document.getElementById('regFullName').value.trim();
-        const username = document.getElementById('regUsername').value.trim();
+        const username = document.getElementById('regUsername').value.trim().toLowerCase();
         const email = document.getElementById('regEmail').value.trim();
         const password = document.getElementById('regPassword').value.trim();
+        
         if(!fullName || !username || !email || !password) return showToast('يرجى ملء كافة البيانات');
         if(email === ADMIN_EMAIL) return showToast('غير مسموح بالتسجيل بهذا البريد');
+        
+        // التحقق الذكي من أن اليوزر نيم غير مكرر في الفايربيس من قبل
         try {
+            const userCheck = await database.ref('users').orderByChild('username').equalTo(username).once('value');
+            if (userCheck.exists()) {
+                return showToast('اسم المستخدم هذا مستخدم بالفعل!');
+            }
+            
             await auth.createUserWithEmailAndPassword(email, password);
             showToast('تم تسجيل حسابك بنجاح! رصيدك: 0 د.ع');
         } catch(e) { showToast(e.message); }
@@ -538,6 +578,9 @@
         
         const avatar = document.getElementById('profileAvatar');
         avatar.innerHTML = APP_STATE.userData?.avatarData ? `<img src="${APP_STATE.userData.avatarData}">` : '<i class="fa-solid fa-camera"></i>';
+        
+        // تحديث البادج الخاص بالطلبات النشطة ديناميكياً
+        document.getElementById('activeOrdersBadge').textContent = (APP_STATE.currentUserOrders || []).length;
     }
 
     function navigateTo(screen) {
@@ -619,7 +662,6 @@
         await database.ref('users/' + auth.currentUser.uid).update({ balance: newBalance, totalSpent: newSpent });
         await database.ref('orders').push(orderData);
         
-        // إرسال الطلب تلقائياً لـ API المزود موقع Beinty
         fetch(API_BASE, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -634,8 +676,15 @@
         const container = document.getElementById('ordersList');
         const empty = document.getElementById('emptyOrders');
         const orders = APP_STATE.currentUserOrders || [];
-        if(!orders.length) { container.innerHTML=''; empty.style.display='block'; return; }
+        
+        container.innerHTML = ''; // تصفية الجدول أولاً لمنع التكرار الشريطي والتداخل
+        
+        if(!orders.length) { 
+            empty.style.display='block'; 
+            return; 
+        }
         empty.style.display='none';
+        
         container.innerHTML = orders.map(o=>`
             <div class="order-list-item">
                 <div class="order-icon"><i class="fa-solid fa-box"></i></div>
@@ -643,7 +692,7 @@
                     <div class="order-platform">${o.platform} - ${o.service}</div>
                     <div class="order-price">الكمية: ${formatNumber(o.quantity)} | التكلفة: ${formatNumber(o.price)} د.ع</div>
                 </div>
-                <span class="order-badge badge-pending">${o.statusLabel}</span>
+                <span class="order-badge badge-pending">${o.statusLabel || 'قيد الانتظار'}</span>
             </div>
         `).join('');
     }
@@ -654,7 +703,7 @@
     }
 
     async function adminChargeWallet() {
-        const username = document.getElementById('chargeUsername').value.trim();
+        const username = document.getElementById('chargeUsername').value.trim().toLowerCase();
         const amount = parseInt(document.getElementById('chargeAmount').value) || 0;
         if(!username || amount <= 0) return showToast('أدخل بيانات شحن صحيحة');
         
@@ -674,10 +723,21 @@
         document.getElementById('editProfileModal').style.display = 'flex';
     }
 
+    function openSettingsModal() {
+        document.getElementById('settingsModal').style.display = 'flex';
+    }
+
     async function saveProfileChanges() {
         const fullName = document.getElementById('editFullName').value.trim();
-        const username = document.getElementById('editUsername').value.trim();
+        const username = document.getElementById('editUsername').value.trim().toLowerCase();
         if(!fullName || !username) return showToast('الحقول مطلوبة');
+        
+        // منع التكرار عند تعديل الحساب أيضاً لقفل الثغرة تماماً
+        if (username !== APP_STATE.userData.username) {
+            const userCheck = await database.ref('users').orderByChild('username').equalTo(username).once('value');
+            if (userCheck.exists()) return showToast('اسم المستخدم هذا مستخدم بالفعل!');
+        }
+        
         await database.ref('users/' + auth.currentUser.uid).update({ fullName, username });
         closeModal('editProfileModal');
         showToast('تم تحديث البيانات ✅');
