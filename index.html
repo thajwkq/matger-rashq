@@ -8,9 +8,10 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+    <!-- Firebase Compat Libraries (10.7.1) -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
     <style>
         :root {
             --bg-deep: #0c0f1c;
@@ -369,9 +370,10 @@
         appId: "1:360949474558:web:fd347c48006098957631af",
         measurementId: "G-55X08DPKMJ"
     };
+    // Initialize Firebase
     firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth();
-    const db = firebase.database();
+    const database = firebase.database();
 
     const TELEGRAM_USERNAME = 'th2f6';
     const ADMIN_EMAIL = 'admin@mtger.iq';
@@ -475,39 +477,44 @@
 
     auth.onAuthStateChanged(async (user) => {
         if (user) {
-            const snapshot = await db.ref('users/' + user.uid).once('value');
-            if (snapshot.exists()) {
-                APP_STATE.userData = snapshot.val();
-            } else {
-                const isAdmin = user.email === ADMIN_EMAIL;
-                const newData = {
-                    fullName: isAdmin ? 'مدير النظام' : 'مستخدم',
-                    username: user.email.split('@')[0],
-                    email: user.email,
-                    balance: isAdmin ? 999999 : 0,
-                    totalSpent: 0,
-                    isAdmin: isAdmin,
-                    createdAt: new Date().toISOString()
-                };
-                await db.ref('users/' + user.uid).set(newData);
-                APP_STATE.userData = newData;
-            }
-            APP_STATE.currentUser = { uid: user.uid, email: user.email, ...APP_STATE.userData };
-            APP_STATE.isAdmin = (user.email === ADMIN_EMAIL);
-
-            if (APP_STATE.maintenanceMode && !APP_STATE.isAdmin) {
-                showMaintenance();
-            } else {
-                if (APP_STATE.isAdmin) {
-                    showAdminPanel();
-                    attachAdminListeners();
+            try {
+                const snapshot = await database.ref('users/' + user.uid).once('value');
+                if (snapshot.exists()) {
+                    APP_STATE.userData = snapshot.val();
                 } else {
-                    showUserPanel();
-                    attachUserListeners();
-                    updateAllUI();
-                    navigateTo('home');
-                    startCarousel();
+                    const isAdmin = user.email === ADMIN_EMAIL;
+                    const newData = {
+                        fullName: isAdmin ? 'مدير النظام' : 'مستخدم',
+                        username: user.email.split('@')[0],
+                        email: user.email,
+                        balance: isAdmin ? 999999 : 0,
+                        totalSpent: 0,
+                        isAdmin: isAdmin,
+                        createdAt: new Date().toISOString()
+                    };
+                    await database.ref('users/' + user.uid).set(newData);
+                    APP_STATE.userData = newData;
                 }
+                APP_STATE.currentUser = { uid: user.uid, email: user.email, ...APP_STATE.userData };
+                APP_STATE.isAdmin = (user.email === ADMIN_EMAIL);
+
+                if (APP_STATE.maintenanceMode && !APP_STATE.isAdmin) {
+                    showMaintenance();
+                } else {
+                    if (APP_STATE.isAdmin) {
+                        showAdminPanel();
+                        attachAdminListeners();
+                    } else {
+                        showUserPanel();
+                        attachUserListeners();
+                        updateAllUI();
+                        navigateTo('home');
+                        startCarousel();
+                    }
+                }
+            } catch (error) {
+                console.error('Auth state error:', error);
+                showAuthPanel(); // fallback to auth
             }
         } else {
             APP_STATE.currentUser = null;
@@ -520,49 +527,55 @@
 
     function attachUserListeners() {
         if (!APP_STATE.currentUser || APP_STATE.isAdmin) return;
-        db.ref('users/' + APP_STATE.currentUser.uid).on('value', snap => {
-            if (snap.exists()) {
-                APP_STATE.userData = snap.val();
-                APP_STATE.currentUser = { ...APP_STATE.currentUser, ...APP_STATE.userData };
-                updateAllUI();
-            }
-        });
-        if (APP_STATE.ordersListener) APP_STATE.ordersListener();
-        APP_STATE.ordersListener = db.ref('orders').orderByChild('userId').equalTo(APP_STATE.currentUser.uid)
-            .on('value', snap => {
-                const orders = [];
-                snap.forEach(child => orders.push({ id: child.key, ...child.val() }));
-                APP_STATE.currentUserOrders = orders;
-                if (APP_STATE.currentScreen === 'orders') renderOrders();
-                if (APP_STATE.currentScreen === 'home') updateHomeUI();
-                updateBadges();
+        try {
+            database.ref('users/' + APP_STATE.currentUser.uid).on('value', snap => {
+                if (snap.exists()) {
+                    APP_STATE.userData = snap.val();
+                    APP_STATE.currentUser = { ...APP_STATE.currentUser, ...APP_STATE.userData };
+                    updateAllUI();
+                }
             });
-        if (APP_STATE.maintenanceListener) APP_STATE.maintenanceListener();
-        APP_STATE.maintenanceListener = db.ref('maintenanceMode').on('value', snap => {
-            APP_STATE.maintenanceMode = snap.val() === true;
-            if (APP_STATE.maintenanceMode && !APP_STATE.isAdmin) showMaintenance();
-        });
+            if (APP_STATE.ordersListener) APP_STATE.ordersListener();
+            APP_STATE.ordersListener = database.ref('orders').orderByChild('userId').equalTo(APP_STATE.currentUser.uid)
+                .on('value', snap => {
+                    const orders = [];
+                    snap.forEach(child => orders.push({ id: child.key, ...child.val() }));
+                    APP_STATE.currentUserOrders = orders;
+                    if (APP_STATE.currentScreen === 'orders') renderOrders();
+                    if (APP_STATE.currentScreen === 'home') updateHomeUI();
+                    updateBadges();
+                });
+            if (APP_STATE.maintenanceListener) APP_STATE.maintenanceListener();
+            APP_STATE.maintenanceListener = database.ref('maintenanceMode').on('value', snap => {
+                APP_STATE.maintenanceMode = snap.val() === true;
+                if (APP_STATE.maintenanceMode && !APP_STATE.isAdmin) showMaintenance();
+            });
+        } catch (e) { console.warn('Listener attach error', e); }
     }
 
     function attachAdminListeners() {
-        if (APP_STATE.usersListener) APP_STATE.usersListener();
-        APP_STATE.usersListener = db.ref('users').on('value', snap => {
-            const users = [];
-            snap.forEach(child => users.push({ uid: child.key, ...child.val() }));
-            APP_STATE.allUsers = users;
-            renderAdminPanel();
-        });
-        if (APP_STATE.maintenanceListener) APP_STATE.maintenanceListener();
-        APP_STATE.maintenanceListener = db.ref('maintenanceMode').on('value', snap => {
-            APP_STATE.maintenanceMode = snap.val() === true;
-            document.getElementById('maintenanceToggle').checked = APP_STATE.maintenanceMode;
-        });
+        try {
+            if (APP_STATE.usersListener) APP_STATE.usersListener();
+            APP_STATE.usersListener = database.ref('users').on('value', snap => {
+                const users = [];
+                snap.forEach(child => users.push({ uid: child.key, ...child.val() }));
+                APP_STATE.allUsers = users;
+                renderAdminPanel();
+            });
+            if (APP_STATE.maintenanceListener) APP_STATE.maintenanceListener();
+            APP_STATE.maintenanceListener = database.ref('maintenanceMode').on('value', snap => {
+                APP_STATE.maintenanceMode = snap.val() === true;
+                document.getElementById('maintenanceToggle').checked = APP_STATE.maintenanceMode;
+            });
+        } catch (e) { console.warn('Admin listener error', e); }
     }
 
     function detachListeners() {
-        if (APP_STATE.ordersListener) { db.ref('orders').off('value', APP_STATE.ordersListener); APP_STATE.ordersListener = null; }
-        if (APP_STATE.maintenanceListener) { db.ref('maintenanceMode').off('value', APP_STATE.maintenanceListener); APP_STATE.maintenanceListener = null; }
-        if (APP_STATE.usersListener) { db.ref('users').off('value', APP_STATE.usersListener); APP_STATE.usersListener = null; }
+        try {
+            if (APP_STATE.ordersListener) { database.ref('orders').off('value', APP_STATE.ordersListener); APP_STATE.ordersListener = null; }
+            if (APP_STATE.maintenanceListener) { database.ref('maintenanceMode').off('value', APP_STATE.maintenanceListener); APP_STATE.maintenanceListener = null; }
+            if (APP_STATE.usersListener) { database.ref('users').off('value', APP_STATE.usersListener); APP_STATE.usersListener = null; }
+        } catch (e) {}
     }
 
     async function handleLogin() {
@@ -584,7 +597,7 @@
         if(email === ADMIN_EMAIL) return showToast('لا يمكن التسجيل بهذا البريد');
         try {
             const cred = await auth.createUserWithEmailAndPassword(email, password);
-            await db.ref('users/' + cred.user.uid).set({
+            await database.ref('users/' + cred.user.uid).set({
                 fullName, username, email, balance:0, totalSpent:0, isAdmin:false, createdAt: new Date().toISOString()
             });
             showToast('تم إنشاء الحساب (رصيد 0 د.ع)');
@@ -593,8 +606,8 @@
 
     async function handleLogout() {
         detachListeners();
-        await auth.signOut();
-        location.reload(); // Force clear session
+        try { await auth.signOut(); } catch(e) {}
+        location.reload();
     }
 
     function switchAuthForm(form) {
@@ -754,8 +767,8 @@
         const newBalance = APP_STATE.userData.balance - total;
         const newSpent = (APP_STATE.userData.totalSpent||0) + total;
         try {
-            await db.ref('users/'+APP_STATE.currentUser.uid).update({ balance: newBalance, totalSpent: newSpent });
-            await db.ref('orders').push(orderData);
+            await database.ref('users/'+APP_STATE.currentUser.uid).update({ balance: newBalance, totalSpent: newSpent });
+            await database.ref('orders').push(orderData);
             fetch(API_BASE, { method:'POST', headers:{'Content-Type':'application/json','Authorization':`Bearer ${API_KEY}`}, body:JSON.stringify({ action:'add', service:orderData.serviceId, link, quantity }) }).catch(()=>{});
             closeModal('orderModal');
             showToast('تم تقديم الطلب 🎉');
@@ -775,7 +788,7 @@
         const name = document.getElementById('editFullName').value.trim();
         const username = document.getElementById('editUsername').value.trim();
         if(!name||!username) return showToast('املأ الحقول');
-        await db.ref('users/'+APP_STATE.currentUser.uid).update({ fullName: name, username });
+        await database.ref('users/'+APP_STATE.currentUser.uid).update({ fullName: name, username });
         closeModal('editProfileModal');
         showToast('تم التحديث ✅');
     }
@@ -784,7 +797,7 @@
         if(!file) return;
         const reader = new FileReader();
         reader.onload = async (ev) => {
-            await db.ref('users/'+APP_STATE.currentUser.uid).update({ avatarData: ev.target.result });
+            await database.ref('users/'+APP_STATE.currentUser.uid).update({ avatarData: ev.target.result });
             showToast('تم تحديث الصورة 📸');
         };
         reader.readAsDataURL(file);
@@ -800,7 +813,7 @@
     }
     async function toggleMaintenance() {
         const val = document.getElementById('maintenanceToggle').checked;
-        await db.ref('maintenanceMode').set(val);
+        await database.ref('maintenanceMode').set(val);
     }
     async function adminChargeWallet() {
         const username = document.getElementById('chargeUsername').value.trim();
@@ -808,7 +821,7 @@
         if(!username||!amount||amount<1000) return showToast('أدخل يوزر ومبلغ صحيح');
         const user = APP_STATE.allUsers?.find(u=>u.username===username && !u.isAdmin);
         if(!user) return showToast('المستخدم غير موجود');
-        await db.ref('users/'+user.uid).update({ balance: (user.balance||0) + amount });
+        await database.ref('users/'+user.uid).update({ balance: (user.balance||0) + amount });
         document.getElementById('chargeUsername').value='';
         document.getElementById('chargeAmount').value='';
         showToast(`تم شحن ${formatNumber(amount)} د.ع لـ @${username}`);
