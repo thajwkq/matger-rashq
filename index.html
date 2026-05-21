@@ -8,7 +8,6 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <!-- Firebase Compat Libraries -->
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
@@ -127,6 +126,7 @@
         .form-visible { display:block; }
         #appContainer { display:none; flex-direction:column; min-height:100vh; padding-bottom:80px; }
         #appContainer.active { display:flex; }
+        #appContainer.admin-active { padding-bottom:0; }
         .bottom-nav {
             position:fixed; bottom:0; left:0; right:0; z-index:200; background:rgba(12,15,28,0.92);
             backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px); border-top:1px solid var(--border-subtle);
@@ -134,6 +134,7 @@
             box-shadow:0 -10px 40px rgba(0,0,0,0.5);
         }
         .bottom-nav.active { display:flex; }
+        .bottom-nav.admin-nav { justify-content:center; }
         .nav-item {
             display:flex; flex-direction:column; align-items:center; gap:3px; cursor:pointer;
             padding:6px 10px; border-radius:var(--radius-lg); transition:all 0.3s; color:var(--text-muted);
@@ -215,6 +216,7 @@
         @keyframes slideDown { from{transform:translateX(-50%) translateY(-60px);opacity:0;} to{transform:translateX(-50%) translateY(0);opacity:1;} }
         @keyframes fadeOutToast { to{opacity:0; transform:translateX(-50%) translateY(-30px);} }
         #avatarInput { display:none; }
+        .admin-logout-btn { position:fixed; top:16px; left:16px; z-index:300; background:rgba(239,68,68,0.2); border:1px solid var(--red); color:var(--red); padding:8px 14px; border-radius:20px; font-weight:700; cursor:pointer; }
     </style>
 </head>
 <body>
@@ -300,6 +302,7 @@
         </ul>
     </div>
     <div class="screen" id="adminScreen">
+        <button class="admin-logout-btn" onclick="handleLogout()"><i class="fa-solid fa-right-from-bracket"></i> تسجيل خروج</button>
         <div style="text-align:center;font-weight:800;margin-bottom:18px;">🛡️ لوحة تحكم الأدمن</div>
         <div style="display:flex;align-items:center;justify-content:space-between;background:var(--bg-card);padding:14px 16px;border-radius:var(--radius-md);border:1px solid var(--border-subtle);margin-bottom:16px;">
             <span>وضع الصيانة</span>
@@ -320,7 +323,6 @@
     <div class="nav-item active" data-screen="home" onclick="navigateTo('home')"><i class="fa-solid fa-house"></i><span>الرئيسية</span></div>
     <div class="nav-item" data-screen="orders" onclick="navigateTo('orders')"><i class="fa-solid fa-list-check"></i><span>طلباتي</span></div>
     <div class="nav-item" data-screen="profile" onclick="navigateTo('profile')"><i class="fa-solid fa-user"></i><span>ملفي</span></div>
-    <div class="nav-item" data-screen="admin" id="navAdmin" style="display:none;" onclick="navigateTo('admin')"><i class="fa-solid fa-shield-halved"></i><span>التحكم</span></div>
 </nav>
 
 <div id="orderModal" class="modal-overlay" style="display:none;" onclick="closeModalOutside(event,'orderModal')">
@@ -406,7 +408,8 @@
         maintenanceMode: false,
         ordersListener: null,
         usersListener: null,
-        maintenanceListener: null
+        maintenanceListener: null,
+        isAdmin: false
     };
 
     // ==================== UTILS ====================
@@ -425,20 +428,11 @@
     async function ensureAdminAccount() {
         try {
             await auth.signInWithEmailAndPassword(ADMIN_EMAIL, ADMIN_PASSWORD);
+            await auth.signOut(); // Just to create if not exists
         } catch (e) {
             if (e.code === 'auth/user-not-found') {
-                try {
-                    const cred = await auth.createUserWithEmailAndPassword(ADMIN_EMAIL, ADMIN_PASSWORD);
-                    await db.ref('users/' + cred.user.uid).set({
-                        fullName: 'مدير النظام',
-                        username: 'admin',
-                        email: ADMIN_EMAIL,
-                        balance: 999999,
-                        totalSpent: 0,
-                        isAdmin: true,
-                        createdAt: new Date().toISOString()
-                    });
-                } catch (err) { console.warn('Admin creation failed', err); }
+                await auth.createUserWithEmailAndPassword(ADMIN_EMAIL, ADMIN_PASSWORD);
+                // We'll set the admin data after creation via onAuthStateChanged
             }
         }
     }
@@ -448,30 +442,37 @@
             const snapshot = await db.ref('users/' + user.uid).once('value');
             if (snapshot.exists()) {
                 APP_STATE.userData = snapshot.val();
-                APP_STATE.currentUser = { uid: user.uid, email: user.email, ...APP_STATE.userData };
             } else {
-                // Fallback: create minimal entry if missing
+                // Create user data if missing
+                const isAdmin = user.email === ADMIN_EMAIL;
                 const newData = {
-                    fullName: user.displayName || 'مستخدم',
+                    fullName: isAdmin ? 'مدير النظام' : 'مستخدم',
                     username: user.email.split('@')[0],
                     email: user.email,
-                    balance: 0,
+                    balance: isAdmin ? 999999 : 0,
                     totalSpent: 0,
-                    isAdmin: false,
+                    isAdmin: isAdmin,
                     createdAt: new Date().toISOString()
                 };
                 await db.ref('users/' + user.uid).set(newData);
                 APP_STATE.userData = newData;
-                APP_STATE.currentUser = { uid: user.uid, email: user.email, ...newData };
             }
-            if (APP_STATE.maintenanceMode && !APP_STATE.userData.isAdmin) {
+            APP_STATE.currentUser = { uid: user.uid, email: user.email, ...APP_STATE.userData };
+            APP_STATE.isAdmin = APP_STATE.userData.isAdmin === true;
+
+            if (APP_STATE.maintenanceMode && !APP_STATE.isAdmin) {
                 showMaintenance();
             } else {
-                showApp();
+                if (APP_STATE.isAdmin) {
+                    showAdminPanel();
+                } else {
+                    showUserApp();
+                }
             }
         } else {
             APP_STATE.currentUser = null;
             APP_STATE.userData = null;
+            APP_STATE.isAdmin = false;
             showAuth();
         }
     });
@@ -481,27 +482,47 @@
         document.getElementById('authWrapper').classList.add('active');
         document.getElementById('appContainer').classList.remove('active');
         document.getElementById('bottomNav').classList.remove('active');
+        document.getElementById('bottomNav').classList.remove('admin-nav');
         hideMaintenance();
         document.getElementById('loginForm').classList.add('form-visible');
         document.getElementById('loginForm').classList.remove('form-hidden');
         document.getElementById('registerForm').classList.add('form-hidden');
         document.getElementById('registerForm').classList.remove('form-visible');
     }
-    function showApp() {
-        if (APP_STATE.maintenanceMode && APP_STATE.currentUser && !APP_STATE.userData?.isAdmin) {
+
+    function showUserApp() {
+        if (APP_STATE.maintenanceMode) {
             showMaintenance();
             return;
         }
         document.getElementById('authWrapper').classList.remove('active');
         document.getElementById('appContainer').classList.add('active');
+        document.getElementById('appContainer').classList.remove('admin-active');
         document.getElementById('bottomNav').classList.add('active');
+        document.getElementById('bottomNav').classList.remove('admin-nav');
         hideMaintenance();
-        updateNavForAdmin();
         attachRealtimeListeners();
         updateAllUI();
         navigateTo('home');
         startCarousel();
     }
+
+    function showAdminPanel() {
+        document.getElementById('authWrapper').classList.remove('active');
+        document.getElementById('appContainer').classList.add('active');
+        document.getElementById('appContainer').classList.add('admin-active');
+        // Hide bottom nav entirely for admin
+        document.getElementById('bottomNav').classList.remove('active');
+        document.getElementById('bottomNav').classList.remove('admin-nav');
+        hideMaintenance();
+        // Admin only sees admin screen
+        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+        document.getElementById('adminScreen').classList.add('active');
+        APP_STATE.currentScreen = 'admin';
+        attachRealtimeListeners();
+        renderAdminPanel();
+    }
+
     function showMaintenance() {
         document.getElementById('authWrapper').classList.remove('active');
         document.getElementById('appContainer').classList.remove('active');
@@ -527,6 +548,7 @@
         if(!email||!password) return showToast('يرجى ملء الحقول');
         try {
             await auth.signInWithEmailAndPassword(email, password);
+            // onAuthStateChanged will handle routing
         } catch(e) { showToast('خطأ في تسجيل الدخول: ' + e.message); }
     }
 
@@ -537,6 +559,7 @@
         const password = document.getElementById('regPassword').value.trim();
         if(!fullName||!username||!email||!password) return showToast('يرجى ملء جميع الحقول');
         if(password.length<5) return showToast('كلمة المرور 5 أحرف على الأقل');
+        if(email === ADMIN_EMAIL) return showToast('لا يمكن التسجيل بهذا البريد');
         try {
             const cred = await auth.createUserWithEmailAndPassword(email, password);
             await db.ref('users/' + cred.user.uid).set({
@@ -560,39 +583,45 @@
             if (snap.exists()) {
                 APP_STATE.userData = snap.val();
                 APP_STATE.currentUser = { ...APP_STATE.currentUser, ...APP_STATE.userData };
-                updateAllUI();
+                APP_STATE.isAdmin = APP_STATE.userData.isAdmin === true;
+                if (!APP_STATE.isAdmin) updateAllUI();
+                else renderAdminPanel();
             }
         });
-        // Orders
-        if (APP_STATE.ordersListener) APP_STATE.ordersListener();
-        APP_STATE.ordersListener = db.ref('orders').orderByChild('userId').equalTo(APP_STATE.currentUser.uid)
-            .on('value', snap => {
-                const orders = [];
-                snap.forEach(child => orders.push({ id: child.key, ...child.val() }));
-                APP_STATE.currentUserOrders = orders;
-                if (APP_STATE.currentScreen === 'orders') renderOrders();
-                if (APP_STATE.currentScreen === 'home') updateHomeUI();
-                updateBadges();
-            });
+        // Orders (only for non-admin)
+        if (!APP_STATE.isAdmin) {
+            if (APP_STATE.ordersListener) APP_STATE.ordersListener();
+            APP_STATE.ordersListener = db.ref('orders').orderByChild('userId').equalTo(APP_STATE.currentUser.uid)
+                .on('value', snap => {
+                    const orders = [];
+                    snap.forEach(child => orders.push({ id: child.key, ...child.val() }));
+                    APP_STATE.currentUserOrders = orders;
+                    if (APP_STATE.currentScreen === 'orders') renderOrders();
+                    if (APP_STATE.currentScreen === 'home') updateHomeUI();
+                    updateBadges();
+                });
+        }
         // Maintenance mode
         if (APP_STATE.maintenanceListener) APP_STATE.maintenanceListener();
         APP_STATE.maintenanceListener = db.ref('maintenanceMode').on('value', snap => {
             APP_STATE.maintenanceMode = snap.val() === true;
             document.getElementById('maintenanceToggle').checked = APP_STATE.maintenanceMode;
-            if (APP_STATE.maintenanceMode && APP_STATE.currentUser && !APP_STATE.userData?.isAdmin) {
+            if (APP_STATE.maintenanceMode && APP_STATE.currentUser && !APP_STATE.isAdmin) {
                 showMaintenance();
-            } else if (!APP_STATE.maintenanceMode) {
+            } else if (!APP_STATE.maintenanceMode && APP_STATE.currentUser && !APP_STATE.isAdmin) {
                 hideMaintenance();
             }
         });
-        // All users (admin)
-        if (APP_STATE.usersListener) APP_STATE.usersListener();
-        APP_STATE.usersListener = db.ref('users').on('value', snap => {
-            const users = [];
-            snap.forEach(child => users.push({ uid: child.key, ...child.val() }));
-            APP_STATE.allUsers = users;
-            if (APP_STATE.currentScreen === 'admin') renderAdminPanel();
-        });
+        // All users (admin only)
+        if (APP_STATE.isAdmin) {
+            if (APP_STATE.usersListener) APP_STATE.usersListener();
+            APP_STATE.usersListener = db.ref('users').on('value', snap => {
+                const users = [];
+                snap.forEach(child => users.push({ uid: child.key, ...child.val() }));
+                APP_STATE.allUsers = users;
+                renderAdminPanel();
+            });
+        }
     }
 
     function detachListeners() {
@@ -603,10 +632,9 @@
 
     // ==================== UI UPDATES ====================
     function updateAllUI() {
-        if (!APP_STATE.currentUser) return;
+        if (!APP_STATE.currentUser || APP_STATE.isAdmin) return;
         updateHomeUI();
         updateProfileUI();
-        updateNavForAdmin();
     }
     function updateHomeUI() {
         document.getElementById('walletBalance').textContent = formatNumber(APP_STATE.userData?.balance||0) + ' د.ع';
@@ -661,21 +689,19 @@
         const users = APP_STATE.allUsers?.filter(u=>!u.isAdmin) || [];
         const tbody = document.getElementById('adminUsersTbody');
         tbody.innerHTML = users.length ? users.map(u=>`<tr><td>${u.fullName}</td><td>@${u.username}</td><td>${formatNumber(u.balance)} د.ع</td></tr>`).join('') : '<tr><td colspan="3">لا يوجد مستخدمون</td></tr>';
-    }
-    function updateNavForAdmin() {
-        document.getElementById('navAdmin').style.display = APP_STATE.userData?.isAdmin ? 'flex' : 'none';
+        document.getElementById('maintenanceToggle').checked = APP_STATE.maintenanceMode;
     }
 
-    // ==================== NAVIGATION ====================
+    // ==================== NAVIGATION (User Only) ====================
     function navigateTo(screen) {
+        if (APP_STATE.isAdmin) return; // Admin cannot use user navigation
         APP_STATE.currentScreen = screen;
-        document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
         document.getElementById(screen+'Screen')?.classList.add('active');
-        document.querySelectorAll('.nav-item').forEach(n=>n.classList.toggle('active', n.dataset.screen===screen));
+        document.querySelectorAll('.nav-item').forEach(n => n.classList.toggle('active', n.dataset.screen === screen));
         if (screen==='orders') renderOrders();
         if (screen==='home') updateHomeUI();
         if (screen==='profile') updateProfileUI();
-        if (screen==='admin') renderAdminPanel();
     }
 
     // ==================== CAROUSEL ====================
@@ -724,8 +750,8 @@
         } else display.textContent = '0 د.ع';
     }
     function openOrderModal(platformId) {
-        if(!APP_STATE.currentUser) return showToast('سجل الدخول أولاً');
-        if((APP_STATE.userData?.balance||0)<=0 && !APP_STATE.userData?.isAdmin) return showToast('رصيدك 0 د.ع، اشحن عبر تليجرام');
+        if(!APP_STATE.currentUser || APP_STATE.isAdmin) return;
+        if((APP_STATE.userData?.balance||0)<=0) return showToast('رصيدك 0 د.ع، اشحن عبر تليجرام');
         document.getElementById('orderModal').style.display='flex';
         document.getElementById('orderPlatform').value = platformId||'';
         document.getElementById('orderService').innerHTML='<option>اختر الخدمة</option>';
@@ -759,21 +785,18 @@
             progress: 0,
             createdAt: new Date().toISOString()
         };
-        // خصم الرصيد
         const newBalance = APP_STATE.userData.balance - total;
         const newSpent = (APP_STATE.userData.totalSpent||0) + total;
         try {
             await db.ref('users/'+APP_STATE.currentUser.uid).update({ balance: newBalance, totalSpent: newSpent });
             await db.ref('orders').push(orderData);
-            // إرسال للـ API
             try {
-                const res = await fetch(API_BASE, {
+                await fetch(API_BASE, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${API_KEY}` },
                     body: JSON.stringify({ action: 'add', service: orderData.serviceId, link, quantity })
                 });
-                if(!res.ok) console.warn('API response not ok');
-            } catch(e) { console.warn('API call failed', e); }
+            } catch(e) {}
             closeModal('orderModal');
             showToast('تم تقديم الطلب بنجاح 🎉');
         } catch(e) { showToast('حدث خطأ: '+e.message); }
@@ -784,6 +807,7 @@
 
     // ==================== PROFILE ====================
     function openEditProfileModal() {
+        if(APP_STATE.isAdmin) return;
         document.getElementById('editFullName').value = APP_STATE.userData?.fullName||'';
         document.getElementById('editUsername').value = APP_STATE.userData?.username||'';
         document.getElementById('editProfileModal').style.display='flex';
@@ -792,11 +816,9 @@
         const name = document.getElementById('editFullName').value.trim();
         const username = document.getElementById('editUsername').value.trim();
         if(!name||!username) return showToast('املأ الحقول');
-        try {
-            await db.ref('users/'+APP_STATE.currentUser.uid).update({ fullName: name, username });
-            closeModal('editProfileModal');
-            showToast('تم التحديث ✅');
-        } catch(e) { showToast('خطأ: '+e.message); }
+        await db.ref('users/'+APP_STATE.currentUser.uid).update({ fullName: name, username });
+        closeModal('editProfileModal');
+        showToast('تم التحديث ✅');
     }
     async function handleAvatarChange(e) {
         const file = e.target.files[0];
@@ -832,9 +854,7 @@
     ensureAdminAccount();
     renderPlatformsGrid();
     populateOrderModalPlatforms();
-    setTimeout(()=>{
-        document.getElementById('splashScreen').classList.add('hidden');
-    }, 3000);
+    setTimeout(()=> document.getElementById('splashScreen').classList.add('hidden'), 3000);
 </script>
 </body>
-</html>
+    </html>
