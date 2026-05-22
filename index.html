@@ -9,8 +9,8 @@
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-storage-compat.js"></script>
 
+    <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <style>
@@ -20,6 +20,7 @@
             --purple: #8a2be2;
             --purple-glow: #9b40f0;
             --pink: #da44bb;
+            --pink-glow: #e85ccf;
             --text-primary: #e8e8f0;
             --text-secondary: #a0a5b8;
             --text-muted: #6b7085;
@@ -29,15 +30,19 @@
             --border-subtle: rgba(138, 43, 226, 0.25);
             --border-glow: rgba(138, 43, 226, 0.55);
             --shadow-purple: 0 0 20px rgba(138, 43, 226, 0.35);
+            --shadow-pink: 0 0 20px rgba(218, 68, 187, 0.3);
             --radius-sm: 10px;
             --radius-md: 16px;
             --radius-lg: 22px;
             --radius-xl: 28px;
             --font-main: 'Segoe UI', 'Tahoma', 'Arial', sans-serif;
+            --transition-fast: 0.2s ease;
             --transition-smooth: 0.35s cubic-bezier(0.4, 0, 0.2, 1);
             --bottom-nav-height: 72px;
         }
+
         * { margin: 0; padding: 0; box-sizing: border-box; }
+
         body {
             font-family: var(--font-main);
             background: var(--bg-deep);
@@ -45,29 +50,27 @@
             min-height: 100vh;
             direction: rtl;
             -webkit-tap-highlight-color: transparent;
+            -webkit-font-smoothing: antialiased;
+            overflow-x: hidden;
             padding-bottom: calc(var(--bottom-nav-height) + 20px);
             background-image:
                 radial-gradient(ellipse at 20% 15%, rgba(138, 43, 226, 0.08) 0%, transparent 55%),
                 radial-gradient(ellipse at 80% 75%, rgba(218, 68, 187, 0.06) 0%, transparent 55%);
             background-attachment: fixed;
         }
+
         ::-webkit-scrollbar { width: 4px; }
         ::-webkit-scrollbar-track { background: var(--bg-deep); }
         ::-webkit-scrollbar-thumb { background: var(--purple); border-radius: 10px; }
 
         .view { display: none; width: 100%; max-width: 520px; margin: 0 auto; padding: 16px; animation: fadeSlideIn 0.4s ease; }
         .view.active { display: block; }
-        @keyframes fadeSlideIn { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes pulseWrench {
-            0%,100%{ transform: scale(1); opacity:.85; text-shadow:0 0 20px rgba(138,43,226,0.7); }
-            50%{ transform: scale(1.12); opacity:1; text-shadow:0 0 40px rgba(138,43,226,1),0 0 70px rgba(218,68,187,0.6); }
-        }
-        @keyframes pulseBanner {
-            0%,100%{ border-color: rgba(243,156,18,0.5); box-shadow:0 0 10px rgba(243,156,18,0.2); }
-            50%{ border-color: rgba(243,156,18,0.9); box-shadow:0 0 24px rgba(243,156,18,0.45); }
-        }
 
-        .maintenance-wrapper { display:flex; justify-content:center; align-items:center; height:100vh; }
+        @keyframes fadeSlideIn { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes pulseWrench { 0%,100%{ transform: scale(1); opacity:.85; text-shadow:0 0 20px rgba(138,43,226,0.7); } 50%{ transform: scale(1.12); opacity:1; text-shadow:0 0 40px rgba(138,43,226,1),0 0 70px rgba(218,68,187,0.6); } }
+        @keyframes pulseBanner { 0%,100%{ border-color: rgba(243,156,18,0.5); box-shadow:0 0 10px rgba(243,156,18,0.2); } 50%{ border-color: rgba(243,156,18,0.9); box-shadow:0 0 24px rgba(243,156,18,0.45); } }
+
+        .maintenance-wrapper { display:flex; justify-content:center; align-items:center; height:100vh; padding:20px; }
         .maintenance-card { background:var(--bg-card); border:1.5px solid var(--border-subtle); border-radius:var(--radius-xl); padding:40px 28px; text-align:center; max-width:440px; box-shadow:var(--shadow-purple); }
         .maintenance-card .wrench-icon { font-size:64px; color:var(--purple); animation:pulseWrench 2s ease-in-out infinite; margin-bottom:20px; }
         .btn-reload { background:linear-gradient(135deg,var(--purple),var(--pink)); color:#fff; border:none; padding:13px 32px; border-radius:30px; font-weight:600; cursor:pointer; box-shadow:var(--shadow-purple); font-family:var(--font-main); }
@@ -77,10 +80,10 @@
         .form-group label { display:block; margin-bottom:6px; font-weight:600; color:var(--text-secondary); font-size:0.88rem; }
         .form-input { width:100%; padding:13px 16px; background:rgba(11,14,20,0.7); border:1.5px solid var(--border-subtle); border-radius:var(--radius-sm); color:var(--text-primary); font-family:var(--font-main); outline:none; transition:var(--transition-smooth); }
         .form-input:focus { border-color:var(--purple); box-shadow:0 0 14px rgba(138,43,226,0.3); }
-        .btn-primary { width:100%; padding:14px 20px; background:linear-gradient(135deg,var(--purple),var(--pink)); color:#fff; border:none; border-radius:30px; font-weight:700; cursor:pointer; box-shadow:var(--shadow-purple); font-family:var(--font-main); }
+        .btn-primary { width:100%; padding:14px 20px; background:linear-gradient(135deg,var(--purple),var(--pink)); color:#fff; border:none; border-radius:30px; font-weight:700; cursor:pointer; box-shadow:var(--shadow-purple); font-family:var(--font-main); transition:var(--transition-smooth); }
         .btn-primary:disabled { opacity:0.5; cursor:not-allowed; }
-        .btn-outline { width:100%; padding:13px 20px; background:transparent; color:var(--purple-glow); border:2px solid var(--purple); border-radius:30px; font-weight:600; cursor:pointer; font-family:var(--font-main); }
-        .btn-sm { padding:9px 18px; font-size:0.85rem; border-radius:22px; width:auto; }
+        .btn-outline { width:100%; padding:13px 20px; background:transparent; color:var(--purple-glow); border:2px solid var(--purple); border-radius:30px; font-weight:600; cursor:pointer; font-family:var(--font-main); transition:var(--transition-smooth); }
+        .btn-sm { padding:9px 18px; font-size:0.85rem; border-radius:22px; width:auto; display:inline-block; }
 
         .error-block, .success-block { padding:12px 16px; border-radius:var(--radius-sm); margin-top:10px; display:none; text-align:center; }
         .error-block { background:rgba(231,76,60,0.15); border:1px solid rgba(231,76,60,0.5); color:#f8716b; }
@@ -96,8 +99,8 @@
         .cost-box { background:rgba(138,43,226,0.1); border:1px dashed var(--purple); border-radius:var(--radius-sm); padding:12px 16px; margin-top:10px; text-align:center; font-weight:700; color:var(--purple-glow); }
 
         .platforms-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin-top:20px; }
-        .platform-card { background:var(--bg-card); border:1px solid var(--border-subtle); border-radius:var(--radius-md); padding:18px 10px; text-align:center; }
-        .platform-card.disabled { opacity:0.45; filter:grayscale(40%); }
+        .platform-card { background:var(--bg-card); border:1px solid var(--border-subtle); border-radius:var(--radius-md); padding:18px 10px; text-align:center; transition:var(--transition-smooth); }
+        .platform-card.disabled { opacity:0.45; filter:grayscale(40%); pointer-events:none; }
 
         .order-box { background:var(--bg-card); border:1px solid var(--border-subtle); border-radius:var(--radius-md); padding:16px; margin-bottom:12px; }
         .status-badge { display:inline-block; padding:4px 12px; border-radius:14px; font-size:0.78rem; font-weight:600; }
@@ -106,8 +109,7 @@
         .status-done { background:rgba(46,204,113,0.2); color:#5deca0; }
         .status-failed { background:rgba(231,76,60,0.2); color:#f8716b; }
 
-        .profile-avatar { width:80px; height:80px; border-radius:50%; background:linear-gradient(135deg,var(--purple),var(--pink)); display:flex; align-items:center; justify-content:center; margin:0 auto 16px; font-size:2.5rem; color:#fff; overflow:hidden; }
-        .profile-avatar img { width:100%; height:100%; object-fit:cover; }
+        .profile-avatar { width:80px; height:80px; border-radius:50%; background:linear-gradient(135deg,var(--purple),var(--pink)); display:flex; align-items:center; justify-content:center; margin:0 auto 16px; font-size:2.5rem; color:#fff; box-shadow:var(--shadow-purple); }
 
         .admin-section { background:rgba(218,68,187,0.08); border:1px dashed var(--pink); border-radius:var(--radius-md); padding:18px; margin-bottom:16px; }
         .toggle-switch { position:relative; display:inline-block; width:56px; height:30px; }
@@ -117,13 +119,16 @@
         input:checked+.toggle-slider { background:var(--purple); }
         input:checked+.toggle-slider::before { transform:translateX(26px); }
 
-        .bottom-nav { display:none; position:fixed; bottom:0; left:0; right:0; z-index:1000; background:rgba(19,25,36,0.82); backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px); border-top:1.5px solid var(--border-subtle); padding:8px 0; }
+        .bottom-nav { display:none; position:fixed; bottom:0; left:0; right:0; z-index:1000; background:rgba(19,25,36,0.82); backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px); border-top:1.5px solid var(--border-subtle); padding:8px 0; box-shadow:0 -6px 28px rgba(0,0,0,0.5); }
         .bottom-nav.visible { display:flex; justify-content:space-around; align-items:center; }
-        .nav-item { display:flex; flex-direction:column; align-items:center; gap:4px; cursor:pointer; padding:6px 14px; border:none; background:none; color:var(--text-muted); font-family:var(--font-main); font-size:0.72rem; }
+        .nav-item { display:flex; flex-direction:column; align-items:center; gap:4px; cursor:pointer; padding:6px 10px; border:none; background:none; color:var(--text-muted); font-family:var(--font-main); font-size:0.7rem; transition:var(--transition-smooth); }
+        .nav-item i { font-size:1.2rem; }
         .nav-item.active { color:var(--purple-glow); }
+        .nav-item.active i { text-shadow:0 0 14px rgba(138,43,226,0.7); }
 
-        .modal-overlay { position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.7); backdrop-filter:blur(6px); z-index:2000; display:flex; justify-content:center; align-items:center; }
-        .modal-content { background:var(--bg-card); border:1px solid var(--border-glow); border-radius:var(--radius-lg); padding:24px; width:90%; max-width:400px; }
+        .settings-section { margin-bottom:20px; }
+        .settings-section h4 { color:var(--purple-glow); margin-bottom:10px; font-size:1rem; }
+        .privacy-box { background:rgba(255,255,255,0.03); border-radius:var(--radius-sm); padding:14px; font-size:0.85rem; color:var(--text-secondary); line-height:1.6; border:1px solid var(--border-subtle); }
 
         .toast-container { position:fixed; top:20px; left:50%; transform:translateX(-50%); z-index:3000; width:90%; max-width:450px; pointer-events:none; }
         .toast { padding:13px 18px; border-radius:var(--radius-sm); font-weight:600; font-size:0.88rem; text-align:center; animation:fadeSlideIn 0.4s ease, fadeOut 0.4s ease 2.6s forwards; margin-bottom:8px; }
@@ -132,10 +137,11 @@
         .toast-info { background:var(--purple); color:#fff; }
         @keyframes fadeOut { to { opacity:0; transform:translateY(-12px); } }
 
-        @media (max-width:480px) { .platforms-grid { grid-template-columns:repeat(2,1fr); } .wallet-balance { font-size:1.6rem; } }
+        @media (max-width:480px) { .platforms-grid { grid-template-columns:repeat(2,1fr); } .wallet-balance { font-size:1.6rem; } .nav-item { font-size:0.65rem; } }
     </style>
 </head>
 <body>
+
     <div class="toast-container" id="toastContainer"></div>
 
     <!-- Maintenance View -->
@@ -144,7 +150,7 @@
             <div class="maintenance-card">
                 <div class="wrench-icon"><i class="fas fa-wrench"></i></div>
                 <h2>التطبيق تحت الصيانة</h2>
-                <p>نعمل على تحديث أنظمة الرشق. يرجى المحاولة لاحقاً.</p>
+                <p>التطبيق تحت الصيانة حالياً. نعمل على تحديث وتطوير أنظمة الرشق لتقديم الخدمة الأفضل لكم، يرجى إعادة المحاولة لاحقاً.</p>
                 <button class="btn-reload" onclick="window.location.reload()"><i class="fas fa-sync-alt"></i> تحديث الصفحة</button>
                 <button id="btnAdminAccess" style="background:none; border:none; color:var(--text-muted); margin-top:16px; cursor:pointer;">دخول المشرفين</button>
             </div>
@@ -182,12 +188,24 @@
         <div class="wallet-card">
             <div class="wallet-label"><i class="fas fa-wallet"></i> رصيدك الحالي</div>
             <div class="wallet-balance" id="walletBalance">0 <span>د.ع</span></div>
-            <a href="#" class="btn-charge" id="btnChargeTelegram"><i class="fab fa-telegram-plane"></i> شحن الرصيد ↗</a>
+            <a href="https://t.me/th2f6" target="_blank" rel="noopener noreferrer" class="btn-charge">شحن الرصيد ↗</a>
         </div>
         <div class="attention-banner">⚠️ تنبيه هام جداً: تأكد من جعل حسابك عاماً (Public) قبل طلب أي عملية رشق لتجنب فشل الطلب وضياع الرصيد!</div>
         <div class="frosted-card" style="margin-bottom:16px;">
             <h4><i class="fas fa-shopping-cart"></i> طلب رشق جديد</h4>
-            <div class="form-group"><label>الخدمة</label><select class="form-input" id="orderService"><option value="100|1500|متابعين انستغرام">📸 انستغرام - متابعين (1,500 د.ع لكل 1k)</option><option value="101|500|لايكات انستغرام">❤️ انستغرام - لايكات (500 د.ع لكل 1k)</option><option value="200|2000|متابعين تيك توك">🎵 تيك توك - متابعين (2,000 د.ع لكل 1k)</option><option value="300|1800|اعضاء تيليجرام">✈️ تيليجرام - اعضاء (1,800 د.ع لكل 1k)</option></select></div>
+            <div class="form-group">
+                <label>الخدمة</label>
+                <select class="form-input" id="orderService">
+                    <option value="100|2500">📸 متابعين انستغرام ثبات عالي</option>
+                    <option value="101|1000">❤️ لايكات انستغرام</option>
+                    <option value="102|500">👁️ مشاهدات انستغرام</option>
+                    <option value="200|3000">🎵 متابعين تيك توك</option>
+                    <option value="201|1500">👍 لايكات تيك توك</option>
+                    <option value="202|400">🎬 مشاهدات تيك توك</option>
+                    <option value="300|2500">✈️ اعضاء تيليجرام</option>
+                    <option value="301|1200">💬 تفاعلات منشور تيليجرام</option>
+                </select>
+            </div>
             <div class="form-group"><label>الرابط / لينك الحساب</label><input type="text" class="form-input" id="orderLink" placeholder="https://..." dir="ltr"></div>
             <div class="form-group"><label>الكمية (الحد الأدنى: 100)</label><input type="number" class="form-input" id="orderQty" placeholder="100" min="100" value="100"></div>
             <div class="cost-box">التكلفة التقديرية: <span id="costValue">0</span> د.ع</div>
@@ -208,24 +226,42 @@
 
     <!-- Orders View -->
     <div class="view" id="viewOrders">
-        <h3><i class="fas fa-list-alt"></i> أرشيف الطلبات</h3>
+        <h3 style="margin-bottom:16px;"><i class="fas fa-list-alt"></i> أرشيف الطلبات</h3>
         <div id="ordersContainer"><p style="text-align:center; padding:40px;">لا توجد طلبات حالياً.</p></div>
+    </div>
+
+    <!-- Settings View -->
+    <div class="view" id="viewSettings">
+        <h3 style="margin-bottom:16px; color:var(--purple-glow);"><i class="fas fa-cog"></i> الإعدادات</h3>
+        <div class="settings-section">
+            <button class="btn-outline" id="btnSettingsChannel" style="background:rgba(138,43,226,0.1); border-color:var(--purple);"><i class="fab fa-telegram-plane"></i> قناة التطبيق الرسمية</button>
+        </div>
+        <div class="settings-section">
+            <h4>لغة التطبيق</h4>
+            <select class="form-input" id="langSelector" disabled style="opacity:0.8;">
+                <option selected>العربية</option>
+            </select>
+        </div>
+        <div class="settings-section">
+            <h4>سياسة الخصوصية والاستخدام</h4>
+            <div class="privacy-box">
+                باستخدامك لهذا التطبيق، فإنك توافق على الشروط التالية: الخدمات مقدمة من خلال واجهة برمجة خارجية، ولا نضمن سرعة التنفيذ أو اكتماله في جميع الحالات. التطبيق غير مسؤول عن الطلبات المرسلة إلى حسابات خاصة (Private) أو روابط غير صالحة. يجب التأكد من جعل الحساب عاماً (Public) قبل تقديم الطلب. جميع عمليات الدفع والرصيد نهائية ولا تخضع للاسترداد إلا في حالات فشل تقني مثبت. نحتفظ بالحق في تعديل الأسعار والخدمات دون إشعار مسبق. لأي استفسار، يرجى التواصل عبر قناة التطبيق الرسمية.
+            </div>
+        </div>
     </div>
 
     <!-- Profile View -->
     <div class="view" id="viewProfile">
         <div class="frosted-card" style="text-align:center;">
-            <div class="profile-avatar" id="profileAvatarContainer">
-                <i class="fas fa-user" id="profileAvatarIcon"></i>
-                <img id="profileAvatarImg" style="display:none;" alt="صورتك">
+            <div class="profile-avatar"><i class="fas fa-user"></i></div>
+            <div class="profile-info">
+                <h3 id="profileFullName">---</h3>
+                <p class="username-display" id="profileUsername">@---</p>
+                <p style="color:var(--text-muted); font-size:0.8rem;" id="profileEmail">---</p>
             </div>
-            <h3 id="profileFullName">---</h3>
-            <p id="profileUsername">@---</p>
-            <p style="color:var(--text-muted); font-size:0.8rem;" id="profileEmail">---</p>
             <button class="btn-outline" id="btnEditProfile" style="margin-bottom:10px;"><i class="fas fa-edit"></i> تعديل الحساب</button>
-            <a href="#" class="btn-outline" id="btnChannelTelegram" style="margin-bottom:10px; text-decoration:none; display:block;"><i class="fab fa-telegram-plane"></i> قناة التطبيق الرسمية</a>
             <button class="btn-outline" id="btnAdminPanel" style="margin-bottom:10px; display:none; border-color:var(--pink); color:var(--pink-glow);"><i class="fas fa-crown"></i> لوحة تحكم الإدارة</button>
-            <button class="btn-primary" id="btnLogout" style="background:rgba(231,76,60,0.8);"><i class="fas fa-sign-out-alt"></i> تسجيل الخروج</button>
+            <button class="btn-primary" id="btnLogout" style="background:rgba(231,76,60,0.8); box-shadow:none;"><i class="fas fa-sign-out-alt"></i> تسجيل الخروج</button>
         </div>
     </div>
 
@@ -252,13 +288,12 @@
         <button class="btn-outline" id="btnBackToProfile"><i class="fas fa-arrow-right"></i> العودة للحساب</button>
     </div>
 
-    <!-- Edit Profile Modal -->
+    <!-- Edit Profile Modal (without image) -->
     <div id="editProfileModal" class="modal-overlay" style="display:none;">
         <div class="modal-content">
             <h3 style="color:var(--purple-glow);">تعديل الملف الشخصي</h3>
             <div class="form-group"><label>الاسم الكامل</label><input type="text" class="form-input" id="editFullName"></div>
             <div class="form-group"><label>اسم المستخدم</label><input type="text" class="form-input" id="editUsername" dir="ltr"></div>
-            <div class="form-group"><label>الصورة الشخصية</label><input type="file" class="form-input" id="editAvatar" accept="image/*"></div>
             <div class="error-block" id="editProfileError"></div>
             <div style="display:flex; gap:10px; margin-top:16px;">
                 <button class="btn-primary btn-sm" id="btnSaveProfile" style="flex:1;">حفظ</button>
@@ -267,16 +302,17 @@
         </div>
     </div>
 
-    <!-- Bottom Nav -->
+    <!-- Bottom Navigation -->
     <nav class="bottom-nav" id="bottomNav">
         <button class="nav-item active" data-nav="home"><i class="fas fa-home"></i><span>الرئيسية</span></button>
         <button class="nav-item" data-nav="orders"><i class="fas fa-list-alt"></i><span>طلباتي</span></button>
+        <button class="nav-item" data-nav="settings"><i class="fas fa-cog"></i><span>الإعدادات</span></button>
         <button class="nav-item" data-nav="profile"><i class="fas fa-user-circle"></i><span>حسابي</span></button>
     </nav>
 
     <script>
         (() => {
-            // Firebase config
+            // Firebase Config
             const firebaseConfig = {
                 apiKey: "AIzaSyB9MrraeowEexYMnrrkHXmVbScoeD7O9AA",
                 authDomain: "mtger-9637a.firebaseapp.com",
@@ -290,7 +326,6 @@
             firebase.initializeApp(firebaseConfig);
             const auth = firebase.auth();
             const db = firebase.database();
-            const storage = firebase.storage();
             const RASHQ_API_KEY = "bnt_af0b56277a9f7d177797731b4d670c44b16aec11";
 
             // State
@@ -301,12 +336,13 @@
             const $ = id => document.getElementById(id);
             const views = {
                 maintenance: $('viewMaintenance'), login: $('viewLogin'), register: $('viewRegister'),
-                home: $('viewHome'), orders: $('viewOrders'), profile: $('viewProfile'), admin: $('viewAdmin')
+                home: $('viewHome'), orders: $('viewOrders'), settings: $('viewSettings'),
+                profile: $('viewProfile'), admin: $('viewAdmin')
             };
             const bottomNav = $('bottomNav');
             const toastContainer = $('toastContainer');
 
-            // Utility
+            // Helper
             const toast = (msg, type='info') => {
                 const t = document.createElement('div'); t.className = `toast toast-${type}`; t.textContent = msg;
                 toastContainer.appendChild(t); setTimeout(() => t.remove(), 3200);
@@ -319,9 +355,8 @@
                 hideAllViews();
                 views[viewId]?.classList.add('active');
                 document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-                if(viewId === 'home') document.querySelector('[data-nav="home"]')?.classList.add('active');
-                if(viewId === 'orders') document.querySelector('[data-nav="orders"]')?.classList.add('active');
-                if(viewId === 'profile') document.querySelector('[data-nav="profile"]')?.classList.add('active');
+                const navMap = { home:'home', orders:'orders', settings:'settings', profile:'profile' };
+                if(navMap[viewId]) document.querySelector(`[data-nav="${navMap[viewId]}"]`)?.classList.add('active');
             };
             const showBottomNav = () => bottomNav.classList.add('visible');
             const hideBottomNav = () => bottomNav.classList.remove('visible');
@@ -336,18 +371,6 @@
                 if(viewId === 'profile') loadProfileData();
                 if(viewId === 'admin') loadAdminData();
                 if(viewId === 'home') refreshBalance();
-            };
-
-            // Telegram links handler
-            const openTelegram = (domain) => {
-                const tgUrl = `tg://resolve?domain=${domain}`;
-                const webUrl = `https://t.me/${domain}`;
-                const start = Date.now();
-                window.location.href = tgUrl;
-                // Fallback after 1.5s if tg didn't open
-                setTimeout(() => {
-                    if (Date.now() - start < 2000) window.open(webUrl, '_blank');
-                }, 1500);
             };
 
             // Maintenance listener
@@ -426,8 +449,6 @@
                 $('profileUsername').textContent = '@' + (userData.username || '---');
                 $('profileEmail').textContent = userData.email || '---';
                 $('btnAdminPanel').style.display = isAdmin ? 'block' : 'none';
-                if(userData.avatarURL) { $('profileAvatarImg').src = userData.avatarURL; $('profileAvatarImg').style.display='block'; $('profileAvatarIcon').style.display='none'; }
-                else { $('profileAvatarImg').style.display='none'; $('profileAvatarIcon').style.display='block'; }
             };
 
             const setupBalanceListener = () => {
@@ -463,7 +484,7 @@
                         const cls = o.status?.includes('مراجعة') ? 'status-review' : o.status?.includes('جاري') ? 'status-progress' : 'status-done';
                         html += `<div class="order-box">
                             <div><strong>الخدمة:</strong> ${o.serviceName}</div>
-                            <div><strong>الرابط:</strong> ${o.link}</div>
+                            <div><strong>الرابط:</strong> <span dir="ltr">${o.link}</span></div>
                             <div><strong>الكمية:</strong> ${o.quantity} | <strong>السعر:</strong> ${o.cost} د.ع</div>
                             <div><strong>التاريخ:</strong> ${new Date(o.date).toLocaleDateString('ar-IQ')}</div>
                             <div><span class="status-badge ${cls}">${o.status||'جاري البدء'}</span></div>
@@ -473,12 +494,14 @@
                 }).catch(() => container.innerHTML = '<p>تعذر تحميل الطلبات</p>');
             };
 
+            // Order submission with updated service list and hidden prices
             const submitOrder = async () => {
-                const [serviceId, priceStr, serviceName] = $('orderService').value.split('|');
+                const [serviceId, pricePer1k] = $('orderService').value.split('|');
+                const serviceName = $('orderService').selectedOptions[0].text; // full text
                 const link = $('orderLink').value.trim();
                 const qty = parseInt($('orderQty').value,10);
                 if(!link || qty < 100) return showError('orderError', 'تأكد من الرابط والكمية (أدنى 100)');
-                const totalCost = Math.ceil(qty/1000) * parseInt(priceStr);
+                const totalCost = Math.ceil(qty/1000) * parseInt(pricePer1k);
                 if((userData?.balance||0) < totalCost) return showError('orderError', 'رصيد غير كاف');
                 try {
                     $('btnSubmitOrder').disabled = true;
@@ -498,6 +521,7 @@
                     showError('orderError', 'فشل: ' + e.message);
                 }
             };
+
             const updateCost = () => {
                 const [_, price] = $('orderService').value.split('|');
                 const qty = parseInt($('orderQty').value,10) || 0;
@@ -533,12 +557,11 @@
                 } catch(e) { showError('adminChargeError', e.message || 'خطأ في الشحن'); }
             };
 
-            // Profile Edit
+            // Profile Edit (without avatar)
             const openEditModal = () => {
                 if(!userData) return;
                 $('editFullName').value = userData.fullName || '';
                 $('editUsername').value = userData.username || '';
-                $('editAvatar').value = '';
                 $('editProfileError').classList.remove('visible');
                 $('editProfileModal').style.display = 'flex';
             };
@@ -550,12 +573,6 @@
                 if(username.toLowerCase() === 'admin' && !isAdmin) return showError('editProfileError', 'اسم مستخدم محجوز');
                 try {
                     const updates = { fullName, username };
-                    const file = $('editAvatar').files[0];
-                    if(file) {
-                        const ref = storage.ref(`avatars/${currentUser.uid}`);
-                        const uploaded = await ref.put(file);
-                        updates.avatarURL = await uploaded.ref.getDownloadURL();
-                    }
                     await db.ref('users/' + currentUser.uid).update(updates);
                     Object.assign(userData, updates);
                     updateProfileUI();
@@ -564,7 +581,10 @@
                 } catch(e) { showError('editProfileError', 'فشل: ' + e.message); }
             };
 
-            // Event listeners
+            // Settings: open Telegram channel securely
+            const openSettingsChannel = () => window.open('https://t.me/I_17g', '_blank');
+
+            // Event Listeners
             $('btnLogin').addEventListener('click', handleLogin);
             $('btnRegister').addEventListener('click', handleRegister);
             $('btnLogout').addEventListener('click', logout);
@@ -582,19 +602,20 @@
             $('btnSaveProfile').addEventListener('click', saveProfile);
             $('btnCancelEdit').addEventListener('click', closeEditModal);
             $('editProfileModal').addEventListener('click', e => { if(e.target === $('editProfileModal')) closeEditModal(); });
-            $('btnChargeTelegram').addEventListener('click', e => { e.preventDefault(); openTelegram('th2f6'); });
-            $('btnChannelTelegram').addEventListener('click', e => { e.preventDefault(); openTelegram('I_17g'); });
+            $('btnSettingsChannel').addEventListener('click', openSettingsChannel);
 
+            // Bottom Nav
             document.querySelectorAll('.nav-item').forEach(item => {
                 item.addEventListener('click', () => {
                     const target = item.dataset.nav;
                     if(target === 'home') navigateTo('home');
                     else if(target === 'orders') navigateTo('orders');
+                    else if(target === 'settings') navigateTo('settings');
                     else if(target === 'profile') navigateTo('profile');
                 });
             });
 
-            // Auth state
+            // Auth State
             auth.onAuthStateChanged(async user => {
                 if(user) {
                     currentUser = user;
