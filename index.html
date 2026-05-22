@@ -11,18 +11,15 @@
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-storage-compat.js"></script>
 
-    <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <style>
         :root {
             --bg-deep: #0b0e14;
             --bg-card: #131924;
-            --bg-card-hover: #1a2030;
             --purple: #8a2be2;
             --purple-glow: #9b40f0;
             --pink: #da44bb;
-            --pink-glow: #e85ccf;
             --text-primary: #e8e8f0;
             --text-secondary: #a0a5b8;
             --text-muted: #6b7085;
@@ -32,23 +29,15 @@
             --border-subtle: rgba(138, 43, 226, 0.25);
             --border-glow: rgba(138, 43, 226, 0.55);
             --shadow-purple: 0 0 20px rgba(138, 43, 226, 0.35);
-            --shadow-pink: 0 0 20px rgba(218, 68, 187, 0.3);
             --radius-sm: 10px;
             --radius-md: 16px;
             --radius-lg: 22px;
             --radius-xl: 28px;
             --font-main: 'Segoe UI', 'Tahoma', 'Arial', sans-serif;
-            --transition-fast: 0.2s ease;
             --transition-smooth: 0.35s cubic-bezier(0.4, 0, 0.2, 1);
             --bottom-nav-height: 72px;
         }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: var(--font-main);
             background: var(--bg-deep);
@@ -56,381 +45,97 @@
             min-height: 100vh;
             direction: rtl;
             -webkit-tap-highlight-color: transparent;
-            -webkit-font-smoothing: antialiased;
-            overflow-x: hidden;
             padding-bottom: calc(var(--bottom-nav-height) + 20px);
             background-image:
                 radial-gradient(ellipse at 20% 15%, rgba(138, 43, 226, 0.08) 0%, transparent 55%),
                 radial-gradient(ellipse at 80% 75%, rgba(218, 68, 187, 0.06) 0%, transparent 55%);
             background-attachment: fixed;
         }
-
         ::-webkit-scrollbar { width: 4px; }
         ::-webkit-scrollbar-track { background: var(--bg-deep); }
         ::-webkit-scrollbar-thumb { background: var(--purple); border-radius: 10px; }
 
-        .view {
-            display: none;
-            width: 100%;
-            max-width: 520px;
-            margin: 0 auto;
-            padding: 16px;
-            animation: fadeSlideIn 0.4s ease;
-        }
+        .view { display: none; width: 100%; max-width: 520px; margin: 0 auto; padding: 16px; animation: fadeSlideIn 0.4s ease; }
         .view.active { display: block; }
-
-        @keyframes fadeSlideIn {
-            from { opacity: 0; transform: translateY(16px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
+        @keyframes fadeSlideIn { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes pulseWrench {
-            0%, 100% { transform: scale(1); opacity: 0.85; text-shadow: 0 0 20px rgba(138, 43, 226, 0.7); }
-            50% { transform: scale(1.12); opacity: 1; text-shadow: 0 0 40px rgba(138, 43, 226, 1), 0 0 70px rgba(218, 68, 187, 0.6); }
+            0%,100%{ transform: scale(1); opacity:.85; text-shadow:0 0 20px rgba(138,43,226,0.7); }
+            50%{ transform: scale(1.12); opacity:1; text-shadow:0 0 40px rgba(138,43,226,1),0 0 70px rgba(218,68,187,0.6); }
         }
         @keyframes pulseBanner {
-            0%, 100% { border-color: rgba(243, 156, 18, 0.5); box-shadow: 0 0 10px rgba(243, 156, 18, 0.2); }
-            50% { border-color: rgba(243, 156, 18, 0.9); box-shadow: 0 0 24px rgba(243, 156, 18, 0.45); }
-        }
-        @keyframes shimmer {
-            0% { background-position: -200px 0; }
-            100% { background-position: 200px 0; }
+            0%,100%{ border-color: rgba(243,156,18,0.5); box-shadow:0 0 10px rgba(243,156,18,0.2); }
+            50%{ border-color: rgba(243,156,18,0.9); box-shadow:0 0 24px rgba(243,156,18,0.45); }
         }
 
-        /* Maintenance */
-        .maintenance-wrapper {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            padding: 20px;
-        }
-        .maintenance-card {
-            background: var(--bg-card);
-            border: 1.5px solid var(--border-subtle);
-            border-radius: var(--radius-xl);
-            padding: 40px 28px;
-            text-align: center;
-            max-width: 440px;
-            width: 100%;
-            box-shadow: var(--shadow-purple);
-        }
-        .maintenance-card .wrench-icon {
-            font-size: 64px;
-            color: var(--purple);
-            animation: pulseWrench 2s ease-in-out infinite;
-            margin-bottom: 20px;
-        }
-        .btn-reload {
-            background: linear-gradient(135deg, var(--purple), var(--pink));
-            color: #fff;
-            border: none;
-            padding: 13px 32px;
-            border-radius: 30px;
-            font-weight: 600;
-            cursor: pointer;
-            box-shadow: var(--shadow-purple);
-            font-family: var(--font-main);
-        }
-        .btn-reload:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 0 30px rgba(138, 43, 226, 0.55);
-        }
+        .maintenance-wrapper { display:flex; justify-content:center; align-items:center; height:100vh; }
+        .maintenance-card { background:var(--bg-card); border:1.5px solid var(--border-subtle); border-radius:var(--radius-xl); padding:40px 28px; text-align:center; max-width:440px; box-shadow:var(--shadow-purple); }
+        .maintenance-card .wrench-icon { font-size:64px; color:var(--purple); animation:pulseWrench 2s ease-in-out infinite; margin-bottom:20px; }
+        .btn-reload { background:linear-gradient(135deg,var(--purple),var(--pink)); color:#fff; border:none; padding:13px 32px; border-radius:30px; font-weight:600; cursor:pointer; box-shadow:var(--shadow-purple); font-family:var(--font-main); }
 
-        /* Cards & Forms */
-        .frosted-card {
-            background: rgba(19, 25, 36, 0.75);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border: 1.5px solid var(--border-subtle);
-            border-radius: var(--radius-lg);
-            padding: 28px 22px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
-        }
-        .form-group { margin-bottom: 16px; }
-        .form-group label {
-            display: block;
-            margin-bottom: 6px;
-            font-weight: 600;
-            color: var(--text-secondary);
-            font-size: 0.88rem;
-        }
-        .form-input {
-            width: 100%;
-            padding: 13px 16px;
-            background: rgba(11, 14, 20, 0.7);
-            border: 1.5px solid var(--border-subtle);
-            border-radius: var(--radius-sm);
-            color: var(--text-primary);
-            font-family: var(--font-main);
-            outline: none;
-            transition: var(--transition-smooth);
-        }
-        .form-input:focus {
-            border-color: var(--purple);
-            box-shadow: 0 0 14px rgba(138, 43, 226, 0.3);
-        }
-        .btn-primary {
-            width: 100%;
-            padding: 14px 20px;
-            background: linear-gradient(135deg, var(--purple), var(--pink));
-            color: #fff;
-            border: none;
-            border-radius: 30px;
-            font-weight: 700;
-            cursor: pointer;
-            box-shadow: var(--shadow-purple);
-            font-family: var(--font-main);
-            transition: var(--transition-smooth);
-        }
-        .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
-        .btn-outline {
-            width: 100%;
-            padding: 13px 20px;
-            background: transparent;
-            color: var(--purple-glow);
-            border: 2px solid var(--purple);
-            border-radius: 30px;
-            font-weight: 600;
-            cursor: pointer;
-            font-family: var(--font-main);
-        }
-        .btn-sm { padding: 9px 18px; font-size: 0.85rem; border-radius: 22px; width: auto; }
+        .frosted-card { background:rgba(19,25,36,0.75); backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px); border:1.5px solid var(--border-subtle); border-radius:var(--radius-lg); padding:28px 22px; box-shadow:0 8px 32px rgba(0,0,0,0.4); }
+        .form-group { margin-bottom:16px; }
+        .form-group label { display:block; margin-bottom:6px; font-weight:600; color:var(--text-secondary); font-size:0.88rem; }
+        .form-input { width:100%; padding:13px 16px; background:rgba(11,14,20,0.7); border:1.5px solid var(--border-subtle); border-radius:var(--radius-sm); color:var(--text-primary); font-family:var(--font-main); outline:none; transition:var(--transition-smooth); }
+        .form-input:focus { border-color:var(--purple); box-shadow:0 0 14px rgba(138,43,226,0.3); }
+        .btn-primary { width:100%; padding:14px 20px; background:linear-gradient(135deg,var(--purple),var(--pink)); color:#fff; border:none; border-radius:30px; font-weight:700; cursor:pointer; box-shadow:var(--shadow-purple); font-family:var(--font-main); }
+        .btn-primary:disabled { opacity:0.5; cursor:not-allowed; }
+        .btn-outline { width:100%; padding:13px 20px; background:transparent; color:var(--purple-glow); border:2px solid var(--purple); border-radius:30px; font-weight:600; cursor:pointer; font-family:var(--font-main); }
+        .btn-sm { padding:9px 18px; font-size:0.85rem; border-radius:22px; width:auto; }
 
-        .error-block, .success-block {
-            padding: 12px 16px;
-            border-radius: var(--radius-sm);
-            margin-top: 10px;
-            display: none;
-            text-align: center;
-        }
-        .error-block { background: rgba(231, 76, 60, 0.15); border: 1px solid rgba(231, 76, 60, 0.5); color: #f8716b; }
-        .success-block { background: rgba(46, 204, 113, 0.15); border: 1px solid rgba(46, 204, 113, 0.5); color: #5deca0; }
-        .visible { display: block; animation: fadeSlideIn 0.3s ease; }
+        .error-block, .success-block { padding:12px 16px; border-radius:var(--radius-sm); margin-top:10px; display:none; text-align:center; }
+        .error-block { background:rgba(231,76,60,0.15); border:1px solid rgba(231,76,60,0.5); color:#f8716b; }
+        .success-block { background:rgba(46,204,113,0.15); border:1px solid rgba(46,204,113,0.5); color:#5deca0; }
+        .visible { display:block; animation:fadeSlideIn 0.3s ease; }
 
-        .wallet-card {
-            background: linear-gradient(145deg, #1a1030, #131924);
-            border: 1.5px solid var(--border-glow);
-            border-radius: var(--radius-lg);
-            padding: 22px 20px;
-            margin-bottom: 18px;
-            position: relative;
-            overflow: hidden;
-            box-shadow: var(--shadow-purple);
-        }
-        .wallet-balance { font-size: 2rem; font-weight: 800; color: #2ecc71; }
-        .btn-charge {
-            display: inline-block;
-            margin-top: 12px;
-            padding: 10px 22px;
-            background: var(--success);
-            color: #000;
-            border-radius: 25px;
-            font-weight: 700;
-            text-decoration: none;
-        }
+        .wallet-card { background:linear-gradient(145deg,#1a1030,#131924); border:1.5px solid var(--border-glow); border-radius:var(--radius-lg); padding:22px 20px; margin-bottom:18px; box-shadow:var(--shadow-purple); }
+        .wallet-balance { font-size:2rem; font-weight:800; color:#2ecc71; }
+        .btn-charge { display:inline-block; margin-top:12px; padding:10px 22px; background:var(--success); color:#000; border-radius:25px; font-weight:700; text-decoration:none; }
 
-        .attention-banner {
-            background: rgba(243, 156, 18, 0.1);
-            border: 1.5px solid rgba(243, 156, 18, 0.5);
-            border-radius: var(--radius-md);
-            padding: 14px 16px;
-            margin-bottom: 18px;
-            animation: pulseBanner 2s ease-in-out infinite;
-            font-weight: 600;
-            color: #f7c464;
-            text-align: center;
-        }
+        .attention-banner { background:rgba(243,156,18,0.1); border:1.5px solid rgba(243,156,18,0.5); border-radius:var(--radius-md); padding:14px 16px; margin-bottom:18px; animation:pulseBanner 2s ease-in-out infinite; font-weight:600; color:#f7c464; text-align:center; }
 
-        .cost-box {
-            background: rgba(138, 43, 226, 0.1);
-            border: 1px dashed var(--purple);
-            border-radius: var(--radius-sm);
-            padding: 12px 16px;
-            margin-top: 10px;
-            text-align: center;
-            font-weight: 700;
-            color: var(--purple-glow);
-        }
+        .cost-box { background:rgba(138,43,226,0.1); border:1px dashed var(--purple); border-radius:var(--radius-sm); padding:12px 16px; margin-top:10px; text-align:center; font-weight:700; color:var(--purple-glow); }
 
-        .platforms-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 12px;
-            margin-top: 20px;
-        }
-        .platform-card {
-            background: var(--bg-card);
-            border: 1px solid var(--border-subtle);
-            border-radius: var(--radius-md);
-            padding: 18px 10px;
-            text-align: center;
-            transition: var(--transition-smooth);
-        }
-        .platform-card.disabled { opacity: 0.45; filter: grayscale(40%); }
+        .platforms-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin-top:20px; }
+        .platform-card { background:var(--bg-card); border:1px solid var(--border-subtle); border-radius:var(--radius-md); padding:18px 10px; text-align:center; }
+        .platform-card.disabled { opacity:0.45; filter:grayscale(40%); }
 
-        .order-box {
-            background: var(--bg-card);
-            border: 1px solid var(--border-subtle);
-            border-radius: var(--radius-md);
-            padding: 16px;
-            margin-bottom: 12px;
-        }
-        .status-badge {
-            display: inline-block;
-            padding: 4px 12px;
-            border-radius: 14px;
-            font-size: 0.78rem;
-            font-weight: 600;
-        }
-        .status-progress { background: rgba(52, 152, 219, 0.2); color: #5dade2; }
-        .status-review { background: rgba(243, 156, 18, 0.2); color: #f7c464; }
-        .status-done { background: rgba(46, 204, 113, 0.2); color: #5deca0; }
-        .status-failed { background: rgba(231, 76, 60, 0.2); color: #f8716b; }
+        .order-box { background:var(--bg-card); border:1px solid var(--border-subtle); border-radius:var(--radius-md); padding:16px; margin-bottom:12px; }
+        .status-badge { display:inline-block; padding:4px 12px; border-radius:14px; font-size:0.78rem; font-weight:600; }
+        .status-progress { background:rgba(52,152,219,0.2); color:#5dade2; }
+        .status-review { background:rgba(243,156,18,0.2); color:#f7c464; }
+        .status-done { background:rgba(46,204,113,0.2); color:#5deca0; }
+        .status-failed { background:rgba(231,76,60,0.2); color:#f8716b; }
 
-        .profile-avatar {
-            width: 80px;
-            height: 80px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, var(--purple), var(--pink));
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto 16px;
-            font-size: 2.5rem;
-            color: #fff;
-            box-shadow: var(--shadow-purple);
-            overflow: hidden;
-        }
-        .profile-avatar img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
+        .profile-avatar { width:80px; height:80px; border-radius:50%; background:linear-gradient(135deg,var(--purple),var(--pink)); display:flex; align-items:center; justify-content:center; margin:0 auto 16px; font-size:2.5rem; color:#fff; overflow:hidden; }
+        .profile-avatar img { width:100%; height:100%; object-fit:cover; }
 
-        .admin-section {
-            background: rgba(218, 68, 187, 0.08);
-            border: 1px dashed var(--pink);
-            border-radius: var(--radius-md);
-            padding: 18px;
-            margin-bottom: 16px;
-        }
-        .toggle-switch {
-            position: relative;
-            display: inline-block;
-            width: 56px;
-            height: 30px;
-        }
-        .toggle-switch input { opacity: 0; width: 0; height: 0; }
-        .toggle-slider {
-            position: absolute;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: #3a3d48;
-            border-radius: 30px;
-            transition: var(--transition-smooth);
-        }
-        .toggle-slider::before {
-            content: '';
-            position: absolute;
-            height: 24px; width: 24px;
-            left: 3px; bottom: 3px;
-            background: #fff;
-            border-radius: 50%;
-            transition: var(--transition-smooth);
-        }
-        input:checked + .toggle-slider { background: var(--purple); }
-        input:checked + .toggle-slider::before { transform: translateX(26px); }
+        .admin-section { background:rgba(218,68,187,0.08); border:1px dashed var(--pink); border-radius:var(--radius-md); padding:18px; margin-bottom:16px; }
+        .toggle-switch { position:relative; display:inline-block; width:56px; height:30px; }
+        .toggle-switch input { opacity:0; width:0; height:0; }
+        .toggle-slider { position:absolute; top:0; left:0; right:0; bottom:0; background:#3a3d48; border-radius:30px; transition:var(--transition-smooth); }
+        .toggle-slider::before { content:''; position:absolute; height:24px; width:24px; left:3px; bottom:3px; background:#fff; border-radius:50%; transition:var(--transition-smooth); }
+        input:checked+.toggle-slider { background:var(--purple); }
+        input:checked+.toggle-slider::before { transform:translateX(26px); }
 
-        /* Bottom Nav */
-        .bottom-nav {
-            display: none;
-            position: fixed;
-            bottom: 0; left: 0; right: 0;
-            z-index: 1000;
-            background: rgba(19, 25, 36, 0.82);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border-top: 1.5px solid var(--border-subtle);
-            padding: 8px 0;
-            box-shadow: 0 -6px 28px rgba(0, 0, 0, 0.5);
-        }
-        .bottom-nav.visible {
-            display: flex;
-            justify-content: space-around;
-            align-items: center;
-        }
-        .nav-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 4px;
-            cursor: pointer;
-            padding: 6px 14px;
-            border: none;
-            background: none;
-            color: var(--text-muted);
-            font-family: var(--font-main);
-            font-size: 0.72rem;
-        }
-        .nav-item.active { color: var(--purple-glow); }
+        .bottom-nav { display:none; position:fixed; bottom:0; left:0; right:0; z-index:1000; background:rgba(19,25,36,0.82); backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px); border-top:1.5px solid var(--border-subtle); padding:8px 0; }
+        .bottom-nav.visible { display:flex; justify-content:space-around; align-items:center; }
+        .nav-item { display:flex; flex-direction:column; align-items:center; gap:4px; cursor:pointer; padding:6px 14px; border:none; background:none; color:var(--text-muted); font-family:var(--font-main); font-size:0.72rem; }
+        .nav-item.active { color:var(--purple-glow); }
 
-        /* Modal */
-        .modal-overlay {
-            position: fixed;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0, 0, 0, 0.7);
-            backdrop-filter: blur(6px);
-            z-index: 2000;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            animation: fadeIn 0.3s ease;
-        }
-        .modal-content {
-            background: var(--bg-card);
-            border: 1px solid var(--border-glow);
-            border-radius: var(--radius-lg);
-            padding: 24px;
-            width: 90%;
-            max-width: 400px;
-            box-shadow: var(--shadow-purple);
-        }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .modal-overlay { position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.7); backdrop-filter:blur(6px); z-index:2000; display:flex; justify-content:center; align-items:center; }
+        .modal-content { background:var(--bg-card); border:1px solid var(--border-glow); border-radius:var(--radius-lg); padding:24px; width:90%; max-width:400px; }
 
-        .toast-container {
-            position: fixed;
-            top: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            z-index: 3000;
-            width: 90%;
-            max-width: 450px;
-            pointer-events: none;
-        }
-        .toast {
-            padding: 13px 18px;
-            border-radius: var(--radius-sm);
-            font-weight: 600;
-            font-size: 0.88rem;
-            text-align: center;
-            animation: fadeSlideIn 0.4s ease, fadeOut 0.4s ease 2.6s forwards;
-            pointer-events: auto;
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
-            margin-bottom: 8px;
-        }
-        .toast-error { background: #e74c3c; color: #fff; }
-        .toast-success { background: #2ecc71; color: #000; }
-        .toast-info { background: var(--purple); color: #fff; }
-        @keyframes fadeOut { to { opacity: 0; transform: translateY(-12px); } }
+        .toast-container { position:fixed; top:20px; left:50%; transform:translateX(-50%); z-index:3000; width:90%; max-width:450px; pointer-events:none; }
+        .toast { padding:13px 18px; border-radius:var(--radius-sm); font-weight:600; font-size:0.88rem; text-align:center; animation:fadeSlideIn 0.4s ease, fadeOut 0.4s ease 2.6s forwards; margin-bottom:8px; }
+        .toast-error { background:#e74c3c; color:#fff; }
+        .toast-success { background:#2ecc71; color:#000; }
+        .toast-info { background:var(--purple); color:#fff; }
+        @keyframes fadeOut { to { opacity:0; transform:translateY(-12px); } }
 
-        @media (max-width: 480px) {
-            .platforms-grid { grid-template-columns: repeat(2, 1fr); }
-            .wallet-balance { font-size: 1.6rem; }
-        }
+        @media (max-width:480px) { .platforms-grid { grid-template-columns:repeat(2,1fr); } .wallet-balance { font-size:1.6rem; } }
     </style>
 </head>
 <body>
-
-    <!-- Toast Container -->
     <div class="toast-container" id="toastContainer"></div>
 
     <!-- Maintenance View -->
@@ -439,38 +144,22 @@
             <div class="maintenance-card">
                 <div class="wrench-icon"><i class="fas fa-wrench"></i></div>
                 <h2>التطبيق تحت الصيانة</h2>
-                <p>التطبيق تحت الصيانة حالياً. نعمل على تحديث وتطوير أنظمة الرشق لتقديم الخدمة الأفضل لكم، يرجى إعادة المحاولة لاحقاً.</p>
-                <button class="btn-reload" onclick="window.location.reload()">
-                    <i class="fas fa-sync-alt"></i> تحديث الصفحة
-                </button>
-                <button class="admin-hidden-link" id="btnAdminAccess" style="margin-top:16px; background:none; border:none; color:var(--text-muted); cursor:pointer;">
-                    دخول المشرفين
-                </button>
+                <p>نعمل على تحديث أنظمة الرشق. يرجى المحاولة لاحقاً.</p>
+                <button class="btn-reload" onclick="window.location.reload()"><i class="fas fa-sync-alt"></i> تحديث الصفحة</button>
+                <button id="btnAdminAccess" style="background:none; border:none; color:var(--text-muted); margin-top:16px; cursor:pointer;">دخول المشرفين</button>
             </div>
         </div>
     </div>
 
     <!-- Login View -->
     <div class="view" id="viewLogin">
-        <div style="text-align:center; padding-top: 30px;">
-            <div style="font-size:3rem; color:var(--purple-glow);"><i class="fas fa-bolt"></i></div>
-            <h2>MTGER</h2>
-            <p style="color:var(--text-muted);">منصة الرشق الذكية</p>
-        </div>
+        <div style="text-align:center; padding-top:30px;"><div style="font-size:3rem; color:var(--purple-glow);"><i class="fas fa-bolt"></i></div><h2>MTGER</h2><p style="color:var(--text-muted);">منصة الرشق الذكية</p></div>
         <div class="frosted-card" style="max-width:420px; margin:0 auto;">
-            <div class="form-group">
-                <label>البريد الإلكتروني</label>
-                <input type="email" class="form-input" id="loginEmail" placeholder="example@email.com" dir="ltr">
-            </div>
-            <div class="form-group">
-                <label>كلمة المرور</label>
-                <input type="password" class="form-input" id="loginPassword" placeholder="••••••••" dir="ltr">
-            </div>
+            <div class="form-group"><label>البريد الإلكتروني</label><input type="email" class="form-input" id="loginEmail" placeholder="example@email.com" dir="ltr"></div>
+            <div class="form-group"><label>كلمة المرور</label><input type="password" class="form-input" id="loginPassword" placeholder="••••••••" dir="ltr"></div>
             <div class="error-block" id="loginError"></div>
             <button class="btn-primary" id="btnLogin"><i class="fas fa-sign-in-alt"></i> دخول</button>
-            <p style="text-align:center; margin-top:14px; font-size:0.85rem; color:var(--text-muted);">
-                ليس لديك حساب؟ <a href="#" id="linkToRegister" style="color:var(--purple-glow);">إنشاء حساب جديد</a>
-            </p>
+            <p style="text-align:center; margin-top:14px;"><a href="#" id="linkToRegister" style="color:var(--purple-glow);">إنشاء حساب جديد</a></p>
         </div>
     </div>
 
@@ -484,9 +173,7 @@
             <div class="form-group"><label>كلمة المرور</label><input type="password" class="form-input" id="regPassword" placeholder="••••••••" dir="ltr"></div>
             <div class="error-block" id="registerError"></div>
             <button class="btn-primary" id="btnRegister"><i class="fas fa-user-plus"></i> إنشاء الحساب</button>
-            <p style="text-align:center; margin-top:14px; font-size:0.85rem; color:var(--text-muted);">
-                لديك حساب بالفعل؟ <a href="#" id="linkToLogin" style="color:var(--purple-glow);">تسجيل الدخول</a>
-            </p>
+            <p style="text-align:center; margin-top:14px;"><a href="#" id="linkToLogin" style="color:var(--purple-glow);">تسجيل الدخول</a></p>
         </div>
     </div>
 
@@ -495,20 +182,12 @@
         <div class="wallet-card">
             <div class="wallet-label"><i class="fas fa-wallet"></i> رصيدك الحالي</div>
             <div class="wallet-balance" id="walletBalance">0 <span>د.ع</span></div>
-            <a href="https://t.me/th2f6" target="_blank" rel="noopener noreferrer" class="btn-charge">شحن الرصيد ↗</a>
+            <a href="#" class="btn-charge" id="btnChargeTelegram"><i class="fab fa-telegram-plane"></i> شحن الرصيد ↗</a>
         </div>
         <div class="attention-banner">⚠️ تنبيه هام جداً: تأكد من جعل حسابك عاماً (Public) قبل طلب أي عملية رشق لتجنب فشل الطلب وضياع الرصيد!</div>
         <div class="frosted-card" style="margin-bottom:16px;">
-            <h4 style="margin-bottom:14px;"><i class="fas fa-shopping-cart"></i> طلب رشق جديد</h4>
-            <div class="form-group">
-                <label>الخدمة</label>
-                <select class="form-input" id="orderService">
-                    <option value="100|1500|متابعين انستغرام">📸 انستغرام - متابعين (1,500 د.ع لكل 1k)</option>
-                    <option value="101|500|لايكات انستغرام">❤️ انستغرام - لايكات (500 د.ع لكل 1k)</option>
-                    <option value="200|2000|متابعين تيك توك">🎵 تيك توك - متابعين (2,000 د.ع لكل 1k)</option>
-                    <option value="300|1800|اعضاء تيليجرام">✈️ تيليجرام - اعضاء (1,800 د.ع لكل 1k)</option>
-                </select>
-            </div>
+            <h4><i class="fas fa-shopping-cart"></i> طلب رشق جديد</h4>
+            <div class="form-group"><label>الخدمة</label><select class="form-input" id="orderService"><option value="100|1500|متابعين انستغرام">📸 انستغرام - متابعين (1,500 د.ع لكل 1k)</option><option value="101|500|لايكات انستغرام">❤️ انستغرام - لايكات (500 د.ع لكل 1k)</option><option value="200|2000|متابعين تيك توك">🎵 تيك توك - متابعين (2,000 د.ع لكل 1k)</option><option value="300|1800|اعضاء تيليجرام">✈️ تيليجرام - اعضاء (1,800 د.ع لكل 1k)</option></select></div>
             <div class="form-group"><label>الرابط / لينك الحساب</label><input type="text" class="form-input" id="orderLink" placeholder="https://..." dir="ltr"></div>
             <div class="form-group"><label>الكمية (الحد الأدنى: 100)</label><input type="number" class="form-input" id="orderQty" placeholder="100" min="100" value="100"></div>
             <div class="cost-box">التكلفة التقديرية: <span id="costValue">0</span> د.ع</div>
@@ -516,11 +195,11 @@
             <div class="success-block" id="orderSuccess"></div>
             <button class="btn-primary" id="btnSubmitOrder" style="margin-top:12px;"><i class="fas fa-paper-plane"></i> إرسال الطلب</button>
         </div>
-        <h4 style="margin-bottom:8px;"><i class="fas fa-th-large"></i> المنصات المتاحة</h4>
+        <h4><i class="fas fa-th-large"></i> المنصات المتاحة</h4>
         <div class="platforms-grid">
-            <div class="platform-card"><i class="fab fa-instagram"></i><div>انستغرام</div><span class="platform-badge">متاح</span></div>
-            <div class="platform-card"><i class="fab fa-tiktok"></i><div>تيك توك</div><span class="platform-badge">متاح</span></div>
-            <div class="platform-card"><i class="fab fa-telegram-plane"></i><div>تيليجرام</div><span class="platform-badge">متاح</span></div>
+            <div class="platform-card"><i class="fab fa-instagram"></i><div>انستغرام</div><span>متاح</span></div>
+            <div class="platform-card"><i class="fab fa-tiktok"></i><div>تيك توك</div><span>متاح</span></div>
+            <div class="platform-card"><i class="fab fa-telegram-plane"></i><div>تيليجرام</div><span>متاح</span></div>
             <div class="platform-card disabled"><i class="fab fa-facebook"></i><div>فيسبوك</div><span>قريباً...</span></div>
             <div class="platform-card disabled"><i class="fab fa-youtube"></i><div>يوتيوب</div><span>قريباً...</span></div>
             <div class="platform-card disabled"><i class="fab fa-x-twitter"></i><div>X</div><span>قريباً...</span></div>
@@ -529,8 +208,8 @@
 
     <!-- Orders View -->
     <div class="view" id="viewOrders">
-        <h3 style="margin-bottom:16px;"><i class="fas fa-list-alt"></i> أرشيف الطلبات</h3>
-        <div id="ordersContainer"><p style="text-align:center; color:var(--text-muted); padding:40px 0;">لا توجد طلبات حالياً.</p></div>
+        <h3><i class="fas fa-list-alt"></i> أرشيف الطلبات</h3>
+        <div id="ordersContainer"><p style="text-align:center; padding:40px;">لا توجد طلبات حالياً.</p></div>
     </div>
 
     <!-- Profile View -->
@@ -538,88 +217,66 @@
         <div class="frosted-card" style="text-align:center;">
             <div class="profile-avatar" id="profileAvatarContainer">
                 <i class="fas fa-user" id="profileAvatarIcon"></i>
-                <img id="profileAvatarImg" style="display:none;" alt="صورتك الشخصية">
+                <img id="profileAvatarImg" style="display:none;" alt="صورتك">
             </div>
-            <div class="profile-info">
-                <h3 id="profileFullName">---</h3>
-                <p class="username-display" id="profileUsername">@---</p>
-                <p style="color:var(--text-muted); font-size:0.8rem;" id="profileEmail">---</p>
-            </div>
+            <h3 id="profileFullName">---</h3>
+            <p id="profileUsername">@---</p>
+            <p style="color:var(--text-muted); font-size:0.8rem;" id="profileEmail">---</p>
             <button class="btn-outline" id="btnEditProfile" style="margin-bottom:10px;"><i class="fas fa-edit"></i> تعديل الحساب</button>
-            <a href="https://t.me/I_17g" target="_blank" rel="noopener noreferrer" class="btn-outline" style="margin-bottom:10px; text-decoration:none; display:block;">
-                <i class="fab fa-telegram-plane"></i> قناة التطبيق الرسمية
-            </a>
-            <button class="btn-outline" id="btnAdminPanel" style="margin-bottom:10px; display:none; border-color:var(--pink); color:var(--pink-glow);">
-                <i class="fas fa-crown"></i> لوحة تحكم الإدارة
-            </button>
-            <button class="btn-primary" id="btnLogout" style="background:rgba(231,76,60,0.8); box-shadow:none;">
-                <i class="fas fa-sign-out-alt"></i> تسجيل الخروج
-            </button>
+            <a href="#" class="btn-outline" id="btnChannelTelegram" style="margin-bottom:10px; text-decoration:none; display:block;"><i class="fab fa-telegram-plane"></i> قناة التطبيق الرسمية</a>
+            <button class="btn-outline" id="btnAdminPanel" style="margin-bottom:10px; display:none; border-color:var(--pink); color:var(--pink-glow);"><i class="fas fa-crown"></i> لوحة تحكم الإدارة</button>
+            <button class="btn-primary" id="btnLogout" style="background:rgba(231,76,60,0.8);"><i class="fas fa-sign-out-alt"></i> تسجيل الخروج</button>
         </div>
     </div>
 
-    <!-- Admin Panel View -->
+    <!-- Admin View -->
     <div class="view" id="viewAdmin">
-        <h3 style="margin-bottom:16px; color:var(--pink-glow);"><i class="fas fa-crown"></i> لوحة تحكم الإدارة</h3>
+        <h3 style="color:var(--pink-glow);"><i class="fas fa-crown"></i> لوحة تحكم الإدارة</h3>
         <div class="frosted-card" style="margin-bottom:16px;">
             <div class="admin-section">
                 <h4><i class="fas fa-power-off"></i> وضع الصيانة</h4>
                 <div style="display:flex; align-items:center; gap:14px;">
-                    <label class="toggle-switch">
-                        <input type="checkbox" id="maintenanceToggle">
-                        <span class="toggle-slider"></span>
-                    </label>
-                    <span id="maintenanceStatusText" style="font-size:0.9rem; color:var(--text-secondary);">غير مفعل</span>
+                    <label class="toggle-switch"><input type="checkbox" id="maintenanceToggle"><span class="toggle-slider"></span></label>
+                    <span id="maintenanceStatusText">غير مفعل</span>
                 </div>
             </div>
             <div class="admin-section">
                 <h4><i class="fas fa-coins"></i> شحن رصيد يدوي</h4>
-                <div class="form-group"><label>اسم المستخدم المستهدف</label><input type="text" class="form-input" id="adminTargetUsername" placeholder="username (بدون @)" dir="ltr"></div>
+                <div class="form-group"><label>اسم المستخدم المستهدف</label><input type="text" class="form-input" id="adminTargetUsername" placeholder="بدون @" dir="ltr"></div>
                 <div class="form-group"><label>المبلغ (د.ع)</label><input type="number" class="form-input" id="adminChargeAmount" placeholder="المبلغ" min="1"></div>
                 <div class="error-block" id="adminChargeError"></div>
                 <div class="success-block" id="adminChargeSuccess"></div>
                 <button class="btn-primary btn-sm" id="btnAdminCharge" style="background:var(--success);"><i class="fas fa-check"></i> تأكيد الشحن</button>
             </div>
         </div>
-        <button class="btn-outline" id="btnBackToProfile" style="border-color:var(--text-muted); color:var(--text-muted);">
-            <i class="fas fa-arrow-right"></i> العودة للحساب
-        </button>
+        <button class="btn-outline" id="btnBackToProfile"><i class="fas fa-arrow-right"></i> العودة للحساب</button>
     </div>
 
-    <!-- Bottom Navigation -->
+    <!-- Edit Profile Modal -->
+    <div id="editProfileModal" class="modal-overlay" style="display:none;">
+        <div class="modal-content">
+            <h3 style="color:var(--purple-glow);">تعديل الملف الشخصي</h3>
+            <div class="form-group"><label>الاسم الكامل</label><input type="text" class="form-input" id="editFullName"></div>
+            <div class="form-group"><label>اسم المستخدم</label><input type="text" class="form-input" id="editUsername" dir="ltr"></div>
+            <div class="form-group"><label>الصورة الشخصية</label><input type="file" class="form-input" id="editAvatar" accept="image/*"></div>
+            <div class="error-block" id="editProfileError"></div>
+            <div style="display:flex; gap:10px; margin-top:16px;">
+                <button class="btn-primary btn-sm" id="btnSaveProfile" style="flex:1;">حفظ</button>
+                <button class="btn-outline btn-sm" id="btnCancelEdit" style="flex:1;">إلغاء</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bottom Nav -->
     <nav class="bottom-nav" id="bottomNav">
         <button class="nav-item active" data-nav="home"><i class="fas fa-home"></i><span>الرئيسية</span></button>
         <button class="nav-item" data-nav="orders"><i class="fas fa-list-alt"></i><span>طلباتي</span></button>
         <button class="nav-item" data-nav="profile"><i class="fas fa-user-circle"></i><span>حسابي</span></button>
     </nav>
 
-    <!-- Edit Profile Modal (Hidden by default) -->
-    <div id="editProfileModal" class="modal-overlay" style="display:none;">
-        <div class="modal-content">
-            <h3 style="color:var(--purple-glow); margin-bottom:16px;">تعديل الملف الشخصي</h3>
-            <div class="form-group">
-                <label>الاسم الكامل</label>
-                <input type="text" class="form-input" id="editFullName">
-            </div>
-            <div class="form-group">
-                <label>اسم المستخدم</label>
-                <input type="text" class="form-input" id="editUsername" dir="ltr">
-            </div>
-            <div class="form-group">
-                <label>الصورة الشخصية</label>
-                <input type="file" class="form-input" id="editAvatar" accept="image/*" style="padding:8px;">
-            </div>
-            <div class="error-block" id="editProfileError"></div>
-            <div style="display:flex; gap:10px; margin-top:16px;">
-                <button class="btn-primary btn-sm" id="btnSaveProfile" style="flex:1;">حفظ التغييرات</button>
-                <button class="btn-outline btn-sm" id="btnCancelEdit" style="flex:1;">إلغاء</button>
-            </div>
-        </div>
-    </div>
-
     <script>
-        (function() {
-            // Firebase Config
+        (() => {
+            // Firebase config
             const firebaseConfig = {
                 apiKey: "AIzaSyB9MrraeowEexYMnrrkHXmVbScoeD7O9AA",
                 authDomain: "mtger-9637a.firebaseapp.com",
@@ -634,293 +291,235 @@
             const auth = firebase.auth();
             const db = firebase.database();
             const storage = firebase.storage();
-
             const RASHQ_API_KEY = "bnt_af0b56277a9f7d177797731b4d670c44b16aec11";
 
             // State
-            let currentUser = null;
-            let isAdmin = false;
-            let userData = null;
-            let maintenanceModeActive = false;
-            let maintenanceListenerUnsub = null;
-            let balanceListenerUnsub = null;
+            let currentUser = null, isAdmin = false, userData = null, maintenanceModeActive = false;
+            let unsubMaintenance = null, unsubBalance = null;
 
-            // DOM Elements
+            // DOM
+            const $ = id => document.getElementById(id);
             const views = {
-                maintenance: document.getElementById('viewMaintenance'),
-                login: document.getElementById('viewLogin'),
-                register: document.getElementById('viewRegister'),
-                home: document.getElementById('viewHome'),
-                orders: document.getElementById('viewOrders'),
-                profile: document.getElementById('viewProfile'),
-                admin: document.getElementById('viewAdmin'),
+                maintenance: $('viewMaintenance'), login: $('viewLogin'), register: $('viewRegister'),
+                home: $('viewHome'), orders: $('viewOrders'), profile: $('viewProfile'), admin: $('viewAdmin')
             };
-            const bottomNav = document.getElementById('bottomNav');
-            const toastContainer = document.getElementById('toastContainer');
+            const bottomNav = $('bottomNav');
+            const toastContainer = $('toastContainer');
 
-            // Helpers
-            function showToast(msg, type='info') {
-                const toast = document.createElement('div');
-                toast.className = `toast toast-${type}`;
-                toast.textContent = msg;
-                toastContainer.appendChild(toast);
-                setTimeout(() => { if(toast.parentNode) toast.remove(); }, 3200);
-            }
-            function showError(id, msg) {
-                const el = document.getElementById(id);
-                if(el) { el.textContent = msg; el.classList.add('visible'); setTimeout(() => el.classList.remove('visible'), 5000); }
-            }
-            function showSuccess(id, msg) {
-                const el = document.getElementById(id);
-                if(el) { el.textContent = msg; el.classList.add('visible'); setTimeout(() => el.classList.remove('visible'), 5000); }
-            }
+            // Utility
+            const toast = (msg, type='info') => {
+                const t = document.createElement('div'); t.className = `toast toast-${type}`; t.textContent = msg;
+                toastContainer.appendChild(t); setTimeout(() => t.remove(), 3200);
+            };
+            const showError = (id, msg) => { const el = $(id); if(el) { el.textContent = msg; el.classList.add('visible'); setTimeout(() => el.classList.remove('visible'), 5000); } };
+            const showSuccess = (id, msg) => { const el = $(id); if(el) { el.textContent = msg; el.classList.add('visible'); setTimeout(() => el.classList.remove('visible'), 5000); } };
 
-            function hideAllViews() { Object.values(views).forEach(v => v.classList.remove('active')); }
-            function showView(viewId) {
+            const hideAllViews = () => Object.values(views).forEach(v => v.classList.remove('active'));
+            const showView = viewId => {
                 hideAllViews();
-                const view = views[viewId];
-                if(view) view.classList.add('active');
-                document.querySelectorAll('.bottom-nav .nav-item').forEach(item => item.classList.remove('active'));
+                views[viewId]?.classList.add('active');
+                document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
                 if(viewId === 'home') document.querySelector('[data-nav="home"]')?.classList.add('active');
-                else if(viewId === 'orders') document.querySelector('[data-nav="orders"]')?.classList.add('active');
-                else if(viewId === 'profile') document.querySelector('[data-nav="profile"]')?.classList.add('active');
-            }
-            function showBottomNav() { bottomNav.classList.add('visible'); }
-            function hideBottomNav() { bottomNav.classList.remove('visible'); }
+                if(viewId === 'orders') document.querySelector('[data-nav="orders"]')?.classList.add('active');
+                if(viewId === 'profile') document.querySelector('[data-nav="profile"]')?.classList.add('active');
+            };
+            const showBottomNav = () => bottomNav.classList.add('visible');
+            const hideBottomNav = () => bottomNav.classList.remove('visible');
 
-            function navigateTo(viewId) {
-                if(viewId === 'admin' && !isAdmin) { showToast('غير مصرح', 'error'); return; }
-                if(maintenanceModeActive && !isAdmin && viewId !== 'maintenance') {
-                    showView('maintenance'); hideBottomNav(); return;
-                }
-                if(!currentUser && viewId !== 'login' && viewId !== 'register' && viewId !== 'maintenance') {
-                    showView('login'); hideBottomNav(); return;
-                }
+            const navigateTo = viewId => {
+                if(viewId === 'admin' && !isAdmin) return toast('غير مصرح', 'error');
+                if(maintenanceModeActive && !isAdmin && viewId !== 'maintenance') { showView('maintenance'); hideBottomNav(); return; }
+                if(!currentUser && viewId !== 'login' && viewId !== 'register' && viewId !== 'maintenance') { showView('login'); hideBottomNav(); return; }
                 showView(viewId);
-                if(currentUser && viewId !== 'login' && viewId !== 'register' && viewId !== 'maintenance') showBottomNav();
-                else hideBottomNav();
+                currentUser && viewId !== 'login' && viewId !== 'register' && viewId !== 'maintenance' ? showBottomNav() : hideBottomNav();
                 if(viewId === 'orders') loadOrders();
                 if(viewId === 'profile') loadProfileData();
                 if(viewId === 'admin') loadAdminData();
-                if(viewId === 'home') refreshBalanceDisplay();
-            }
+                if(viewId === 'home') refreshBalance();
+            };
+
+            // Telegram links handler
+            const openTelegram = (domain) => {
+                const tgUrl = `tg://resolve?domain=${domain}`;
+                const webUrl = `https://t.me/${domain}`;
+                const start = Date.now();
+                window.location.href = tgUrl;
+                // Fallback after 1.5s if tg didn't open
+                setTimeout(() => {
+                    if (Date.now() - start < 2000) window.open(webUrl, '_blank');
+                }, 1500);
+            };
 
             // Maintenance listener
-            function setupMaintenanceListener() {
-                if(maintenanceListenerUnsub) maintenanceListenerUnsub();
-                maintenanceListenerUnsub = db.ref('maintenance_mode').on('value', snap => {
-                    const val = snap.val();
-                    maintenanceModeActive = (val === true || val === 'true');
+            const setupMaintenanceListener = () => {
+                if(unsubMaintenance) unsubMaintenance();
+                unsubMaintenance = db.ref('maintenance_mode').on('value', snap => {
+                    maintenanceModeActive = snap.val() === true || snap.val() === 'true';
                     handleMaintenanceRedirect();
                 }, err => {
-                    console.warn('تعذر قراءة وضع الصيانة:', err.message);
+                    console.warn('Maintenance read error:', err.message);
                     maintenanceModeActive = false;
                     handleMaintenanceRedirect();
                 });
-            }
-            function handleMaintenanceRedirect() {
-                if(maintenanceModeActive && !isAdmin) {
-                    hideAllViews(); views.maintenance.classList.add('active'); hideBottomNav();
-                } else if(!maintenanceModeActive && views.maintenance.classList.contains('active')) {
-                    if(currentUser) { navigateTo('home'); } else { showView('login'); hideBottomNav(); }
+            };
+            const handleMaintenanceRedirect = () => {
+                if(maintenanceModeActive && !isAdmin) { hideAllViews(); views.maintenance.classList.add('active'); hideBottomNav(); }
+                else if(!maintenanceModeActive && views.maintenance.classList.contains('active')) {
+                    if(currentUser) navigateTo('home'); else { showView('login'); hideBottomNav(); }
                 }
-            }
+            };
 
             // Auth
-            async function handleLogin() {
-                const email = document.getElementById('loginEmail').value.trim();
-                const password = document.getElementById('loginPassword').value.trim();
-                if(!email || !password) return showError('loginError', 'يرجى ملء الحقول');
+            const handleLogin = async () => {
+                const email = $('loginEmail').value.trim(), password = $('loginPassword').value.trim();
+                if(!email || !password) return showError('loginError', 'املأ الحقول');
                 try {
-                    const btn = document.getElementById('btnLogin');
-                    btn.disabled = true; btn.textContent = 'جاري الدخول...';
+                    $('btnLogin').disabled = true; $('btnLogin').textContent = 'جاري الدخول...';
                     const cred = await auth.signInWithEmailAndPassword(email, password);
                     currentUser = cred.user;
                     isAdmin = (email.toLowerCase() === 'admin@mtger.iq' && password === 'Admin123');
                     await loadUserData();
                     setupBalanceListener();
-                    btn.disabled = false; btn.textContent = 'دخول';
-                    if(!maintenanceModeActive || isAdmin) navigateTo('home');
-                    else showView('maintenance');
+                    $('btnLogin').disabled = false; $('btnLogin').textContent = 'دخول';
+                    if(!maintenanceModeActive || isAdmin) navigateTo('home'); else showView('maintenance');
                 } catch(e) {
-                    document.getElementById('btnLogin').disabled = false;
-                    document.getElementById('btnLogin').textContent = 'دخول';
-                    let msg = 'فشل الدخول';
-                    if(e.code === 'auth/user-not-found') msg = 'المستخدم غير موجود';
-                    else if(e.code === 'auth/wrong-password') msg = 'كلمة مرور خاطئة';
-                    else msg = e.message;
+                    $('btnLogin').disabled = false; $('btnLogin').textContent = 'دخول';
+                    const msg = e.code === 'auth/user-not-found' ? 'المستخدم غير موجود' : e.code === 'auth/wrong-password' ? 'كلمة مرور خاطئة' : e.message;
                     showError('loginError', msg);
                 }
-            }
+            };
 
-            async function handleRegister() {
-                const fullName = document.getElementById('regFullName').value.trim();
-                let username = document.getElementById('regUsername').value.trim().replace(/@/g, '');
-                const email = document.getElementById('regEmail').value.trim();
-                const password = document.getElementById('regPassword').value.trim();
-                if(!fullName || !username || !email || !password) return showError('registerError', 'جميع الحقول مطلوبة');
+            const handleRegister = async () => {
+                const fullName = $('regFullName').value.trim();
+                let username = $('regUsername').value.trim().replace(/@/g, '');
+                const email = $('regEmail').value.trim(), password = $('regPassword').value.trim();
+                if(!fullName || !username || !email || !password) return showError('registerError', 'املأ كل الحقول');
                 if(password.length < 6) return showError('registerError', 'كلمة المرور 6 أحرف على الأقل');
                 if(email.toLowerCase() === 'admin@mtger.iq') return showError('registerError', 'البريد محجوز');
                 if(username.toLowerCase() === 'admin') return showError('registerError', 'اسم المستخدم محجوز');
                 try {
-                    const btn = document.getElementById('btnRegister');
-                    btn.disabled = true; btn.textContent = 'جاري الإنشاء...';
+                    $('btnRegister').disabled = true; $('btnRegister').textContent = 'جاري الإنشاء...';
                     const cred = await auth.createUserWithEmailAndPassword(email, password);
-                    const uid = cred.user.uid;
-                    await db.ref('users/' + uid).set({
-                        fullName, username, email, balance: 0, role: 'user', createdAt: new Date().toISOString()
-                    });
-                    currentUser = cred.user;
-                    isAdmin = false;
+                    await db.ref('users/' + cred.user.uid).set({ fullName, username, email, balance: 0, role: 'user', createdAt: new Date().toISOString() });
+                    currentUser = cred.user; isAdmin = false;
                     await loadUserData();
                     setupBalanceListener();
-                    btn.disabled = false; btn.textContent = 'إنشاء الحساب';
+                    $('btnRegister').disabled = false; $('btnRegister').textContent = 'إنشاء الحساب';
                     navigateTo('home');
                 } catch(e) {
-                    document.getElementById('btnRegister').disabled = false;
-                    document.getElementById('btnRegister').textContent = 'إنشاء الحساب';
-                    let msg = 'فشل';
-                    if(e.code === 'auth/email-already-in-use') msg = 'البريد مستخدم';
-                    showError('registerError', msg || e.message);
+                    $('btnRegister').disabled = false; $('btnRegister').textContent = 'إنشاء الحساب';
+                    showError('registerError', e.code === 'auth/email-already-in-use' ? 'البريد مستخدم' : e.message);
                 }
-            }
+            };
 
-            async function loadUserData() {
+            const loadUserData = async () => {
                 if(!currentUser) return;
                 const snap = await db.ref('users/' + currentUser.uid).once('value');
                 userData = snap.val() || {};
-                if(userData.role === 'admin' || userData.email === 'admin@mtger.iq') isAdmin = true;
+                if(userData.role === 'admin' || (userData.email && userData.email.toLowerCase() === 'admin@mtger.iq')) isAdmin = true;
                 updateProfileUI();
-            }
+            };
 
-            function updateProfileUI() {
+            const updateProfileUI = () => {
                 if(!userData) return;
-                document.getElementById('profileFullName').textContent = userData.fullName || '---';
-                document.getElementById('profileUsername').textContent = '@' + (userData.username || '---');
-                document.getElementById('profileEmail').textContent = userData.email || '---';
-                document.getElementById('btnAdminPanel').style.display = isAdmin ? 'block' : 'none';
-                // Avatar
-                const avatarImg = document.getElementById('profileAvatarImg');
-                const avatarIcon = document.getElementById('profileAvatarIcon');
-                if(userData.avatarURL) {
-                    avatarImg.src = userData.avatarURL;
-                    avatarImg.style.display = 'block';
-                    avatarIcon.style.display = 'none';
-                } else {
-                    avatarImg.style.display = 'none';
-                    avatarIcon.style.display = 'block';
-                }
-            }
+                $('profileFullName').textContent = userData.fullName || '---';
+                $('profileUsername').textContent = '@' + (userData.username || '---');
+                $('profileEmail').textContent = userData.email || '---';
+                $('btnAdminPanel').style.display = isAdmin ? 'block' : 'none';
+                if(userData.avatarURL) { $('profileAvatarImg').src = userData.avatarURL; $('profileAvatarImg').style.display='block'; $('profileAvatarIcon').style.display='none'; }
+                else { $('profileAvatarImg').style.display='none'; $('profileAvatarIcon').style.display='block'; }
+            };
 
-            function setupBalanceListener() {
-                if(balanceListenerUnsub) balanceListenerUnsub();
+            const setupBalanceListener = () => {
+                if(unsubBalance) unsubBalance();
                 if(!currentUser) return;
-                balanceListenerUnsub = db.ref('users/' + currentUser.uid + '/balance').on('value', snap => {
+                unsubBalance = db.ref('users/' + currentUser.uid + '/balance').on('value', snap => {
                     const bal = snap.val() || 0;
                     if(userData) userData.balance = bal;
-                    document.getElementById('walletBalance').innerHTML = `${bal.toLocaleString('ar-IQ')} <span>د.ع</span>`;
+                    $('walletBalance').innerHTML = `${bal.toLocaleString('ar-IQ')} <span>د.ع</span>`;
                 });
-            }
-            function refreshBalanceDisplay() {
-                if(userData) {
-                    document.getElementById('walletBalance').innerHTML = `${(userData.balance||0).toLocaleString('ar-IQ')} <span>د.ع</span>`;
-                }
-            }
+            };
+            const refreshBalance = () => {
+                if(userData) $('walletBalance').innerHTML = `${(userData.balance||0).toLocaleString('ar-IQ')} <span>د.ع</span>`;
+            };
 
-            async function logout() {
-                if(balanceListenerUnsub) balanceListenerUnsub();
+            const logout = async () => {
+                if(unsubBalance) unsubBalance();
                 await auth.signOut();
                 currentUser = null; isAdmin = false; userData = null;
                 hideBottomNav();
-                if(maintenanceModeActive) showView('maintenance');
-                else showView('login');
-            }
+                maintenanceModeActive ? showView('maintenance') : showView('login');
+            };
 
             // Orders
-            function loadOrders() {
-                const container = document.getElementById('ordersContainer');
-                container.innerHTML = '<p style="text-align:center; color:var(--text-muted);">جاري التحميل...</p>';
+            const loadOrders = () => {
+                const container = $('ordersContainer');
+                container.innerHTML = '<p style="text-align:center;">جاري التحميل...</p>';
                 db.ref('orders/' + currentUser.uid).once('value').then(snap => {
                     const orders = snap.val();
-                    if(!orders) { container.innerHTML = '<p style="text-align:center;">لا توجد طلبات</p>'; return; }
+                    if(!orders) { container.innerHTML = '<p>لا توجد طلبات</p>'; return; }
                     let html = '';
-                    Object.entries(orders).sort((a,b)=> (b[1].date||'').localeCompare(a[1].date||'')).forEach(([id,o])=>{
-                        const statusClass = o.status?.includes('مراجعة') ? 'status-review' : (o.status?.includes('جاري')?'status-progress':'status-done');
+                    Object.entries(orders).sort((a,b) => (b[1].date||'').localeCompare(a[1].date||'')).forEach(([id,o]) => {
+                        const cls = o.status?.includes('مراجعة') ? 'status-review' : o.status?.includes('جاري') ? 'status-progress' : 'status-done';
                         html += `<div class="order-box">
                             <div><strong>الخدمة:</strong> ${o.serviceName}</div>
-                            <div><strong>الرابط:</strong> <span dir="ltr">${o.link}</span></div>
-                            <div><strong>الكمية:</strong> ${o.quantity}</div>
-                            <div><strong>السعر:</strong> ${o.cost} د.ع</div>
+                            <div><strong>الرابط:</strong> ${o.link}</div>
+                            <div><strong>الكمية:</strong> ${o.quantity} | <strong>السعر:</strong> ${o.cost} د.ع</div>
                             <div><strong>التاريخ:</strong> ${new Date(o.date).toLocaleDateString('ar-IQ')}</div>
-                            <div><span class="status-badge ${statusClass}">${o.status||'جاري البدء'}</span></div>
+                            <div><span class="status-badge ${cls}">${o.status||'جاري البدء'}</span></div>
                         </div>`;
                     });
                     container.innerHTML = html;
-                }).catch(()=> container.innerHTML = '<p>تعذر تحميل الطلبات</p>');
-            }
+                }).catch(() => container.innerHTML = '<p>تعذر تحميل الطلبات</p>');
+            };
 
-            // Submit Order
-            async function submitOrder() {
-                const service = document.getElementById('orderService').value.split('|');
-                const link = document.getElementById('orderLink').value.trim();
-                const qty = parseInt(document.getElementById('orderQty').value,10);
-                if(!link || qty<100) return showError('orderError', 'تأكد من الرابط والكمية');
-                const [serviceId, pricePer1k, serviceName] = service;
-                const totalCost = Math.ceil(qty/1000) * parseInt(pricePer1k);
-                const bal = userData?.balance || 0;
-                if(bal < totalCost) return showError('orderError', 'رصيد غير كاف');
+            const submitOrder = async () => {
+                const [serviceId, priceStr, serviceName] = $('orderService').value.split('|');
+                const link = $('orderLink').value.trim();
+                const qty = parseInt($('orderQty').value,10);
+                if(!link || qty < 100) return showError('orderError', 'تأكد من الرابط والكمية (أدنى 100)');
+                const totalCost = Math.ceil(qty/1000) * parseInt(priceStr);
+                if((userData?.balance||0) < totalCost) return showError('orderError', 'رصيد غير كاف');
                 try {
-                    document.getElementById('btnSubmitOrder').disabled = true;
-                    await db.ref('users/' + currentUser.uid + '/balance').set(bal - totalCost);
-                    // API call
-                    const apiUrl = `https://bnt-shb.com/api/v2?key=${RASHQ_API_KEY}&action=add&service=${serviceId}&link=${encodeURIComponent(link)}&quantity=${qty}`;
-                    let apiSuccess = false;
+                    $('btnSubmitOrder').disabled = true;
+                    await db.ref('users/' + currentUser.uid + '/balance').set(userData.balance - totalCost);
+                    let status = 'مراجعة يدوية';
                     try {
-                        const res = await fetch(apiUrl, {method:'POST'});
+                        const res = await fetch(`https://bnt-shb.com/api/v2?key=${RASHQ_API_KEY}&action=add&service=${serviceId}&link=${encodeURIComponent(link)}&quantity=${qty}`, {method:'POST'});
                         const text = await res.text();
-                        apiSuccess = text && (text.includes('order') || text.match(/^\d+$/));
+                        if(text && (text.includes('order') || text.match(/^\d+$/))) status = 'جاري البدء';
                     } catch {}
-                    const status = apiSuccess ? 'جاري البدء' : 'مراجعة يدوية';
-                    await db.ref('orders/' + currentUser.uid).push({
-                        serviceName, link, quantity: qty, cost: totalCost, status, date: new Date().toISOString()
-                    });
-                    document.getElementById('btnSubmitOrder').disabled = false;
-                    showToast('تم تقديم الطلب', 'success');
-                    document.getElementById('orderLink').value = '';
-                    document.getElementById('orderQty').value = 100;
-                    updateCostDisplay();
+                    await db.ref('orders/' + currentUser.uid).push({ serviceName, link, quantity: qty, cost: totalCost, status, date: new Date().toISOString() });
+                    $('btnSubmitOrder').disabled = false;
+                    $('orderLink').value = ''; $('orderQty').value = 100; updateCost();
+                    toast('تم تقديم الطلب', 'success');
                 } catch(e) {
-                    document.getElementById('btnSubmitOrder').disabled = false;
+                    $('btnSubmitOrder').disabled = false;
                     showError('orderError', 'فشل: ' + e.message);
                 }
-            }
+            };
+            const updateCost = () => {
+                const [_, price] = $('orderService').value.split('|');
+                const qty = parseInt($('orderQty').value,10) || 0;
+                $('costValue').textContent = Math.ceil(qty/1000) * parseInt(price);
+            };
 
-            function updateCostDisplay() {
-                const [_, price] = document.getElementById('orderService').value.split('|');
-                const qty = parseInt(document.getElementById('orderQty').value,10) || 0;
-                document.getElementById('costValue').textContent = Math.ceil(qty/1000)*parseInt(price);
-            }
-
-            // Admin Functions
-            async function loadAdminData() {
+            // Admin
+            const loadAdminData = async () => {
                 const snap = await db.ref('maintenance_mode').once('value');
-                const val = snap.val();
-                document.getElementById('maintenanceToggle').checked = (val===true);
-                document.getElementById('maintenanceStatusText').textContent = val ? 'مفعل' : 'غير مفعل';
-            }
-            async function toggleMaintenance(checked) {
+                const val = snap.val() === true;
+                $('maintenanceToggle').checked = val;
+                $('maintenanceStatusText').textContent = val ? 'مفعل' : 'غير مفعل';
+            };
+            const toggleMaintenance = async (checked) => {
                 try {
                     await db.ref('maintenance_mode').set(checked);
-                    document.getElementById('maintenanceStatusText').textContent = checked ? 'مفعل' : 'غير مفعل';
-                    showToast(checked ? 'تم تفعيل الصيانة' : 'تم إيقاف الصيانة', 'success');
-                } catch(e) {
-                    showToast('فشل: ' + e.message, 'error');
-                    document.getElementById('maintenanceToggle').checked = !checked;
-                }
-            }
-            async function adminChargeWallet() {
-                const target = document.getElementById('adminTargetUsername').value.trim().replace(/@/g, '');
-                const amount = parseInt(document.getElementById('adminChargeAmount').value,10);
+                    $('maintenanceStatusText').textContent = checked ? 'مفعل' : 'غير مفعل';
+                } catch(e) { toast('فشل: ' + e.message, 'error'); $('maintenanceToggle').checked = !checked; }
+            };
+            const adminChargeWallet = async () => {
+                const target = $('adminTargetUsername').value.trim().replace(/@/g, '');
+                const amount = parseInt($('adminChargeAmount').value,10);
                 if(!target || isNaN(amount) || amount<=0) return showError('adminChargeError', 'بيانات غير صحيحة');
                 try {
                     const snap = await db.ref('users').orderByChild('username').equalTo(target).once('value');
@@ -929,76 +528,65 @@
                     const uid = Object.keys(users)[0];
                     const currentBal = users[uid].balance || 0;
                     await db.ref('users/' + uid + '/balance').set(currentBal + amount);
-                    document.getElementById('adminTargetUsername').value = '';
-                    document.getElementById('adminChargeAmount').value = '';
-                    showSuccess('adminChargeSuccess', `تم شحن ${amount} د.ع`);
-                } catch(e) {
-                    showError('adminChargeError', 'خطأ: ' + (e.message||'تأكد من صلاحيات قاعدة البيانات'));
-                }
-            }
+                    $('adminTargetUsername').value = ''; $('adminChargeAmount').value = '';
+                    showSuccess('adminChargeSuccess', `تم شحن ${amount.toLocaleString()} د.ع`);
+                } catch(e) { showError('adminChargeError', e.message || 'خطأ في الشحن'); }
+            };
 
-            // Profile Edit & Avatar Upload
-            function openEditProfileModal() {
+            // Profile Edit
+            const openEditModal = () => {
                 if(!userData) return;
-                document.getElementById('editFullName').value = userData.fullName || '';
-                document.getElementById('editUsername').value = userData.username || '';
-                document.getElementById('editAvatar').value = '';
-                document.getElementById('editProfileError').classList.remove('visible');
-                document.getElementById('editProfileModal').style.display = 'flex';
-            }
-            function closeEditProfileModal() {
-                document.getElementById('editProfileModal').style.display = 'none';
-            }
-
-            async function saveProfileChanges() {
-                const newFullName = document.getElementById('editFullName').value.trim();
-                let newUsername = document.getElementById('editUsername').value.trim().replace(/@/g, '');
-                const fileInput = document.getElementById('editAvatar');
-                if(!newFullName || !newUsername) return showError('editProfileError', 'الاسم واسم المستخدم مطلوبان');
-                if(newUsername.toLowerCase() === 'admin' && !isAdmin) return showError('editProfileError', 'اسم المستخدم محجوز');
+                $('editFullName').value = userData.fullName || '';
+                $('editUsername').value = userData.username || '';
+                $('editAvatar').value = '';
+                $('editProfileError').classList.remove('visible');
+                $('editProfileModal').style.display = 'flex';
+            };
+            const closeEditModal = () => $('editProfileModal').style.display = 'none';
+            const saveProfile = async () => {
+                const fullName = $('editFullName').value.trim();
+                let username = $('editUsername').value.trim().replace(/@/g, '');
+                if(!fullName || !username) return showError('editProfileError', 'الاسم واسم المستخدم مطلوبان');
+                if(username.toLowerCase() === 'admin' && !isAdmin) return showError('editProfileError', 'اسم مستخدم محجوز');
                 try {
-                    const updates = { fullName: newFullName, username: newUsername };
-                    if(fileInput.files && fileInput.files[0]) {
-                        const file = fileInput.files[0];
-                        const storageRef = storage.ref(`avatars/${currentUser.uid}`);
-                        const uploadTask = await storageRef.put(file);
-                        const downloadURL = await uploadTask.ref.getDownloadURL();
-                        updates.avatarURL = downloadURL;
+                    const updates = { fullName, username };
+                    const file = $('editAvatar').files[0];
+                    if(file) {
+                        const ref = storage.ref(`avatars/${currentUser.uid}`);
+                        const uploaded = await ref.put(file);
+                        updates.avatarURL = await uploaded.ref.getDownloadURL();
                     }
                     await db.ref('users/' + currentUser.uid).update(updates);
-                    userData = { ...userData, ...updates };
+                    Object.assign(userData, updates);
                     updateProfileUI();
-                    closeEditProfileModal();
-                    showToast('تم تحديث الملف الشخصي', 'success');
-                } catch(e) {
-                    showError('editProfileError', 'فشل الحفظ: ' + (e.message||'خطأ في رفع الصورة'));
-                }
-            }
+                    closeEditModal();
+                    toast('تم التحديث', 'success');
+                } catch(e) { showError('editProfileError', 'فشل: ' + e.message); }
+            };
 
-            // Event Listeners
-            document.getElementById('btnLogin').addEventListener('click', handleLogin);
-            document.getElementById('btnRegister').addEventListener('click', handleRegister);
-            document.getElementById('btnLogout').addEventListener('click', logout);
-            document.getElementById('btnSubmitOrder').addEventListener('click', submitOrder);
-            document.getElementById('btnAdminPanel').addEventListener('click', ()=> navigateTo('admin'));
-            document.getElementById('btnBackToProfile').addEventListener('click', ()=> navigateTo('profile'));
-            document.getElementById('btnAdminCharge').addEventListener('click', adminChargeWallet);
-            document.getElementById('maintenanceToggle').addEventListener('change', e => toggleMaintenance(e.target.checked));
-            document.getElementById('orderService').addEventListener('change', updateCostDisplay);
-            document.getElementById('orderQty').addEventListener('input', updateCostDisplay);
-            document.getElementById('linkToRegister').addEventListener('click', e=>{e.preventDefault(); navigateTo('register');});
-            document.getElementById('linkToLogin').addEventListener('click', e=>{e.preventDefault(); navigateTo('login');});
-            document.getElementById('btnAdminAccess').addEventListener('click', ()=> { if(maintenanceModeActive) navigateTo('login'); });
-            document.getElementById('btnEditProfile').addEventListener('click', openEditProfileModal);
-            document.getElementById('btnSaveProfile').addEventListener('click', saveProfileChanges);
-            document.getElementById('btnCancelEdit').addEventListener('click', closeEditProfileModal);
-            document.getElementById('editProfileModal').addEventListener('click', function(e) {
-                if(e.target === this) closeEditProfileModal();
-            });
+            // Event listeners
+            $('btnLogin').addEventListener('click', handleLogin);
+            $('btnRegister').addEventListener('click', handleRegister);
+            $('btnLogout').addEventListener('click', logout);
+            $('btnSubmitOrder').addEventListener('click', submitOrder);
+            $('btnAdminPanel').addEventListener('click', ()=> navigateTo('admin'));
+            $('btnBackToProfile').addEventListener('click', ()=> navigateTo('profile'));
+            $('btnAdminCharge').addEventListener('click', adminChargeWallet);
+            $('maintenanceToggle').addEventListener('change', e => toggleMaintenance(e.target.checked));
+            $('orderService').addEventListener('change', updateCost);
+            $('orderQty').addEventListener('input', updateCost);
+            $('linkToRegister').addEventListener('click', e=>{ e.preventDefault(); navigateTo('register'); });
+            $('linkToLogin').addEventListener('click', e=>{ e.preventDefault(); navigateTo('login'); });
+            $('btnAdminAccess').addEventListener('click', ()=> { if(maintenanceModeActive) navigateTo('login'); });
+            $('btnEditProfile').addEventListener('click', openEditModal);
+            $('btnSaveProfile').addEventListener('click', saveProfile);
+            $('btnCancelEdit').addEventListener('click', closeEditModal);
+            $('editProfileModal').addEventListener('click', e => { if(e.target === $('editProfileModal')) closeEditModal(); });
+            $('btnChargeTelegram').addEventListener('click', e => { e.preventDefault(); openTelegram('th2f6'); });
+            $('btnChannelTelegram').addEventListener('click', e => { e.preventDefault(); openTelegram('I_17g'); });
 
-            // Bottom Nav
-            document.querySelectorAll('.bottom-nav .nav-item').forEach(item => {
-                item.addEventListener('click', ()=> {
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.addEventListener('click', () => {
                     const target = item.dataset.nav;
                     if(target === 'home') navigateTo('home');
                     else if(target === 'orders') navigateTo('orders');
@@ -1006,26 +594,24 @@
                 });
             });
 
-            // Auth State
+            // Auth state
             auth.onAuthStateChanged(async user => {
                 if(user) {
                     currentUser = user;
                     await loadUserData();
                     setupBalanceListener();
-                    if(!maintenanceModeActive || isAdmin) navigateTo('home');
-                    else showView('maintenance');
+                    if(!maintenanceModeActive || isAdmin) navigateTo('home'); else showView('maintenance');
                 } else {
                     currentUser = null; isAdmin = false; userData = null;
-                    if(balanceListenerUnsub) balanceListenerUnsub();
+                    if(unsubBalance) unsubBalance();
                     hideBottomNav();
-                    if(maintenanceModeActive) showView('maintenance');
-                    else showView('login');
+                    maintenanceModeActive ? showView('maintenance') : showView('login');
                 }
             });
 
             // Init
             setupMaintenanceListener();
-            updateCostDisplay();
+            updateCost();
             hideAllViews();
             views.login.classList.add('active');
         })();
