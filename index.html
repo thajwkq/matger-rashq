@@ -57,7 +57,6 @@
             background-attachment: fixed;
         }
 
-        /* شاشة حجب التحميل لمنع الوميض للمسجلين سابقاً */
         #appInitGatekeeper {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: var(--bg-deep); z-index: 99999;
@@ -97,7 +96,10 @@
 
         .wallet-card { background:linear-gradient(145deg,#1a1030,#131924); border:1.5px solid var(--border-glow); border-radius:var(--radius-lg); padding:22px 20px; margin-bottom:18px; box-shadow:var(--shadow-purple); }
         .wallet-balance { font-size:2rem; font-weight:800; color:#2ecc71; }
-        .btn-charge { display:inline-block; margin-top:12px; padding:10px 22px; background:var(--success); color:#000; border-radius:25px; font-weight:700; text-decoration:none; }
+        
+        /* تعديل تصميم زر الشحن ليصبح متناسقاً بعد تحويله لوسم زر حقيقي */
+        .btn-charge { display:inline-block; margin-top:12px; padding:10px 22px; background:var(--success); color:#000; border:none; border-radius:25px; font-weight:700; font-family:var(--font-main); cursor:pointer; font-size:0.95rem; transition: var(--transition-fast); }
+        .btn-charge:active { opacity: 0.8; }
 
         .attention-banner { background:rgba(243,156,18,0.1); border:1.5px solid rgba(243,156,18,0.5); border-radius:var(--radius-md); padding:14px 16px; margin-bottom:18px; animation:pulseBanner 2s ease-in-out infinite; font-weight:600; color:#f7c464; text-align:center; }
 
@@ -200,7 +202,7 @@
         <div class="wallet-card">
             <div class="wallet-label"><i class="fas fa-wallet"></i> رصيدك الحالي</div>
             <div class="wallet-balance" id="walletBalance">0 <span>د.ع</span></div>
-            <a href="https://t.me/th2f6" target="_blank" class="btn-charge">شحن الرصيد ↗</a>
+            <button id="btnChargeWallet" class="btn-charge">شحن الرصيد ↗</button>
         </div>
         <div class="attention-banner">⚠️ تنبيه هام جداً: تأكد من جعل حسابك عاماً (Public) قبل طلب أي عملية رشق لتجنب فشل الطلب وضياع الرصيد!</div>
         <div class="frosted-card" style="margin-bottom:16px;">
@@ -679,9 +681,14 @@
                 } catch(e) { showError('editProfileError', 'فشل: ' + e.message); }
             };
 
-            // حل سحري لـ AppCreator24: استخدام تصفح كامل للنافذة لتخطي حاجز الـ WebView الداخلي
+            // حل سحري لـ AppCreator24: استخدام تصفح كامل للنافذة لتخطي حاجز الـ WebView الداخلي لقناة الإثباتات
             const openSettingsChannel = () => {
                 window.location.href = `https://t.me/${TELEGRAM_OFFICIAL_CHANNEL}`;
+            };
+
+            // دالة جافاسكريبت المضافة لزر الشحن لفتح الرابط في نافذة جديدة تابعة للنظام الخارجي تماماً وتخطي حظر WebView التطبيق
+            const handleChargeWalletClick = () => {
+                window.open(`https://t.me/${TELEGRAM_SUPPORT_USERNAME}`, '_system', 'location=yes');
             };
 
             $('btnLogin').addEventListener('click', handleLogin);
@@ -703,6 +710,9 @@
             $('btnCancelEdit').addEventListener('click', closeEditModal);
             $('editProfileModal').addEventListener('click', e => { if(e.target === $('editProfileModal')) closeEditModal(); });
             $('btnSettingsChannel').addEventListener('click', openSettingsChannel);
+            
+            // ربط الحدث لزر الشحن الجديد بالدالة الذكية
+            $('btnChargeWallet').addEventListener('click', handleChargeWalletClick);
 
             document.querySelectorAll('.nav-item').forEach(item => {
                 item.addEventListener('click', () => {
@@ -743,12 +753,6 @@
 
             setupMaintenanceListener();
             updateCost();
-
-            // ربط ديناميكي لزر شحن الرصيد لضمان عمله بالمعرف الجديد دون مشاكل
-            const chargeBtn = document.querySelector('.btn-charge');
-            if(chargeBtn) {
-                chargeBtn.href = `https://t.me/${TELEGRAM_SUPPORT_USERNAME}`;
-            }
         })();
     </script>
 </body>
