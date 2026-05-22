@@ -5,12 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>MTGER - منصة الرشق الذكية</title>
 
-    <!-- Firebase SDKs (Compat v9) -->
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
 
-    <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <style>
@@ -102,7 +100,7 @@
         .platform-card { background:var(--bg-card); border:1px solid var(--border-subtle); border-radius:var(--radius-md); padding:18px 10px; text-align:center; transition:var(--transition-smooth); }
         .platform-card.disabled { opacity:0.45; filter:grayscale(40%); pointer-events:none; }
 
-        .order-box { background:var(--bg-card); border:1px solid var(--border-subtle); border-radius:var(--radius-md); padding:16px; margin-bottom:12px; }
+        .order-box { background:var(--bg-card); border:1px solid var(--border-subtle); border-radius:var(--radius-md); padding:16px; margin-bottom:12px; position: relative; }
         .status-badge { display:inline-block; padding:4px 12px; border-radius:14px; font-size:0.78rem; font-weight:600; }
         .status-progress { background:rgba(52,152,219,0.2); color:#5dade2; }
         .status-review { background:rgba(243,156,18,0.2); color:#f7c464; }
@@ -137,6 +135,15 @@
         .toast-info { background:var(--purple); color:#fff; }
         @keyframes fadeOut { to { opacity:0; transform:translateY(-12px); } }
 
+        /* تعديلات مخصصة لقائمة إدارة الطلبات */
+        .admin-order-card { background: rgba(255, 255, 255, 0.02); border: 1px solid var(--border-subtle); padding: 14px; border-radius: var(--radius-md); margin-bottom: 12px; }
+        .admin-order-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; border-bottom: 1px dashed rgba(255,255,255,0.05); padding-bottom: 6px; }
+        .admin-select-status { background: #1c2431; border: 1px solid var(--border-subtle); color: white; padding: 6px 10px; border-radius: var(--radius-sm); font-family: var(--font-main); font-size: 0.85rem; outline: none; cursor: pointer; width: 100%; margin-top: 8px; }
+
+        /* أنماط المودال المعدلة */
+        .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.7); backdrop-filter: blur(5px); z-index: 2000; display: flex; align-items: center; justify-content: center; padding: 20px; }
+        .modal-content { background: var(--bg-card); border: 1.5px solid var(--border-subtle); border-radius: var(--radius-lg); padding: 24px; width: 100%; max-width: 400px; box-shadow: var(--shadow-purple); }
+
         @media (max-width:480px) { .platforms-grid { grid-template-columns:repeat(2,1fr); } .wallet-balance { font-size:1.6rem; } .nav-item { font-size:0.65rem; } }
     </style>
 </head>
@@ -144,7 +151,6 @@
 
     <div class="toast-container" id="toastContainer"></div>
 
-    <!-- Maintenance View -->
     <div class="view" id="viewMaintenance">
         <div class="maintenance-wrapper">
             <div class="maintenance-card">
@@ -157,7 +163,6 @@
         </div>
     </div>
 
-    <!-- Login View -->
     <div class="view" id="viewLogin">
         <div style="text-align:center; padding-top:30px;"><div style="font-size:3rem; color:var(--purple-glow);"><i class="fas fa-bolt"></i></div><h2>MTGER</h2><p style="color:var(--text-muted);">منصة الرشق الذكية</p></div>
         <div class="frosted-card" style="max-width:420px; margin:0 auto;">
@@ -169,7 +174,6 @@
         </div>
     </div>
 
-    <!-- Register View -->
     <div class="view" id="viewRegister">
         <div style="text-align:center; padding-top:20px;"><h2 style="color:var(--purple-glow);">إنشاء حساب</h2></div>
         <div class="frosted-card" style="max-width:420px; margin:0 auto;">
@@ -183,7 +187,6 @@
         </div>
     </div>
 
-    <!-- Home View -->
     <div class="view" id="viewHome">
         <div class="wallet-card">
             <div class="wallet-label"><i class="fas fa-wallet"></i> رصيدك الحالي</div>
@@ -224,13 +227,11 @@
         </div>
     </div>
 
-    <!-- Orders View -->
     <div class="view" id="viewOrders">
         <h3 style="margin-bottom:16px;"><i class="fas fa-list-alt"></i> أرشيف الطلبات</h3>
         <div id="ordersContainer"><p style="text-align:center; padding:40px;">لا توجد طلبات حالياً.</p></div>
     </div>
 
-    <!-- Settings View -->
     <div class="view" id="viewSettings">
         <h3 style="margin-bottom:16px; color:var(--purple-glow);"><i class="fas fa-cog"></i> الإعدادات</h3>
         <div class="settings-section">
@@ -245,12 +246,11 @@
         <div class="settings-section">
             <h4>سياسة الخصوصية والاستخدام</h4>
             <div class="privacy-box">
-                باستخدامك لهذا التطبيق، فإنك توافق على الشروط التالية: الخدمات مقدمة من خلال واجهة برمجة خارجية، ولا نضمن سرعة التنفيذ أو اكتماله في جميع الحالات. التطبيق غير مسؤول عن الطلبات المرسلة إلى حسابات خاصة (Private) أو روابط غير صالحة. يجب التأكد من جعل الحساب عاماً (Public) قبل تقديم الطلب. جميع عمليات الدفع والرصيد نهائية ولا تخضع للاسترداد إلا في حالات فشل تقني مثبت. نحتفظ بالحق في تعديل الأسعار والخدمات دون إشعار مسبق. لأي استفسار، يرجى التواصل عبر قناة التطبيق الرسمية.
+                باستخدامك لهذا التطبيق، فإنك توافق على الشروط التالية: الخدمات مقدمة من خلال واجهة برمجة خارجية، ولا نضمن سرعة التنفيذ أو اكتماله في جميع الحالات. التطبيق غير مسؤول عن الطلبات المرسسة إلى حسابات خاصة (Private) أو روابط غير صالحة. يجب التأكد من جعل الحساب عاماً (Public) قبل تقديم الطلب. جميع عمليات الدفع والرصيد نهائية ولا تخضع للاسترداد إلا في حالات فشل تقني مثبت. نحتفظ بالحق في تعديل الأسعار والخدمات دون إشعار مسبق. لأي استفسار، يرجى التواصل عبر قناة التطبيق الرسمية.
             </div>
         </div>
     </div>
 
-    <!-- Profile View -->
     <div class="view" id="viewProfile">
         <div class="frosted-card" style="text-align:center;">
             <div class="profile-avatar"><i class="fas fa-user"></i></div>
@@ -261,13 +261,13 @@
             </div>
             <button class="btn-outline" id="btnEditProfile" style="margin-bottom:10px;"><i class="fas fa-edit"></i> تعديل الحساب</button>
             <button class="btn-outline" id="btnAdminPanel" style="margin-bottom:10px; display:none; border-color:var(--pink); color:var(--pink-glow);"><i class="fas fa-crown"></i> لوحة تحكم الإدارة</button>
-            <button class="btn-primary" id="btnLogoutProfile" style="background:rgba(231,76,60,0.8); box-shadow:none;" onclick="handleLogout()"><i class="fas fa-sign-out-alt"></i> تسجيل الخروج</button>
+            <button class="btn-primary" id="btnLogoutProfile" style="background:rgba(231,76,60,0.8); box-shadow:none;"><i class="fas fa-sign-out-alt"></i> تسجيل الخروج</button>
         </div>
     </div>
 
-    <!-- Admin View -->
     <div class="view" id="viewAdmin">
-        <h3 style="color:var(--pink-glow);"><i class="fas fa-crown"></i> لوحة تحكم الإدارة</h3>
+        <h3 style="color:var(--pink-glow); margin-bottom:16px;"><i class="fas fa-crown"></i> لوحة تحكم الإدارة</h3>
+        
         <div class="frosted-card" style="margin-bottom:16px;">
             <div class="admin-section">
                 <h4><i class="fas fa-power-off"></i> وضع الصيانة</h4>
@@ -276,23 +276,29 @@
                     <span id="maintenanceStatusText">غير مفعل</span>
                 </div>
             </div>
+            
             <div class="admin-section">
                 <h4><i class="fas fa-coins"></i> شحن رصيد يدوي</h4>
                 <div class="form-group"><label>اسم المستخدم المستهدف</label><input type="text" class="form-input" id="adminTargetUsername" placeholder="بدون @" dir="ltr"></div>
                 <div class="form-group"><label>المبلغ (د.ع)</label><input type="number" class="form-input" id="adminChargeAmount" placeholder="المبلغ" min="1"></div>
                 <div class="error-block" id="adminChargeError"></div>
                 <div class="success-block" id="adminChargeSuccess"></div>
-                <button class="btn-primary btn-sm" id="btnAdminCharge" style="background:var(--success);"><i class="fas fa-check"></i> تأكيد الشحن</button>
+                <button class="btn-primary btn-sm" id="btnAdminCharge" style="background:var(--success); color:#000;"><i class="fas fa-check"></i> تأكيد الشحن</button>
             </div>
         </div>
+
+        <h4 style="color:var(--purple-glow); margin-bottom:10px;"><i class="fas fa-tasks"></i> التحكم بطلبات المستخدمين</h4>
+        <div class="frosted-card" style="margin-bottom:16px; max-height:400px; overflow-y:auto;" id="adminOrdersDashboard">
+            <p style="text-align:center; color:var(--text-muted); padding:20px;">جاري تحميل طلبات النظام...</p>
+        </div>
+
         <button class="btn-outline" id="btnBackToProfile"><i class="fas fa-arrow-right"></i> العودة للحساب</button>
-        <button class="btn-primary" id="btnLogoutAdmin" style="background:rgba(231,76,60,0.8); box-shadow:none; margin-top:12px;" onclick="handleLogout()"><i class="fas fa-sign-out-alt"></i> تسجيل الخروج</button>
+        <button class="btn-primary" id="btnLogoutAdmin" style="background:rgba(231,76,60,0.8); box-shadow:none; margin-top:12px;"><i class="fas fa-sign-out-alt"></i> تسجيل الخروج</button>
     </div>
 
-    <!-- Edit Profile Modal (without image) -->
     <div id="editProfileModal" class="modal-overlay" style="display:none;">
         <div class="modal-content">
-            <h3 style="color:var(--purple-glow);">تعديل الملف الشخصي</h3>
+            <h3 style="color:var(--purple-glow); margin-bottom: 12px;">تعديل الملف الشخصي</h3>
             <div class="form-group"><label>الاسم الكامل</label><input type="text" class="form-input" id="editFullName"></div>
             <div class="form-group"><label>اسم المستخدم</label><input type="text" class="form-input" id="editUsername" dir="ltr"></div>
             <div class="error-block" id="editProfileError"></div>
@@ -303,7 +309,6 @@
         </div>
     </div>
 
-    <!-- Bottom Navigation -->
     <nav class="bottom-nav" id="bottomNav">
         <button class="nav-item active" data-nav="home"><i class="fas fa-home"></i><span>الرئيسية</span></button>
         <button class="nav-item" data-nav="orders"><i class="fas fa-list-alt"></i><span>طلباتي</span></button>
@@ -331,7 +336,7 @@
 
             // State
             let currentUser = null, isAdmin = false, userData = null, maintenanceModeActive = false;
-            let unsubMaintenance = null, unsubBalance = null;
+            let unsubMaintenance = null, unsubBalance = null, unsubAdminOrders = null;
 
             // DOM
             const $ = id => document.getElementById(id);
@@ -366,11 +371,19 @@
                 if(viewId === 'admin' && !isAdmin) return toast('غير مصرح', 'error');
                 if(maintenanceModeActive && !isAdmin && viewId !== 'maintenance') { showView('maintenance'); hideBottomNav(); return; }
                 if(!currentUser && viewId !== 'login' && viewId !== 'register' && viewId !== 'maintenance') { showView('login'); hideBottomNav(); return; }
+                
                 showView(viewId);
-                currentUser && viewId !== 'login' && viewId !== 'register' && viewId !== 'maintenance' ? showBottomNav() : hideBottomNav();
+                
+                // التحكم في إظهار شريط التنقل السفلي - يخفى تماماً في صفحة الإدارة
+                if(currentUser && viewId !== 'login' && viewId !== 'register' && viewId !== 'maintenance' && viewId !== 'admin') {
+                    showBottomNav();
+                } else {
+                    hideBottomNav();
+                }
+                
                 if(viewId === 'orders') loadOrders();
                 if(viewId === 'profile') loadProfileData();
-                if(viewId === 'admin') loadAdminData();
+                if(viewId === 'admin') loadAdminDashboard();
                 if(viewId === 'home') refreshBalance();
             };
 
@@ -399,13 +412,24 @@
                 if(!email || !password) return showError('loginError', 'املأ الحقول');
                 try {
                     $('btnLogin').disabled = true; $('btnLogin').textContent = 'جاري الدخول...';
+                    
+                    // تم ربط التحقق من بيانات الأدمن المحددة محلياً قبل الفايربيس لضمان الصلاحية المطلقة
+                    if(email.toLowerCase() === 'admin@mtger.iq' && password === 'Admin123') {
+                        isAdmin = true;
+                    }
+                    
                     const cred = await auth.signInWithEmailAndPassword(email, password);
                     currentUser = cred.user;
-                    isAdmin = (email.toLowerCase() === 'admin@mtger.iq' && password === 'Admin123');
+                    
                     await loadUserData();
                     setupBalanceListener();
                     $('btnLogin').disabled = false; $('btnLogin').textContent = 'دخول';
-                    if(!maintenanceModeActive || isAdmin) navigateTo('home'); else showView('maintenance');
+                    
+                    if(isAdmin) {
+                        navigateTo('admin');
+                    } else {
+                        if(!maintenanceModeActive) navigateTo('home'); else showView('maintenance');
+                    }
                 } catch(e) {
                     $('btnLogin').disabled = false; $('btnLogin').textContent = 'دخول';
                     const msg = e.code === 'auth/user-not-found' ? 'المستخدم غير موجود' : e.code === 'auth/wrong-password' ? 'كلمة مرور خاطئة' : e.message;
@@ -440,7 +464,7 @@
                 if(!currentUser) return;
                 const snap = await db.ref('users/' + currentUser.uid).once('value');
                 userData = snap.val() || {};
-                if(userData.role === 'admin' || (userData.email && userData.email.toLowerCase() === 'admin@mtger.iq')) isAdmin = true;
+                if(userData.role === 'admin' || (currentUser.email && currentUser.email.toLowerCase() === 'admin@mtger.iq')) isAdmin = true;
                 updateProfileUI();
             };
 
@@ -465,29 +489,24 @@
                 if(userData) $('walletBalance').innerHTML = `${(userData.balance||0).toLocaleString('ar-IQ')} <span>د.ع</span>`;
             };
 
-            // ========== FIXED LOGOUT FUNCTION ==========
-            const handleLogout = () => {
-                auth.signOut()
-                    .then(() => {
-                        // Hide bottom navigation
-                        bottomNav.classList.remove('visible');
-                        // Clear cached user data
-                        currentUser = null;
-                        isAdmin = false;
-                        userData = null;
-                        // Switch to login view
-                        hideAllViews();
-                        views.login.classList.add('active');
-                        // Remove active state from all nav items
-                        document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-                        // Stop balance listener
-                        if(unsubBalance) unsubBalance();
-                        console.log('✅ تم تسجيل الخروج بنجاح');
-                    })
-                    .catch(error => {
-                        console.error('❌ خطأ في تسجيل الخروج:', error.message);
-                        toast('حدث خطأ أثناء تسجيل الخروج، حاول مرة أخرى', 'error');
-                    });
+            // دالة تسجيل الخروج الاحترافية والمعدلة بالكامل لإنهاء الجلسة وإخفاء البار السفلي
+            const handleLogoutAction = () => {
+                if(unsubAdminOrders) { unsubAdminOrders(); unsubAdminOrders = null; }
+                if(unsubBalance) { unsubBalance(); unsubBalance = null; }
+                
+                auth.signOut().then(() => {
+                    bottomNav.classList.remove('visible');
+                    currentUser = null;
+                    isAdmin = false;
+                    userData = null;
+                    hideAllViews();
+                    views.login.classList.add('active');
+                    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+                    toast('تم تسجيل الخروج بنجاح', 'success');
+                }).catch(err => {
+                    console.error(err);
+                    toast('خطأ أثناء خروج الجلسة', 'error');
+                });
             };
 
             // Orders
@@ -496,16 +515,20 @@
                 container.innerHTML = '<p style="text-align:center;">جاري التحميل...</p>';
                 db.ref('orders/' + currentUser.uid).once('value').then(snap => {
                     const orders = snap.val();
-                    if(!orders) { container.innerHTML = '<p>لا توجد طلبات</p>'; return; }
+                    if(!orders) { container.innerHTML = '<p style="text-align:center; padding:20px; color:var(--text-muted);">لا توجد طلبات حالياً.</p>'; return; }
                     let html = '';
                     Object.entries(orders).sort((a,b) => (b[1].date||'').localeCompare(a[1].date||'')).forEach(([id,o]) => {
-                        const cls = o.status?.includes('مراجعة') ? 'status-review' : o.status?.includes('جاري') ? 'status-progress' : 'status-done';
+                        let cls = 'status-review';
+                        if(o.status === 'جاري التنفيذ') cls = 'status-progress';
+                        if(o.status === 'مكتمل') cls = 'status-done';
+                        if(o.status === 'فشل الطلب') cls = 'status-failed';
+                        
                         html += `<div class="order-box">
                             <div><strong>الخدمة:</strong> ${o.serviceName}</div>
                             <div><strong>الرابط:</strong> <span dir="ltr">${o.link}</span></div>
                             <div><strong>الكمية:</strong> ${o.quantity} | <strong>السعر:</strong> ${o.cost} د.ع</div>
-                            <div><strong>التاريخ:</strong> ${new Date(o.date).toLocaleDateString('ar-IQ')}</div>
-                            <div><span class="status-badge ${cls}">${o.status||'جاري البدء'}</span></div>
+                            <div><strong>التاريخ:</strong> ${o.date ? new Date(o.date).toLocaleDateString('ar-IQ') : '---'}</div>
+                            <div style="margin-top:6px;"><span class="status-badge ${cls}">${o.status||'قيد المراجعة'}</span></div>
                         </div>`;
                     });
                     container.innerHTML = html;
@@ -523,16 +546,16 @@
                 try {
                     $('btnSubmitOrder').disabled = true;
                     await db.ref('users/' + currentUser.uid + '/balance').set(userData.balance - totalCost);
-                    let status = 'مراجعة يدوية';
+                    let status = 'قيد المراجعة';
                     try {
                         const res = await fetch(`https://bnt-shb.com/api/v2?key=${RASHQ_API_KEY}&action=add&service=${serviceId}&link=${encodeURIComponent(link)}&quantity=${qty}`, {method:'POST'});
                         const text = await res.text();
-                        if(text && (text.includes('order') || text.match(/^\d+$/))) status = 'جاري البدء';
+                        if(text && (text.includes('order') || text.match(/^\d+$/))) status = 'جاري التنفيذ';
                     } catch {}
                     await db.ref('orders/' + currentUser.uid).push({ serviceName, link, quantity: qty, cost: totalCost, status, date: new Date().toISOString() });
                     $('btnSubmitOrder').disabled = false;
                     $('orderLink').value = ''; $('orderQty').value = 100; updateCost();
-                    toast('تم تقديم الطلب', 'success');
+                    toast('تم تقديم الطلب بنجاح', 'success');
                 } catch(e) {
                     $('btnSubmitOrder').disabled = false;
                     showError('orderError', 'فشل: ' + e.message);
@@ -544,13 +567,64 @@
                 $('costValue').textContent = Math.ceil(qty/1000) * parseInt(price);
             };
 
-            // Admin
-            const loadAdminData = async () => {
+            // لوحة تحكم الإدارة الشاملة وإدارة وتحديث حالات الطلبات يدوياً وحفظها بالفايربيس
+            const loadAdminDashboard = async () => {
                 const snap = await db.ref('maintenance_mode').once('value');
                 const val = snap.val() === true;
                 $('maintenanceToggle').checked = val;
                 $('maintenanceStatusText').textContent = val ? 'مفعل' : 'غير مفعل';
+                
+                // الاستماع اللحظي لكافة طلبات المستخدمين وعرضها للأدمن
+                const dashboardContainer = $('adminOrdersDashboard');
+                if(unsubAdminOrders) unsubAdminOrders();
+                
+                unsubAdminOrders = db.ref('orders').on('value', snapshot => {
+                    dashboardContainer.innerHTML = '';
+                    const allUsersOrders = snapshot.val();
+                    if(!allUsersOrders) {
+                        dashboardContainer.innerHTML = '<p style="text-align:center; color:var(--text-muted); padding:20px;">لا توجد طلبات في النظام حالياً.</p>';
+                        return;
+                    }
+                    
+                    let ordersHtml = '';
+                    Object.entries(allUsersOrders).forEach(([userId, userOrdersNode]) => {
+                        Object.entries(userOrdersNode).forEach(([orderId, orderData]) => {
+                            ordersHtml += `
+                                <div class="admin-order-card">
+                                    <div class="admin-order-header">
+                                        <span style="font-size:0.8rem; color:var(--pink-glow); font-weight:bold;">رقم: ${orderId.substring(1,8)}</span>
+                                        <span style="font-size:0.8rem; color:var(--text-muted);">${orderData.date ? new Date(orderData.date).toLocaleDateString('ar-IQ') : '---'}</span>
+                                    </div>
+                                    <div style="font-size:0.85rem; margin-bottom:4px;"><b>الخدمة:</b> ${orderData.serviceName}</div>
+                                    <div style="font-size:0.85rem; margin-bottom:4px; word-break:break-all;"><b>الرابط:</b> ${orderData.link}</div>
+                                    <div style="font-size:0.85rem; margin-bottom:6px;"><b>الكمية:</b> ${orderData.quantity} | <b>السعر:</b> ${orderData.cost} د.ع</div>
+                                    
+                                    <select class="admin-select-status" data-uid="${userId}" data-oid="${orderId}" onchange="globalUpdateOrderStatus(this)">
+                                        <option value="قيد المراجعة" ${orderData.status === 'قيد المراجعة' ? 'selected' : ''}>قيد المراجعة</option>
+                                        <option value="جاري التنفيذ" ${orderData.status === 'جاري التنفيذ' ? 'selected' : ''}>جاري التنفيذ</option>
+                                        <option value="مكتمل" ${orderData.status === 'مكتمل' ? 'selected' : ''}>مكتمل</option>
+                                    </select>
+                                </div>
+                            `;
+                        });
+                    });
+                    dashboardContainer.innerHTML = ordersHtml || '<p style="text-align:center; color:var(--text-muted); padding:20px;">لا توجد طلبات في النظام حالياً.</p>';
+                });
             };
+
+            // دالة تحديث حالة الطلب من الإدارة والمربوطة بالنافذة المنسدلة للتحكم
+            window.globalUpdateOrderStatus = (selectElement) => {
+                const uid = selectElement.getAttribute('data-uid');
+                const oid = selectElement.getAttribute('data-oid');
+                const newStatus = selectElement.value;
+                
+                db.ref(`orders/${uid}/${oid}/status`).set(newStatus).then(() => {
+                    toast('تم تحديث حالة الطلب بنجاح', 'success');
+                }).catch(err => {
+                    toast('فشل تحديث الحالة: ' + err.message, 'error');
+                });
+            };
+
             const toggleMaintenance = async (checked) => {
                 try {
                     await db.ref('maintenance_mode').set(checked);
@@ -603,7 +677,8 @@
             // Event Listeners
             $('btnLogin').addEventListener('click', handleLogin);
             $('btnRegister').addEventListener('click', handleRegister);
-            // Logout buttons now use onclick="handleLogout()" directly in HTML
+            $('btnLogoutProfile').addEventListener('click', handleLogoutAction);
+            $('btnLogoutAdmin').addEventListener('click', handleLogoutAction);
             $('btnSubmitOrder').addEventListener('click', submitOrder);
             $('btnAdminPanel').addEventListener('click', ()=> navigateTo('admin'));
             $('btnBackToProfile').addEventListener('click', ()=> navigateTo('profile'));
@@ -635,16 +710,24 @@
             auth.onAuthStateChanged(user => {
                 if (user) {
                     currentUser = user;
+                    // فحص البريد محلياً فور تفعيل الجلسة للتأكد من حالة حساب الأدمن الفريد
+                    if(user.email && user.email.toLowerCase() === 'admin@mtger.iq') {
+                        isAdmin = true;
+                    }
                     loadUserData();
                     setupBalanceListener();
-                    if(!maintenanceModeActive || isAdmin) navigateTo('home');
-                    else showView('maintenance');
+                    if(isAdmin) {
+                        navigateTo('admin');
+                    } else {
+                        if(!maintenanceModeActive) navigateTo('home');
+                        else showView('maintenance');
+                    }
                 } else {
-                    // User signed out – ensure UI resets
                     currentUser = null;
                     isAdmin = false;
                     userData = null;
                     if(unsubBalance) unsubBalance();
+                    if(unsubAdminOrders) unsubAdminOrders();
                     hideBottomNav();
                     hideAllViews();
                     if(maintenanceModeActive) showView('maintenance');
@@ -661,4 +744,4 @@
         })();
     </script>
 </body>
-                    </html>
+</html>
