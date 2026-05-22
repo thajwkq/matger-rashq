@@ -177,32 +177,44 @@
             background-color: #192233;
         }
 
-        /* نمط صفحة الصيانة المحسّنة والمرتبة */
+        /* --- تعديل وضع الصيانة --- */
+        /* CSS جديد ومعدل لتوسيط محتوى وضع الصيانة تماماً */
         .maintenance-view {
             display: flex;
             flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
+            justify-content: center; /* توسيط عمودي */
+            align-items: center; /* توسيط أفقي */
+            height: 100vh; /* ملء ارتفاع الشاشة بالكامل */
             text-align: center;
             padding: 20px;
             box-sizing: border-box;
+            background-color: var(--bg-color); /* ضمان الخلفية السوداء */
         }
         
         .maintenance-view h1 {
             background: var(--primary-gradient);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            font-size: 26px;
-            margin-top: 20px;
+            font-size: 28px; /* حجم خط مناسب */
+            margin-top: 25px;
+            margin-bottom: 15px;
         }
 
+        .maintenance-view p {
+            color: var(--text-muted);
+            max-width: 320px;
+            line-height: 1.6;
+            margin-bottom: 30px;
+        }
+
+        /* حركة دوران للأيقونة */
         @keyframes pulse {
             0% { transform: scale(1); opacity: 0.9; }
             50% { transform: scale(1.05); opacity: 1; }
             100% { transform: scale(1); opacity: 0.9; }
         }
 
+        /* تنسيق كروت الطلبات */
         .order-item {
             background-color: var(--card-bg);
             border-radius: 12px;
@@ -217,10 +229,10 @@
 
     <div id="maintenancePage" class="page">
         <div class="maintenance-view">
-            <div style="font-size: 70px; color: #da44bb; animation: pulse 2s infinite ease-in-out;"><i class="fas fa-tools"></i></div>
+            <div style="font-size: 80px; color: #8a2be2; animation: pulse 2s infinite ease-in-out;"><i class="fas fa-wrench"></i></div>
             <h1>التطبيق تحت الصيانة حالياً</h1>
-            <p style="color: var(--text-muted); max-width: 320px; line-height: 1.6;">نعمل حالياً على تحديث وتطوير أنظمة الرشق لتقديم الخدمة الأفضل لكم، يرجى إعادة المحاولة لاحقاً.</p>
-            <button class="btn-primary" style="width: auto; padding: 10px 40px;" onclick="window.location.reload()">تحديث الحالية</button>
+            <p>نعمل حالياً على تحديث وتطوير أنظمة الرشق لتقديم الخدمة الأفضل لكم، يرجى إعادة المحاولة لاحقاً.</p>
+            <button class="btn-primary" style="width: auto; padding: 12px 40px;" onclick="window.location.reload()">تحديث الصفحة</button>
         </div>
     </div>
 
@@ -322,7 +334,7 @@
     <div id="ordersPage" class="page">
         <h2 style="padding: 20px; margin-bottom: 5px;"><i class="fas fa-box-open" style="margin-left: 10px; color:#da44bb;"></i>سجل طلباتي</h2>
         <div id="ordersList" style="padding: 0 20px;">
-            <p style="color: var(--text-muted); text-align: center; margin-top: 40px;">لا توجد طلبات رشق سابقة في حسابك حالياً.</p>
+            <p style="color: var(--text-muted); text-align: center; margin-top: 40px;">لا توجد طلبات سابقة في حسابك حالياً.</p>
         </div>
     </div>
 
@@ -367,7 +379,7 @@
     </div>
 
     <script>
-        // إعدادات وبيانات مشروع الـ Firebase الخاص بك
+        // إعدادات وبيانات مشروع الـ Firebase الخاصة بك
         const firebaseConfig = {
             apiKey: "AIzaSyCBbRaAuYo6KhH7K6-byjp4SCou0DS4IXc",
             authDomain: "surtur-5d667.firebaseapp.com",
@@ -379,10 +391,10 @@
             measurementId: "G-55X08DPKMJ"
         };
         
-        // مفتاح الـ API لسيرفر الرشق الخاص بك المرفق
+        // مفتاح الـ API لسيرفر الرشق
         const RASHQ_API_KEY = "bnt_af0b56277a9f7d177797731b4d670c44b16aec11";
 
-        // إطلاق مكتبة الـ Firebase بالتوافقية للمتصفح المباشر
+        // إطلاق مكتبة الـ Firebase
         if (!firebase.apps.length) {
             firebase.initializeApp(firebaseConfig);
         }
@@ -390,7 +402,7 @@
         const db = firebase.database();
         let currentUserData = null;
 
-        // التحقق اللحظي التلقائي من حالة "وضع الصيانة العام"
+        // التحقق اللحظي التلقائي من حالة "وضع الصيانة" وتوسيط الصفحة
         db.ref('maintenance_mode').on('value', (snapshot) => {
             const isMaintenance = snapshot.val();
             const toggleElement = document.getElementById('maintenanceToggle');
@@ -402,7 +414,6 @@
             }
         });
 
-        // التبديل بين الشاشات
         function navigate(pageId) {
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active-page'));
             document.getElementById(pageId).classList.add('active-page');
@@ -414,7 +425,6 @@
             element.classList.add('active');
         }
 
-        // حساب تكلفة رشق الخدمة بشكل حي ومباشر بناءً على الكمية المحددة
         function calculatePrice() {
             const select = document.getElementById('serviceSelect');
             const pricePerThousand = parseFloat(select.options[select.selectedIndex].getAttribute('data-price'));
@@ -423,7 +433,6 @@
             document.getElementById('totalCost').innerText = total;
         }
 
-        // تسجيل الدخول الآمن والربط
         function handleLogin() {
             const email = document.getElementById('loginEmail').value;
             const pass = document.getElementById('loginPassword').value;
@@ -438,7 +447,6 @@
             });
         }
 
-        // إنشاء الحساب للمستخدمين الجدد وضخهم بقاعدة البيانات برصيد افتراضي 0
         function handleRegister() {
             const name = document.getElementById('regName').value;
             const user = document.getElementById('regUser').value.trim().replace('@', '');
@@ -470,7 +478,6 @@
             });
         }
 
-        // معالجة الدخول الناجح وجلب بيانات المستخدم والطلبات
         function loginSuccess(user) {
             document.getElementById('globalNav').style.display = 'flex';
             navigate('homePage');
@@ -492,7 +499,6 @@
             loadUserOrders(user.uid);
         }
 
-        // إرسال طلب رشق ومعالجته تلقائياً مع السيرفر والـ Firebase
         function submitOrder() {
             const select = document.getElementById('serviceSelect');
             const serviceId = select.value;
@@ -501,23 +507,20 @@
             const totalCost = parseFloat(document.getElementById('totalCost').innerText);
 
             if(!link || qty < 100) {
-                alert('يرجى كتابة رابط صحيح وتحديد كمية لا تقل عن 100 متابع/لايك.');
+                alert('يرجى كتابة رابط صحيح وتحديد كمية لا تقل عن 100.');
                 return;
             }
 
             if(!currentUserData || currentUserData.balance < totalCost) {
-                alert('رصيدك غير كافٍ لشراء هذه الخدمة، يرجى شحن رصيد محفظتك أولاً.');
+                alert('رصيدك غير كافٍ، يرجى شحن الرصيد أولاً.');
                 return;
             }
 
-            // 1. خصم الرصيد أولاً من حساب المستخدم لضمان سلامة التعامل المالي
             const uid = auth.currentUser.uid;
             const newBalance = currentUserData.balance - totalCost;
 
             db.ref('users/' + uid).update({ balance: newBalance }).then(() => {
                 
-                // 2. إرسال الطلب البرمي المباشر لسيرفر الرشق الخاص بك (عبر الـ API)
-                // ملحوظة: بعض المتصفحات تقيد طلبات الـ CORS المباشرة، ويتم معالجتها من إعدادات السيرفر
                 const apiEndpoint = `https://bnt-shb.com/api/v2?key=${RASHQ_API_KEY}&action=add&service=${serviceId}&link=${encodeURIComponent(link)}&quantity=${qty}`;
 
                 fetch(apiEndpoint, { method: 'POST' })
@@ -525,7 +528,6 @@
                 .then(data => {
                     const orderId = data.order || "تحت المعالجة";
                     
-                    // 3. توثيق وحفظ الطلب في سجل المستخدم داخل Firebase
                     db.ref('orders/' + uid).push({
                         serviceName: select.options[select.selectedIndex].text.split('[')[0],
                         link: link,
@@ -536,11 +538,10 @@
                         date: new Date().toLocaleString('ar-IQ')
                     });
 
-                    alert(`تم إرسال الطلب بنجاح إلى السيرفر! رقم الطلب: ${orderId}`);
+                    alert(`تم إرسال الطلب بنجاح! رقم الطلب: ${orderId}`);
                     document.getElementById('orderLink').value = '';
                 })
                 .catch(err => {
-                    // في حال فشل الاتصال المباشر بالسيرفر، نوثق الطلب للأدمن لمراجعته وحفظ حق المستخدم
                     db.ref('orders/' + uid).push({
                         serviceName: select.options[select.selectedIndex].text.split('[')[0],
                         link: link,
@@ -549,12 +550,11 @@
                         status: 'مراجعة يدوية',
                         date: new Date().toLocaleString('ar-IQ')
                     });
-                    alert('تم قيد الطلب بنجاح، سيقوم المسؤول بتأكيده خلال دقائق.');
+                    alert('تم قيد الطلب بنجاح وسيقوم المسؤول بتأكيده خلال دقائق.');
                 });
             });
         }
 
-        // جلب واستعراض قائمة طلبات المستخدم السابقة
         function loadUserOrders(uid) {
             db.ref('orders/' + uid).on('value', (snapshot) => {
                 const listDiv = document.getElementById('ordersList');
@@ -575,12 +575,11 @@
                         `;
                     });
                 } else {
-                    listDiv.innerHTML = '<p style="color: var(--text-muted); text-align: center; margin-top: 40px;">لا توجد طلبات سابقة في حسابك حالياً.</p>';
+                    listDiv.innerHTML = '<p style="color: var(--text-muted); text-align: center; margin-top: 40px;">لا توجد طلبات سابقة في حسابك.</p>';
                 }
             });
         }
 
-        // تسجيل الخروج
         function handleLogout() {
             auth.signOut().then(() => {
                 document.getElementById('globalNav').style.display = 'none';
@@ -589,18 +588,16 @@
             });
         }
 
-        // [أدمن] - تعديل حالة وضع الصيانة
         function toggleMaintenanceMode(status) {
             db.ref('maintenance_mode').set(status);
         }
 
-        // [أدمن] - شحن رصيد المحافظ بالبحث عن اسم الحساب
         function adminChargeWallet() {
             const target = document.getElementById('targetUser').value.trim().replace('@', '');
             const amount = parseFloat(document.getElementById('chargeAmount').value);
 
             if(!target || isNaN(amount)) {
-                alert('يرجى إدخال اسم مستخدم ومبلغ شحن صحيح.');
+                alert('يرجى إدخال بيانات صحيحة.');
                 return;
             }
 
@@ -612,13 +609,11 @@
                         db.ref('users/' + userKey).update({
                             balance: currentBalance + amount
                         }).then(() => {
-                            alert(`تم بنجاح شحن الحساب بمبلغ ${amount} د.ع`);
-                            document.getElementById('targetUser').value = '';
-                            document.getElementById('chargeAmount').value = '';
+                            alert('تم الشحن بنجاح!');
                         });
                     });
                 } else {
-                    alert('خطأ: لم يتم العثور على اسم المستخدم، تأكد من الأحرف.');
+                    alert('المستخدم غير موجود.');
                 }
             });
         }
