@@ -374,7 +374,6 @@
                 
                 showView(viewId);
                 
-                // التحكم في إظهار شريط التنقل السفلي - يخفى تماماً في صفحة الإدارة
                 if(currentUser && viewId !== 'login' && viewId !== 'register' && viewId !== 'maintenance' && viewId !== 'admin') {
                     showBottomNav();
                 } else {
@@ -413,7 +412,6 @@
                 try {
                     $('btnLogin').disabled = true; $('btnLogin').textContent = 'جاري الدخول...';
                     
-                    // تم ربط التحقق من بيانات الأدمن المحددة محلياً قبل الفايربيس لضمان الصلاحية المطلقة
                     if(email.toLowerCase() === 'admin@mtger.iq' && password === 'Admin123') {
                         isAdmin = true;
                     }
@@ -489,7 +487,6 @@
                 if(userData) $('walletBalance').innerHTML = `${(userData.balance||0).toLocaleString('ar-IQ')} <span>د.ع</span>`;
             };
 
-            // دالة تسجيل الخروج الاحترافية والمعدلة بالكامل لإنهاء الجلسة وإخفاء البار السفلي
             const handleLogoutAction = () => {
                 if(unsubAdminOrders) { unsubAdminOrders(); unsubAdminOrders = null; }
                 if(unsubBalance) { unsubBalance(); unsubBalance = null; }
@@ -567,14 +564,12 @@
                 $('costValue').textContent = Math.ceil(qty/1000) * parseInt(price);
             };
 
-            // لوحة تحكم الإدارة الشاملة وإدارة وتحديث حالات الطلبات يدوياً وحفظها بالفايربيس
             const loadAdminDashboard = async () => {
                 const snap = await db.ref('maintenance_mode').once('value');
                 const val = snap.val() === true;
                 $('maintenanceToggle').checked = val;
                 $('maintenanceStatusText').textContent = val ? 'مفعل' : 'غير مفعل';
                 
-                // الاستماع اللحظي لكافة طلبات المستخدمين وعرضها للأدمن
                 const dashboardContainer = $('adminOrdersDashboard');
                 if(unsubAdminOrders) unsubAdminOrders();
                 
@@ -612,7 +607,6 @@
                 });
             };
 
-            // دالة تحديث حالة الطلب من الإدارة والمربوطة بالنافذة المنسدلة للتحكم
             window.globalUpdateOrderStatus = (selectElement) => {
                 const uid = selectElement.getAttribute('data-uid');
                 const oid = selectElement.getAttribute('data-oid');
@@ -647,7 +641,6 @@
                 } catch(e) { showError('adminChargeError', e.message || 'خطأ في الشحن'); }
             };
 
-            // Profile Edit (without avatar)
             const openEditModal = () => {
                 if(!userData) return;
                 $('editFullName').value = userData.fullName || '';
@@ -671,10 +664,9 @@
                 } catch(e) { showError('editProfileError', 'فشل: ' + e.message); }
             };
 
-            // Settings: open Telegram channel
             const openSettingsChannel = () => window.open('https://t.me/I_17g', '_blank');
 
-            // Event Listeners
+            // إعداد مستمعي الأحداث فوراً عند قراءة السكريبت بدلاً من DOMContentLoaded المعزول
             $('btnLogin').addEventListener('click', handleLogin);
             $('btnRegister').addEventListener('click', handleRegister);
             $('btnLogoutProfile').addEventListener('click', handleLogoutAction);
@@ -695,7 +687,6 @@
             $('editProfileModal').addEventListener('click', e => { if(e.target === $('editProfileModal')) closeEditModal(); });
             $('btnSettingsChannel').addEventListener('click', openSettingsChannel);
 
-            // Bottom Nav
             document.querySelectorAll('.nav-item').forEach(item => {
                 item.addEventListener('click', () => {
                     const target = item.dataset.nav;
@@ -706,16 +697,14 @@
                 });
             });
 
-            // Auth State (Session Guard)
-            auth.onAuthStateChanged(user => {
+            // الحل السحري والتوجيه الآمن المتزامن (Async Auth State)
+            auth.onAuthStateChanged(async (user) => {
                 if (user) {
                     currentUser = user;
-                    // فحص البريد محلياً فور تفعيل الجلسة للتأكد من حالة حساب الأدمن الفريد
-                    if(user.email && user.email.toLowerCase() === 'admin@mtger.iq') {
-                        isAdmin = true;
-                    }
-                    loadUserData();
+                    // تجميد التوجيه الإجباري حتى يتم إحضار كامل البيانات من السحابة والتحقق من الرتبة
+                    await loadUserData();
                     setupBalanceListener();
+                    
                     if(isAdmin) {
                         navigateTo('admin');
                     } else {
@@ -726,8 +715,8 @@
                     currentUser = null;
                     isAdmin = false;
                     userData = null;
-                    if(unsubBalance) unsubBalance();
-                    if(unsubAdminOrders) unsubAdminOrders();
+                    if(unsubBalance) { unsubBalance(); unsubBalance = null; }
+                    if(unsubAdminOrders) { unsubAdminOrders(); unsubAdminOrders = null; }
                     hideBottomNav();
                     hideAllViews();
                     if(maintenanceModeActive) showView('maintenance');
@@ -739,8 +728,6 @@
             // Init
             setupMaintenanceListener();
             updateCost();
-            hideAllViews();
-            views.login.classList.add('active');
         })();
     </script>
 </body>
