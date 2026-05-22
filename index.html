@@ -200,7 +200,6 @@
         <div class="wallet-card">
             <div class="wallet-label"><i class="fas fa-wallet"></i> رصيدك الحالي</div>
             <div class="wallet-balance" id="walletBalance">0 <span>د.ع</span></div>
-            <!-- زر شحن الرصيد - يفتح محادثة مع حساب الدعم على تيليجرام -->
             <a href="https://t.me/l_17g" target="_blank" class="btn-charge">شحن الرصيد ↗</a>
         </div>
         <div class="attention-banner">⚠️ تنبيه هام جداً: تأكد من جعل حسابك عاماً (Public) قبل طلب أي عملية رشق لتجنب فشل الطلب وضياع الرصيد!</div>
@@ -328,10 +327,10 @@
 
     <script>
         (() => {
-            // ===== إعدادات التيليجرام - قم بتغيير المعرفات هنا حسب رغبتك =====
-            const TELEGRAM_SUPPORT_USERNAME = "th2f6";     // حسابك الشخصي (لفتح محادثة الشحن)
-            const TELEGRAM_OFFICIAL_CHANNEL = "I_17g";     // قناة التطبيق الرسمية
-            // =================================================================
+            // ===== إعدادات التيليجرام - قم بتغيير المعرفات هنا بسهولة دون تعديل الكود بالأسفل =====
+            const TELEGRAM_SUPPORT_USERNAME = "l_17g";     // معرف حساب دعم شحن الرصيد
+            const TELEGRAM_OFFICIAL_CHANNEL = "l_17g";     // معرف قناة الإثباتات/التطبيق الرسمية
+            // ====================================================================================
 
             const firebaseConfig = {
                 apiKey: "AIzaSyB9MrraeowEexYMnrrkHXmVbScoeD7O9AA",
@@ -501,7 +500,6 @@
                 if(userData) $('walletBalance').innerHTML = `${(userData.balance||0).toLocaleString('ar-IQ')} <span>د.ع</span>`;
             };
 
-            // إصلاح دالة تسجيل الخروج بشكل جذري ومسح الجلسة
             const handleLogoutAction = () => {
                 if(unsubAdminOrders) { unsubAdminOrders(); unsubAdminOrders = null; }
                 if(unsubBalance) { unsubBalance(); unsubBalance = null; }
@@ -681,9 +679,9 @@
                 } catch(e) { showError('editProfileError', 'فشل: ' + e.message); }
             };
 
-            // فتح قناة التطبيق الرسمية على تيليجرام
+            // حل سحري لـ AppCreator24: استخدام تصفح كامل للنافذة لتخطي حاجز الـ WebView الداخلي
             const openSettingsChannel = () => {
-                window.open(`https://t.me/${TELEGRAM_OFFICIAL_CHANNEL}`, '_blank');
+                window.location.href = `https://t.me/${TELEGRAM_OFFICIAL_CHANNEL}`;
             };
 
             $('btnLogin').addEventListener('click', handleLogin);
@@ -716,7 +714,6 @@
                 });
             });
 
-            // آلية الحل السحري المتزامن لمنع الوميض العشوائي لواجهة تسجيل الدخول
             auth.onAuthStateChanged(async (user) => {
                 if (user) {
                     currentUser = user;
@@ -741,17 +738,17 @@
                     else showView('login');
                     document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
                 }
-                // إزالة بوابة التحميل فور انتهاء الفحص بشكل كامل وآمن
                 setTimeout(() => { if(gatekeeper) gatekeeper.style.display = 'none'; }, 200);
             });
 
             setupMaintenanceListener();
             updateCost();
 
-            // تعديل رابط زر الشحن لاستخدام المتغير (تم تعديله يدوياً في الـ HTML)
-            // لكن أيضاً نضمن تعديله عبر DOM للتأكد
+            // ربط ديناميكي لزر شحن الرصيد لضمان عمله بالمعرف الجديد دون مشاكل
             const chargeBtn = document.querySelector('.btn-charge');
-            if(chargeBtn) chargeBtn.href = `https://t.me/${TELEGRAM_SUPPORT_USERNAME}`;
+            if(chargeBtn) {
+                chargeBtn.href = `https://t.me/${TELEGRAM_SUPPORT_USERNAME}`;
+            }
         })();
     </script>
 </body>
