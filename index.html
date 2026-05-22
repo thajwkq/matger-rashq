@@ -57,6 +57,13 @@
             background-attachment: fixed;
         }
 
+        /* شاشة حجب التحميل لمنع الوميض للمسجلين سابقاً */
+        #appInitGatekeeper {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--bg-deep); z-index: 99999;
+            display: flex; justify-content: center; align-items: center;
+        }
+
         ::-webkit-scrollbar { width: 4px; }
         ::-webkit-scrollbar-track { background: var(--bg-deep); }
         ::-webkit-scrollbar-thumb { background: var(--purple); border-radius: 10px; }
@@ -135,12 +142,10 @@
         .toast-info { background:var(--purple); color:#fff; }
         @keyframes fadeOut { to { opacity:0; transform:translateY(-12px); } }
 
-        /* تعديلات مخصصة لقائمة إدارة الطلبات */
         .admin-order-card { background: rgba(255, 255, 255, 0.02); border: 1px solid var(--border-subtle); padding: 14px; border-radius: var(--radius-md); margin-bottom: 12px; }
         .admin-order-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; border-bottom: 1px dashed rgba(255,255,255,0.05); padding-bottom: 6px; }
         .admin-select-status { background: #1c2431; border: 1px solid var(--border-subtle); color: white; padding: 6px 10px; border-radius: var(--radius-sm); font-family: var(--font-main); font-size: 0.85rem; outline: none; cursor: pointer; width: 100%; margin-top: 8px; }
 
-        /* أنماط المودال المعدلة */
         .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.7); backdrop-filter: blur(5px); z-index: 2000; display: flex; align-items: center; justify-content: center; padding: 20px; }
         .modal-content { background: var(--bg-card); border: 1.5px solid var(--border-subtle); border-radius: var(--radius-lg); padding: 24px; width: 100%; max-width: 400px; box-shadow: var(--shadow-purple); }
 
@@ -148,6 +153,10 @@
     </style>
 </head>
 <body>
+
+    <div id="appInitGatekeeper">
+        <div class="spinner"></div>
+    </div>
 
     <div class="toast-container" id="toastContainer"></div>
 
@@ -191,7 +200,7 @@
         <div class="wallet-card">
             <div class="wallet-label"><i class="fas fa-wallet"></i> رصيدك الحالي</div>
             <div class="wallet-balance" id="walletBalance">0 <span>د.ع</span></div>
-            <a href="https://t.me/th2f6" target="_blank" rel="noopener noreferrer" class="btn-charge">شحن الرصيد ↗</a>
+            <a href="tg:resolve?domain=l_17g" class="btn-charge">شحن الرصيد ↗</a>
         </div>
         <div class="attention-banner">⚠️ تنبيه هام جداً: تأكد من جعل حسابك عاماً (Public) قبل طلب أي عملية رشق لتجنب فشل الطلب وضياع الرصيد!</div>
         <div class="frosted-card" style="margin-bottom:16px;">
@@ -318,7 +327,6 @@
 
     <script>
         (() => {
-            // Firebase Config
             const firebaseConfig = {
                 apiKey: "AIzaSyB9MrraeowEexYMnrrkHXmVbScoeD7O9AA",
                 authDomain: "mtger-9637a.firebaseapp.com",
@@ -334,11 +342,9 @@
             const db = firebase.database();
             const RASHQ_API_KEY = "bnt_af0b56277a9f7d177797731b4d670c44b16aec11";
 
-            // State
             let currentUser = null, isAdmin = false, userData = null, maintenanceModeActive = false;
             let unsubMaintenance = null, unsubBalance = null, unsubAdminOrders = null;
 
-            // DOM
             const $ = id => document.getElementById(id);
             const views = {
                 maintenance: $('viewMaintenance'), login: $('viewLogin'), register: $('viewRegister'),
@@ -347,8 +353,8 @@
             };
             const bottomNav = $('bottomNav');
             const toastContainer = $('toastContainer');
+            const gatekeeper = $('appInitGatekeeper');
 
-            // Helper
             const toast = (msg, type='info') => {
                 const t = document.createElement('div'); t.className = `toast toast-${type}`; t.textContent = msg;
                 toastContainer.appendChild(t); setTimeout(() => t.remove(), 3200);
@@ -357,6 +363,7 @@
             const showSuccess = (id, msg) => { const el = $(id); if(el) { el.textContent = msg; el.classList.add('visible'); setTimeout(() => el.classList.remove('visible'), 5000); } };
 
             const hideAllViews = () => Object.values(views).forEach(v => v.classList.remove('active'));
+            
             const showView = viewId => {
                 hideAllViews();
                 views[viewId]?.classList.add('active');
@@ -364,6 +371,7 @@
                 const navMap = { home:'home', orders:'orders', settings:'settings', profile:'profile' };
                 if(navMap[viewId]) document.querySelector(`[data-nav="${navMap[viewId]}"]`)?.classList.add('active');
             };
+            
             const showBottomNav = () => bottomNav.classList.add('visible');
             const hideBottomNav = () => bottomNav.classList.remove('visible');
 
@@ -386,7 +394,6 @@
                 if(viewId === 'home') refreshBalance();
             };
 
-            // Maintenance listener
             const setupMaintenanceListener = () => {
                 if(unsubMaintenance) unsubMaintenance();
                 unsubMaintenance = db.ref('maintenance_mode').on('value', snap => {
@@ -398,6 +405,7 @@
                     handleMaintenanceRedirect();
                 });
             };
+            
             const handleMaintenanceRedirect = () => {
                 if(maintenanceModeActive && !isAdmin) { hideAllViews(); views.maintenance.classList.add('active'); hideBottomNav(); }
                 else if(!maintenanceModeActive && views.maintenance.classList.contains('active')) {
@@ -405,7 +413,6 @@
                 }
             };
 
-            // Auth
             const handleLogin = async () => {
                 const email = $('loginEmail').value.trim(), password = $('loginPassword').value.trim();
                 if(!email || !password) return showError('loginError', 'املأ الحقول');
@@ -483,20 +490,22 @@
                     $('walletBalance').innerHTML = `${bal.toLocaleString('ar-IQ')} <span>د.ع</span>`;
                 });
             };
+            
             const refreshBalance = () => {
                 if(userData) $('walletBalance').innerHTML = `${(userData.balance||0).toLocaleString('ar-IQ')} <span>د.ع</span>`;
             };
 
+            // إصلاح دالة تسجيل الخروج بشكل جذري ومسح الجلسة
             const handleLogoutAction = () => {
                 if(unsubAdminOrders) { unsubAdminOrders(); unsubAdminOrders = null; }
                 if(unsubBalance) { unsubBalance(); unsubBalance = null; }
                 
                 auth.signOut().then(() => {
-                    bottomNav.classList.remove('visible');
+                    hideBottomNav();
+                    hideAllViews();
                     currentUser = null;
                     isAdmin = false;
                     userData = null;
-                    hideAllViews();
                     views.login.classList.add('active');
                     document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
                     toast('تم تسجيل الخروج بنجاح', 'success');
@@ -506,7 +515,6 @@
                 });
             };
 
-            // Orders
             const loadOrders = () => {
                 const container = $('ordersContainer');
                 container.innerHTML = '<p style="text-align:center;">جاري التحميل...</p>';
@@ -558,6 +566,7 @@
                     showError('orderError', 'فشل: ' + e.message);
                 }
             };
+            
             const updateCost = () => {
                 const [_, price] = $('orderService').value.split('|');
                 const qty = parseInt($('orderQty').value,10) || 0;
@@ -625,6 +634,7 @@
                     $('maintenanceStatusText').textContent = checked ? 'مفعل' : 'غير مفعل';
                 } catch(e) { toast('فشل: ' + e.message, 'error'); $('maintenanceToggle').checked = !checked; }
             };
+            
             const adminChargeWallet = async () => {
                 const target = $('adminTargetUsername').value.trim().replace(/@/g, '');
                 const amount = parseInt($('adminChargeAmount').value,10);
@@ -649,6 +659,7 @@
                 $('editProfileModal').style.display = 'flex';
             };
             const closeEditModal = () => $('editProfileModal').style.display = 'none';
+            
             const saveProfile = async () => {
                 const fullName = $('editFullName').value.trim();
                 let username = $('editUsername').value.trim().replace(/@/g, '');
@@ -666,7 +677,6 @@
 
             const openSettingsChannel = () => window.open('https://t.me/I_17g', '_blank');
 
-            // إعداد مستمعي الأحداث فوراً عند قراءة السكريبت بدلاً من DOMContentLoaded المعزول
             $('btnLogin').addEventListener('click', handleLogin);
             $('btnRegister').addEventListener('click', handleRegister);
             $('btnLogoutProfile').addEventListener('click', handleLogoutAction);
@@ -697,11 +707,10 @@
                 });
             });
 
-            // الحل السحري والتوجيه الآمن المتزامن (Async Auth State)
+            // آلية الحل السحري المتزامن لمنع الوميض العشوائي لواجهة تسجيل الدخول
             auth.onAuthStateChanged(async (user) => {
                 if (user) {
                     currentUser = user;
-                    // تجميد التوجيه الإجباري حتى يتم إحضار كامل البيانات من السحابة والتحقق من الرتبة
                     await loadUserData();
                     setupBalanceListener();
                     
@@ -723,9 +732,10 @@
                     else showView('login');
                     document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
                 }
+                // إزالة بوابة التحميل فور انتهاء الفحص بشكل كامل وآمن
+                setTimeout(() => { if(gatekeeper) gatekeeper.style.display = 'none'; }, 200);
             });
 
-            // Init
             setupMaintenanceListener();
             updateCost();
         })();
