@@ -3,620 +3,1836 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ميديامتجر رشق - خدمات السوشيال ميديا</title>
-    
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
-    
+    <title>MTGER - منصة الرشق الذكية</title>
+
+    <!-- Firebase SDKs (Compat v9) -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js">
+    </script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js">
+    </script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js">
+    </script>
+
+    <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <style>
-        /* --- الأنماط والتصميم العام المتناسق المحسن --- */
         :root {
-            --bg-color: #0b0e14;
-            --card-bg: #131924;
-            --primary-gradient: linear-gradient(90deg, #8a2be2, #da44bb);
-            --text-color: #ffffff;
-            --text-muted: #a0aec0;
-            --danger: #ff4d4d;
+            --bg-deep: #0b0e14;
+            --bg-card: #131924;
+            --bg-card-hover: #1a2030;
+            --purple: #8a2be2;
+            --purple-glow: #9b40f0;
+            --pink: #da44bb;
+            --pink-glow: #e85ccf;
+            --text-primary: #e8e8f0;
+            --text-secondary: #a0a5b8;
+            --text-muted: #6b7085;
+            --danger: #e74c3c;
             --success: #2ecc71;
+            --warning: #f39c12;
+            --border-subtle: rgba(138, 43, 226, 0.25);
+            --border-glow: rgba(138, 43, 226, 0.55);
+            --shadow-purple: 0 0 20px rgba(138, 43, 226, 0.35);
+            --shadow-pink: 0 0 20px rgba(218, 68, 187, 0.3);
+            --radius-sm: 10px;
+            --radius-md: 16px;
+            --radius-lg: 22px;
+            --radius-xl: 28px;
+            --font-main: 'Segoe UI', 'Tahoma', 'Arial', sans-serif;
+            --transition-fast: 0.2s ease;
+            --transition-smooth: 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+            --bottom-nav-height: 72px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
 
         body {
-            margin: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            direction: rtl;
-        }
-
-        /* حاوية الشاشات والتنقل */
-        .page {
-            display: none;
+            font-family: var(--font-main);
+            background: var(--bg-deep);
+            color: var(--text-primary);
             min-height: 100vh;
-            box-sizing: border-box;
-            padding-bottom: 80px; 
+            direction: rtl;
+            -webkit-tap-highlight-color: transparent;
+            -webkit-font-smoothing: antialiased;
+            overflow-x: hidden;
+            padding-bottom: calc(var(--bottom-nav-height) + 20px);
+            background-image:
+                radial-gradient(ellipse at 20% 15%, rgba(138, 43, 226, 0.08) 0%, transparent 55%),
+                radial-gradient(ellipse at 80% 75%, rgba(218, 68, 187, 0.06) 0%, transparent 55%),
+                radial-gradient(ellipse at 50% 50%, rgba(11, 14, 20, 1) 0%, rgba(11, 14, 20, 1) 100%);
+            background-attachment: fixed;
         }
 
-        .active-page {
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 4px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--bg-deep);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--purple);
+            border-radius: 10px;
+        }
+
+        /* View container */
+        .view {
+            display: none;
+            width: 100%;
+            max-width: 520px;
+            margin: 0 auto;
+            padding: 16px;
+            animation: fadeSlideIn 0.4s ease;
+        }
+        .view.active {
             display: block;
         }
 
-        /* الهياكل المشتركة للكروت والمدخلات */
-        .auth-container {
+        @keyframes fadeSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(16px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        @keyframes pulseGlow {
+            0%,
+            100% {
+                box-shadow: 0 0 8px rgba(138, 43, 226, 0.4), 0 0 20px rgba(138, 43, 226, 0.15);
+            }
+            50% {
+                box-shadow: 0 0 18px rgba(138, 43, 226, 0.7), 0 0 40px rgba(218, 68, 187, 0.3);
+            }
+        }
+        @keyframes pulseWrench {
+            0%,
+            100% {
+                transform: scale(1);
+                opacity: 0.85;
+                text-shadow: 0 0 20px rgba(138, 43, 226, 0.7);
+            }
+            50% {
+                transform: scale(1.12);
+                opacity: 1;
+                text-shadow: 0 0 40px rgba(138, 43, 226, 1), 0 0 70px rgba(218, 68, 187, 0.6);
+            }
+        }
+        @keyframes spinSlow {
+            from {
+                transform: rotate(0deg);
+            }
+            to {
+                transform: rotate(360deg);
+            }
+        }
+        @keyframes pulseBanner {
+            0%,
+            100% {
+                border-color: rgba(243, 156, 18, 0.5);
+                box-shadow: 0 0 10px rgba(243, 156, 18, 0.2);
+            }
+            50% {
+                border-color: rgba(243, 156, 18, 0.9);
+                box-shadow: 0 0 24px rgba(243, 156, 18, 0.45);
+            }
+        }
+        @keyframes shimmer {
+            0% {
+                background-position: -200px 0;
+            }
+            100% {
+                background-position: 200px 0;
+            }
+        }
+
+        /* ========== MAINTENANCE PAGE ========== */
+        .maintenance-wrapper {
             display: flex;
-            flex-direction: column;
-            align-items: center;
             justify-content: center;
-            min-height: 100vh;
+            align-items: center;
+            height: 100vh;
+            width: 100%;
             padding: 20px;
         }
-
-        .card {
-            background-color: var(--card-bg);
-            border-radius: 20px;
-            padding: 30px;
-            width: 100%;
-            max-width: 400px;
-            box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+        .maintenance-card {
+            background: var(--bg-card);
+            border: 1.5px solid var(--border-subtle);
+            border-radius: var(--radius-xl);
+            padding: 40px 28px;
             text-align: center;
-            box-sizing: border-box;
-        }
-
-        .input-group {
-            position: relative;
-            margin-bottom: 15px;
-            text-align: right;
-        }
-
-        .input-group label {
-            display: block;
-            margin-bottom: 5px;
-            font-size: 14px;
-            color: var(--text-muted);
-        }
-
-        .input-group input, .input-group select {
+            max-width: 440px;
             width: 100%;
-            padding: 12px 15px;
-            background-color: #1c2431;
-            border: 1px solid #2d3748;
-            border-radius: 10px;
-            color: white;
-            box-sizing: border-box;
-            font-size: 15px;
+            box-shadow: var(--shadow-purple);
+        }
+        .maintenance-card .wrench-icon {
+            font-size: 64px;
+            color: var(--purple);
+            display: inline-block;
+            animation: pulseWrench 2s ease-in-out infinite;
+            margin-bottom: 20px;
+        }
+        .maintenance-card h2 {
+            font-size: 1.5rem;
+            color: var(--text-primary);
+            margin-bottom: 12px;
+            font-weight: 700;
+        }
+        .maintenance-card p {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            line-height: 1.7;
+            margin-bottom: 24px;
+        }
+        .btn-reload {
+            background: linear-gradient(135deg, var(--purple), var(--pink));
+            color: #fff;
+            border: none;
+            padding: 13px 32px;
+            border-radius: 30px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition-smooth);
+            box-shadow: var(--shadow-purple);
+            font-family: var(--font-main);
+        }
+        .btn-reload:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0 30px rgba(138, 43, 226, 0.55), 0 0 50px rgba(218, 68, 187, 0.3);
+        }
+        .btn-reload:active {
+            transform: scale(0.96);
+        }
+        .admin-hidden-link {
+            display: block;
+            margin-top: 20px;
+            color: var(--text-muted);
+            font-size: 0.75rem;
+            cursor: pointer;
+            text-decoration: none;
+            transition: var(--transition-fast);
+            border: none;
+            background: none;
+            font-family: var(--font-main);
+        }
+        .admin-hidden-link:hover {
+            color: var(--purple-glow);
+            text-decoration: underline;
+        }
+
+        /* ========== FROSTED GLASS CARDS ========== */
+        .frosted-card {
+            background: rgba(19, 25, 36, 0.75);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1.5px solid var(--border-subtle);
+            border-radius: var(--radius-lg);
+            padding: 28px 22px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+        }
+
+        /* ========== FORM ELEMENTS ========== */
+        .form-group {
+            margin-bottom: 16px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            font-size: 0.88rem;
+        }
+        .form-input {
+            width: 100%;
+            padding: 13px 16px;
+            background: rgba(11, 14, 20, 0.7);
+            border: 1.5px solid var(--border-subtle);
+            border-radius: var(--radius-sm);
+            color: var(--text-primary);
+            font-size: 0.95rem;
+            font-family: var(--font-main);
+            transition: var(--transition-smooth);
             outline: none;
+        }
+        .form-input:focus {
+            border-color: var(--purple);
+            box-shadow: 0 0 14px rgba(138, 43, 226, 0.3);
+            background: rgba(11, 14, 20, 0.9);
+        }
+        .form-input::placeholder {
+            color: var(--text-muted);
+            opacity: 0.7;
+        }
+        select.form-input {
+            appearance: none;
+            -webkit-appearance: none;
+            cursor: pointer;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%238a2be2' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: left 14px center;
+            padding-left: 36px;
         }
 
         .btn-primary {
-            background: var(--primary-gradient);
-            color: white;
-            border: none;
-            padding: 12px;
+            display: inline-block;
             width: 100%;
-            border-radius: 25px;
-            font-size: 16px;
-            font-weight: bold;
+            padding: 14px 20px;
+            background: linear-gradient(135deg, var(--purple), var(--pink));
+            color: #fff;
+            border: none;
+            border-radius: 30px;
+            font-size: 1rem;
+            font-weight: 700;
             cursor: pointer;
-            box-shadow: 0 4px 15px rgba(218, 68, 187, 0.3);
-            margin-top: 10px;
-            transition: transform 0.2s;
+            transition: var(--transition-smooth);
+            box-shadow: var(--shadow-purple);
+            font-family: var(--font-main);
+            text-align: center;
+            letter-spacing: 0.3px;
         }
-
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0 28px rgba(138, 43, 226, 0.55), 0 0 48px rgba(218, 68, 187, 0.25);
+        }
         .btn-primary:active {
-            transform: scale(0.98);
+            transform: scale(0.96);
+        }
+        .btn-primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        .btn-outline {
+            display: inline-block;
+            width: 100%;
+            padding: 13px 20px;
+            background: transparent;
+            color: var(--purple-glow);
+            border: 2px solid var(--purple);
+            border-radius: 30px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition-smooth);
+            font-family: var(--font-main);
+            text-align: center;
+        }
+        .btn-outline:hover {
+            background: rgba(138, 43, 226, 0.1);
+            box-shadow: 0 0 18px rgba(138, 43, 226, 0.3);
+        }
+        .btn-sm {
+            padding: 9px 18px;
+            font-size: 0.85rem;
+            border-radius: 22px;
+            width: auto;
+            display: inline-block;
         }
 
-        .error-popup {
-            background-color: rgba(255, 77, 77, 0.15);
-            border: 1px solid var(--danger);
-            color: var(--danger);
-            padding: 10px;
-            border-radius: 10px;
-            margin-bottom: 20px;
-            font-size: 14px;
+        /* ========== ERROR / SUCCESS BLOCKS ========== */
+        .error-block {
+            background: rgba(231, 76, 60, 0.15);
+            border: 1px solid rgba(231, 76, 60, 0.5);
+            border-radius: var(--radius-sm);
+            padding: 12px 16px;
+            color: #f8716b;
+            font-size: 0.88rem;
+            margin-top: 10px;
             display: none;
+            text-align: center;
+        }
+        .error-block.visible {
+            display: block;
+            animation: fadeSlideIn 0.3s ease;
+        }
+        .success-block {
+            background: rgba(46, 204, 113, 0.15);
+            border: 1px solid rgba(46, 204, 113, 0.5);
+            border-radius: var(--radius-sm);
+            padding: 12px 16px;
+            color: #5deca0;
+            font-size: 0.88rem;
+            margin-top: 10px;
+            display: none;
+            text-align: center;
+        }
+        .success-block.visible {
+            display: block;
+            animation: fadeSlideIn 0.3s ease;
         }
 
-        /* شريط التنقل السفلي الاحترافي */
+        /* ========== WALLET CARD ========== */
+        .wallet-card {
+            background: linear-gradient(145deg, #1a1030, #131924);
+            border: 1.5px solid var(--border-glow);
+            border-radius: var(--radius-lg);
+            padding: 22px 20px;
+            margin-bottom: 18px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: var(--shadow-purple);
+        }
+        .wallet-card::before {
+            content: '';
+            position: absolute;
+            top: -40px;
+            right: -40px;
+            width: 100px;
+            height: 100px;
+            background: rgba(138, 43, 226, 0.2);
+            border-radius: 50%;
+            filter: blur(40px);
+            pointer-events: none;
+        }
+        .wallet-balance {
+            font-size: 2rem;
+            font-weight: 800;
+            color: #2ecc71;
+            letter-spacing: 0.5px;
+        }
+        .wallet-balance span {
+            font-size: 1rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+            margin-right: 4px;
+        }
+        .wallet-label {
+            font-size: 0.82rem;
+            color: var(--text-muted);
+            margin-bottom: 4px;
+        }
+        .btn-charge {
+            display: inline-block;
+            margin-top: 12px;
+            padding: 10px 22px;
+            background: var(--success);
+            color: #000;
+            border: none;
+            border-radius: 25px;
+            font-weight: 700;
+            cursor: pointer;
+            font-family: var(--font-main);
+            font-size: 0.9rem;
+            transition: var(--transition-smooth);
+            text-decoration: none;
+            text-align: center;
+        }
+        .btn-charge:hover {
+            background: #3be082;
+            box-shadow: 0 0 20px rgba(46, 204, 113, 0.5);
+            transform: translateY(-2px);
+        }
+
+        /* ========== ATTENTION BANNER ========== */
+        .attention-banner {
+            background: rgba(243, 156, 18, 0.1);
+            border: 1.5px solid rgba(243, 156, 18, 0.5);
+            border-radius: var(--radius-md);
+            padding: 14px 16px;
+            margin-bottom: 18px;
+            animation: pulseBanner 2s ease-in-out infinite;
+            font-weight: 600;
+            color: #f7c464;
+            font-size: 0.9rem;
+            text-align: center;
+            line-height: 1.5;
+        }
+
+        /* ========== COST CALCULATOR ========== */
+        .cost-box {
+            background: rgba(138, 43, 226, 0.1);
+            border: 1px dashed var(--purple);
+            border-radius: var(--radius-sm);
+            padding: 12px 16px;
+            margin-top: 10px;
+            text-align: center;
+            font-weight: 700;
+            color: var(--purple-glow);
+            font-size: 1.1rem;
+            transition: var(--transition-smooth);
+        }
+
+        /* ========== PLATFORMS GRID ========== */
+        .platforms-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-top: 20px;
+        }
+        .platform-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-md);
+            padding: 18px 10px;
+            text-align: center;
+            transition: var(--transition-smooth);
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+        .platform-card:hover {
+            border-color: var(--purple);
+            box-shadow: 0 0 16px rgba(138, 43, 226, 0.25);
+            transform: translateY(-3px);
+        }
+        .platform-card.disabled {
+            opacity: 0.45;
+            cursor: not-allowed;
+            filter: grayscale(40%);
+        }
+        .platform-card.disabled:hover {
+            transform: none;
+            border-color: var(--border-subtle);
+            box-shadow: none;
+        }
+        .platform-card i {
+            font-size: 2rem;
+            color: var(--purple-glow);
+            margin-bottom: 8px;
+            display: block;
+        }
+        .platform-card .platform-name {
+            font-weight: 600;
+            font-size: 0.85rem;
+            color: var(--text-primary);
+        }
+        .platform-card .platform-badge {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            background: rgba(255, 255, 255, 0.05);
+            padding: 3px 8px;
+            border-radius: 12px;
+            display: inline-block;
+            margin-top: 4px;
+        }
+
+        /* ========== ORDERS LIST ========== */
+        .order-box {
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-md);
+            padding: 16px;
+            margin-bottom: 12px;
+            transition: var(--transition-fast);
+        }
+        .order-box:hover {
+            border-color: var(--border-glow);
+        }
+        .order-row {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 6px;
+            font-size: 0.85rem;
+            margin-bottom: 4px;
+            color: var(--text-secondary);
+        }
+        .order-row strong {
+            color: var(--text-primary);
+        }
+        .status-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 14px;
+            font-size: 0.78rem;
+            font-weight: 600;
+        }
+        .status-progress {
+            background: rgba(52, 152, 219, 0.2);
+            color: #5dade2;
+        }
+        .status-review {
+            background: rgba(243, 156, 18, 0.2);
+            color: #f7c464;
+        }
+        .status-done {
+            background: rgba(46, 204, 113, 0.2);
+            color: #5deca0;
+        }
+        .status-failed {
+            background: rgba(231, 76, 60, 0.2);
+            color: #f8716b;
+        }
+
+        /* ========== PROFILE ========== */
+        .profile-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--purple), var(--pink));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 16px;
+            font-size: 2.5rem;
+            color: #fff;
+            box-shadow: var(--shadow-purple);
+        }
+        .profile-info {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .profile-info h3 {
+            font-size: 1.3rem;
+            color: var(--text-primary);
+        }
+        .profile-info .username-display {
+            color: var(--purple-glow);
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+
+        /* ========== ADMIN PANEL ========== */
+        .admin-section {
+            background: rgba(218, 68, 187, 0.08);
+            border: 1px dashed var(--pink);
+            border-radius: var(--radius-md);
+            padding: 18px;
+            margin-bottom: 16px;
+        }
+        .admin-section h4 {
+            color: var(--pink-glow);
+            margin-bottom: 10px;
+            font-size: 1rem;
+        }
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 56px;
+            height: 30px;
+            cursor: pointer;
+        }
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        .toggle-slider {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: #3a3d48;
+            border-radius: 30px;
+            transition: var(--transition-smooth);
+        }
+        .toggle-slider::before {
+            content: '';
+            position: absolute;
+            height: 24px;
+            width: 24px;
+            left: 3px;
+            bottom: 3px;
+            background: #fff;
+            border-radius: 50%;
+            transition: var(--transition-smooth);
+        }
+        input:checked+.toggle-slider {
+            background: var(--purple);
+            box-shadow: 0 0 14px rgba(138, 43, 226, 0.5);
+        }
+        input:checked+.toggle-slider::before {
+            transform: translateX(26px);
+        }
+
+        /* ========== BOTTOM NAV ========== */
         .bottom-nav {
+            display: none;
             position: fixed;
             bottom: 0;
             left: 0;
             right: 0;
-            height: 65px;
-            background-color: var(--card-bg);
+            z-index: 1000;
+            background: rgba(19, 25, 36, 0.82);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-top: 1.5px solid var(--border-subtle);
+            padding: 8px 0;
+            box-shadow: 0 -6px 28px rgba(0, 0, 0, 0.5);
+        }
+        .bottom-nav.visible {
             display: flex;
             justify-content: space-around;
             align-items: center;
-            border-top: 1px solid #1c2431;
-            z-index: 1000;
         }
-
-        .nav-item {
-            color: var(--text-muted);
-            text-decoration: none;
-            font-size: 12px;
-            text-align: center;
-            cursor: pointer;
-            flex: 1;
-            padding: 10px 0;
-        }
-
-        .nav-item.active {
-            color: #da44bb;
-        }
-
-        .nav-item i {
-            display: block;
-            font-size: 20px;
-            margin-bottom: 4px;
-        }
-
-        /* شبكة المنصات المتاحة */
-        .platforms-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 15px;
-            padding: 20px;
-        }
-
-        .platform-card {
-            background-color: var(--card-bg);
-            padding: 15px;
-            border-radius: 15px;
-            text-align: center;
-            cursor: pointer;
-            border: 1px solid transparent;
-            transition: 0.2s;
-        }
-
-        .platform-card:hover {
-            border-color: #da44bb50;
-            background-color: #192233;
-        }
-
-        /* --- تعديل وضع الصيانة --- */
-        /* CSS جديد ومعدل لتوسيط محتوى وضع الصيانة تماماً */
-        .maintenance-view {
+        .bottom-nav .nav-item {
             display: flex;
             flex-direction: column;
-            justify-content: center; /* توسيط عمودي */
-            align-items: center; /* توسيط أفقي */
-            height: 100vh; /* ملء ارتفاع الشاشة بالكامل */
-            text-align: center;
-            padding: 20px;
-            box-sizing: border-box;
-            background-color: var(--bg-color); /* ضمان الخلفية السوداء */
-        }
-        
-        .maintenance-view h1 {
-            background: var(--primary-gradient);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            font-size: 28px; /* حجم خط مناسب */
-            margin-top: 25px;
-            margin-bottom: 15px;
-        }
-
-        .maintenance-view p {
+            align-items: center;
+            gap: 4px;
+            cursor: pointer;
+            padding: 6px 14px;
+            border-radius: var(--radius-md);
+            transition: var(--transition-smooth);
             color: var(--text-muted);
-            max-width: 320px;
-            line-height: 1.6;
-            margin-bottom: 30px;
+            font-size: 0.72rem;
+            font-weight: 500;
+            border: none;
+            background: none;
+            font-family: var(--font-main);
+        }
+        .bottom-nav .nav-item i {
+            font-size: 1.3rem;
+            transition: var(--transition-smooth);
+        }
+        .bottom-nav .nav-item.active {
+            color: var(--purple-glow);
+        }
+        .bottom-nav .nav-item.active i {
+            text-shadow: 0 0 14px rgba(138, 43, 226, 0.7);
+        }
+        .bottom-nav .nav-item:hover {
+            color: var(--text-primary);
         }
 
-        /* حركة دوران للأيقونة */
-        @keyframes pulse {
-            0% { transform: scale(1); opacity: 0.9; }
-            50% { transform: scale(1.05); opacity: 1; }
-            100% { transform: scale(1); opacity: 0.9; }
+        /* ========== TOAST ========== */
+        .toast-container {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 2000;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            pointer-events: none;
+            width: 90%;
+            max-width: 450px;
+        }
+        .toast {
+            padding: 13px 18px;
+            border-radius: var(--radius-sm);
+            font-weight: 600;
+            font-size: 0.88rem;
+            text-align: center;
+            animation: fadeSlideIn 0.4s ease, fadeOut 0.4s ease 2.6s forwards;
+            pointer-events: auto;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+        }
+        .toast-error {
+            background: #e74c3c;
+            color: #fff;
+        }
+        .toast-success {
+            background: #2ecc71;
+            color: #000;
+        }
+        .toast-info {
+            background: var(--purple);
+            color: #fff;
+        }
+        @keyframes fadeOut {
+            to {
+                opacity: 0;
+                transform: translateY(-12px);
+            }
         }
 
-        /* تنسيق كروت الطلبات */
-        .order-item {
-            background-color: var(--card-bg);
-            border-radius: 12px;
-            padding: 15px;
-            margin-bottom: 10px;
-            text-align: right;
-            border-right: 4px solid #da44bb;
+        /* ========== RESPONSIVE ========== */
+        @media (max-width: 480px) {
+            .view {
+                padding: 10px;
+            }
+            .frosted-card {
+                padding: 20px 14px;
+            }
+            .platforms-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 8px;
+            }
+            .wallet-balance {
+                font-size: 1.6rem;
+            }
+            .maintenance-card {
+                padding: 28px 16px;
+            }
+            .maintenance-card .wrench-icon {
+                font-size: 48px;
+            }
+            .bottom-nav .nav-item {
+                padding: 4px 10px;
+                font-size: 0.68rem;
+            }
+            .bottom-nav .nav-item i {
+                font-size: 1.1rem;
+            }
+        }
+        @media (min-width: 768px) {
+            .platforms-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
         }
     </style>
 </head>
 <body>
 
-    <div id="maintenancePage" class="page">
-        <div class="maintenance-view">
-            <div style="font-size: 80px; color: #8a2be2; animation: pulse 2s infinite ease-in-out;"><i class="fas fa-wrench"></i></div>
-            <h1>التطبيق تحت الصيانة حالياً</h1>
-            <p>نعمل حالياً على تحديث وتطوير أنظمة الرشق لتقديم الخدمة الأفضل لكم، يرجى إعادة المحاولة لاحقاً.</p>
-            <button class="btn-primary" style="width: auto; padding: 12px 40px;" onclick="window.location.reload()">تحديث الصفحة</button>
-        </div>
-    </div>
+    <!-- ==================== TOAST CONTAINER ==================== -->
+    <div class="toast-container" id="toastContainer"></div>
 
-    <div id="loginPage" class="page active-page">
-        <div class="auth-container">
-            <div class="card">
-                <div style="font-size: 45px; margin-bottom: 10px; color: #da44bb;"><i class="fas fa-rocket"></i></div>
-                <h2 style="margin-bottom: 25px;">تسجيل الدخول للمتجر</h2>
-                <div id="loginError" class="error-popup"></div>
-                <div class="input-group">
-                    <input type="email" id="loginEmail" placeholder="البريد الإلكتروني" value="admin@mtger.iq">
-                </div>
-                <div class="input-group">
-                    <input type="password" id="loginPassword" placeholder="كلمة المرور">
-                </div>
-                <button class="btn-primary" onclick="handleLogin()">دخول آمن</button>
-                <p style="margin-top: 20px; font-size: 14px; color: var(--text-muted);">ليس لديك حساب؟ <span style="color: #da44bb; cursor: pointer; font-weight: bold;" onclick="navigate('registerPage')">إنشاء حساب جديد</span></p>
+    <!-- ==================== VIEW: MAINTENANCE ==================== -->
+    <div class="view" id="viewMaintenance">
+        <div class="maintenance-wrapper">
+            <div class="maintenance-card">
+                <div class="wrench-icon"><i class="fas fa-wrench"></i></div>
+                <h2>التطبيق تحت الصيانة</h2>
+                <p>التطبيق تحت الصيانة حالياً. نعمل على تحديث وتطوير أنظمة الرشق لتقديم الخدمة الأفضل لكم، يرجى إعادة المحاولة لاحقاً.</p>
+                <button class="btn-reload" onclick="window.location.reload()">
+                    <i class="fas fa-sync-alt"></i> تحديث الصفحة
+                </button>
+                <button class="admin-hidden-link" id="btnAdminAccess" title="دخول المشرفين">
+                    دخول المشرفين
+                </button>
             </div>
         </div>
     </div>
 
-    <div id="registerPage" class="page">
-        <div class="auth-container">
-            <div class="card">
-                <h2 style="margin-bottom: 25px;">إنشاء حساب جديد</h2>
-                <div id="registerError" class="error-popup"></div>
-                <div class="input-group">
-                    <input type="text" id="regName" placeholder="الاسم الكامل">
-                </div>
-                <div class="input-group">
-                    <input type="text" id="regUser" placeholder="اسم المستخدم (اليوزر بدون @)">
-                </div>
-                <div class="input-group">
-                    <input type="email" id="regEmail" placeholder="البريد الإلكتروني">
-                </div>
-                <div class="input-group">
-                    <input type="password" id="regPassword" placeholder="كلمة المرور">
-                </div>
-                <button class="btn-primary" onclick="handleRegister()">تسجيل الحساب</button>
-                <p style="margin-top: 20px; font-size: 14px; color: var(--text-muted);">لديك حساب بالفعل؟ <span style="color: #da44bb; cursor: pointer; font-weight: bold;" onclick="navigate('loginPage')">تسجيل الدخول</span></p>
+    <!-- ==================== VIEW: LOGIN ==================== -->
+    <div class="view" id="viewLogin">
+        <div style="text-align:center; padding-top: 30px; margin-bottom: 10px;">
+            <div style="font-size:3rem; color:var(--purple-glow); text-shadow:0 0 30px rgba(138,43,226,0.7);">
+                <i class="fas fa-bolt"></i>
+            </div>
+            <h2 style="font-weight:800; letter-spacing:1px; margin-top:4px;">MTGER</h2>
+            <p style="color:var(--text-muted); font-size:0.85rem;">منصة الرشق الذكية</p>
+        </div>
+        <div class="frosted-card" style="max-width:420px; margin:0 auto;">
+            <h3 style="text-align:center; margin-bottom:18px; color:var(--text-primary);">تسجيل الدخول</h3>
+            <div class="form-group">
+                <label>البريد الإلكتروني</label>
+                <input type="email" class="form-input" id="loginEmail" placeholder="example@email.com" dir="ltr">
+            </div>
+            <div class="form-group">
+                <label>كلمة المرور</label>
+                <input type="password" class="form-input" id="loginPassword" placeholder="••••••••" dir="ltr">
+            </div>
+            <div class="error-block" id="loginError"></div>
+            <button class="btn-primary" id="btnLogin" style="margin-top:12px;">
+                <i class="fas fa-sign-in-alt"></i> دخول
+            </button>
+            <p style="text-align:center; margin-top:14px; font-size:0.85rem; color:var(--text-muted);">
+                ليس لديك حساب؟ <a href="#" id="linkToRegister" style="color:var(--purple-glow); font-weight:600; text-decoration:none;">إنشاء حساب جديد</a>
+            </p>
+        </div>
+    </div>
+
+    <!-- ==================== VIEW: REGISTER ==================== -->
+    <div class="view" id="viewRegister">
+        <div style="text-align:center; padding-top: 20px; margin-bottom: 8px;">
+            <h2 style="font-weight:800; color:var(--purple-glow);">إنشاء حساب</h2>
+        </div>
+        <div class="frosted-card" style="max-width:420px; margin:0 auto;">
+            <div class="form-group">
+                <label>الاسم الكامل</label>
+                <input type="text" class="form-input" id="regFullName" placeholder="الاسم الكامل">
+            </div>
+            <div class="form-group">
+                <label>اسم المستخدم</label>
+                <input type="text" class="form-input" id="regUsername" placeholder="username (بدون @)" dir="ltr">
+            </div>
+            <div class="form-group">
+                <label>البريد الإلكتروني</label>
+                <input type="email" class="form-input" id="regEmail" placeholder="example@email.com" dir="ltr">
+            </div>
+            <div class="form-group">
+                <label>كلمة المرور</label>
+                <input type="password" class="form-input" id="regPassword" placeholder="••••••••" dir="ltr">
+            </div>
+            <div class="error-block" id="registerError"></div>
+            <button class="btn-primary" id="btnRegister">
+                <i class="fas fa-user-plus"></i> إنشاء الحساب
+            </button>
+            <p style="text-align:center; margin-top:14px; font-size:0.85rem; color:var(--text-muted);">
+                لديك حساب بالفعل؟ <a href="#" id="linkToLogin" style="color:var(--purple-glow); font-weight:600; text-decoration:none;">تسجيل الدخول</a>
+            </p>
+        </div>
+    </div>
+
+    <!-- ==================== VIEW: HOME ==================== -->
+    <div class="view" id="viewHome">
+        <!-- Wallet Card -->
+        <div class="wallet-card" id="walletCard">
+            <div class="wallet-label"><i class="fas fa-wallet"></i> رصيدك الحالي</div>
+            <div class="wallet-balance" id="walletBalance">0 <span>د.ع</span></div>
+            <a href="https://t.me/th2f6" target="_blank" rel="noopener noreferrer" class="btn-charge">
+                شحن الرصيد ↗ <i class="fas fa-external-link-alt"></i>
+            </a>
+        </div>
+
+        <!-- Attention Banner -->
+        <div class="attention-banner">
+            ⚠️ تنبيه هام جداً: تأكد من جعل حسابك عاماً (Public) قبل طلب أي عملية رشق لتجنب فشل الطلب وضياع الرصيد!
+        </div>
+
+        <!-- Order Form -->
+        <div class="frosted-card" style="margin-bottom:16px;">
+            <h4 style="margin-bottom:14px; color:var(--text-primary);"><i class="fas fa-shopping-cart"></i> طلب رشق جديد</h4>
+            <div class="form-group">
+                <label>الخدمة</label>
+                <select class="form-input" id="orderService">
+                    <option value="100|1500|متابعين انستغرام">📸 انستغرام - متابعين (1,500 د.ع لكل 1k)</option>
+                    <option value="101|500|لايكات انستغرام">❤️ انستغرام - لايكات (500 د.ع لكل 1k)</option>
+                    <option value="200|2000|متابعين تيك توك">🎵 تيك توك - متابعين (2,000 د.ع لكل 1k)</option>
+                    <option value="300|1800|اعضاء تيليجرام">✈️ تيليجرام - اعضاء (1,800 د.ع لكل 1k)</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>الرابط / لينك الحساب</label>
+                <input type="text" class="form-input" id="orderLink" placeholder="https://..." dir="ltr">
+            </div>
+            <div class="form-group">
+                <label>الكمية (الحد الأدنى: 100)</label>
+                <input type="number" class="form-input" id="orderQty" placeholder="100" min="100" value="100" dir="ltr">
+            </div>
+            <div class="cost-box" id="costBox">
+                التكلفة التقديرية: <span id="costValue">0</span> د.ع
+            </div>
+            <div class="error-block" id="orderError"></div>
+            <div class="success-block" id="orderSuccess"></div>
+            <button class="btn-primary" id="btnSubmitOrder" style="margin-top:12px;">
+                <i class="fas fa-paper-plane"></i> إرسال الطلب
+            </button>
+        </div>
+
+        <!-- Platforms Grid -->
+        <h4 style="margin-bottom:8px; color:var(--text-primary);"><i class="fas fa-th-large"></i> المنصات المتاحة</h4>
+        <div class="platforms-grid">
+            <div class="platform-card">
+                <i class="fab fa-instagram"></i>
+                <div class="platform-name">انستغرام</div>
+                <div class="platform-badge">متاح</div>
+            </div>
+            <div class="platform-card">
+                <i class="fab fa-tiktok"></i>
+                <div class="platform-name">تيك توك</div>
+                <div class="platform-badge">متاح</div>
+            </div>
+            <div class="platform-card">
+                <i class="fab fa-telegram-plane"></i>
+                <div class="platform-name">تيليجرام</div>
+                <div class="platform-badge">متاح</div>
+            </div>
+            <div class="platform-card disabled">
+                <i class="fab fa-facebook"></i>
+                <div class="platform-name">فيسبوك</div>
+                <div class="platform-badge">قريباً...</div>
+            </div>
+            <div class="platform-card disabled">
+                <i class="fab fa-youtube"></i>
+                <div class="platform-name">يوتيوب</div>
+                <div class="platform-badge">قريباً...</div>
+            </div>
+            <div class="platform-card disabled">
+                <i class="fab fa-x-twitter"></i>
+                <div class="platform-name">X</div>
+                <div class="platform-badge">قريباً...</div>
             </div>
         </div>
     </div>
 
-    <div id="homePage" class="page">
-        <div style="padding: 20px;">
-            <div style="background-color: var(--card-bg); padding: 20px; border-radius: 20px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 15px rgba(0,0,0,0.2);">
-                <div>
-                    <div style="font-size: 13px; color: var(--text-muted);"><i class="fas fa-wallet" style="margin-left: 5px;"></i>رصيد المحفظة حالياً</div>
-                    <div style="font-size: 24px; font-weight: bold; margin-top: 5px; color: #2ecc71;"><span id="userWalletBalance">0</span> د.ع</div>
+    <!-- ==================== VIEW: ORDERS ==================== -->
+    <div class="view" id="viewOrders">
+        <h3 style="margin-bottom:16px; color:var(--text-primary);"><i class="fas fa-list-alt"></i> أرشيف الطلبات</h3>
+        <div id="ordersContainer">
+            <p style="text-align:center; color:var(--text-muted); padding:40px 0;">لا توجد طلبات حالياً.</p>
+        </div>
+    </div>
+
+    <!-- ==================== VIEW: PROFILE ==================== -->
+    <div class="view" id="viewProfile">
+        <div class="frosted-card" style="text-align:center;">
+            <div class="profile-avatar"><i class="fas fa-user"></i></div>
+            <div class="profile-info">
+                <h3 id="profileFullName">---</h3>
+                <p class="username-display" id="profileUsername">@---</p>
+                <p style="color:var(--text-muted); font-size:0.8rem;" id="profileEmail">---</p>
+            </div>
+            <a href="https://t.me/I_17g" target="_blank" rel="noopener noreferrer" class="btn-outline" style="margin-bottom:10px; display:block; text-decoration:none;">
+                <i class="fab fa-telegram-plane"></i> قناة التطبيق الرسمية
+            </a>
+            <button class="btn-outline" id="btnAdminPanel" style="margin-bottom:10px; display:none; border-color:var(--pink); color:var(--pink-glow);">
+                <i class="fas fa-crown"></i> لوحة تحكم الإدارة
+            </button>
+            <button class="btn-primary" id="btnLogout" style="background:rgba(231,76,60,0.8); box-shadow:none;">
+                <i class="fas fa-sign-out-alt"></i> تسجيل الخروج
+            </button>
+        </div>
+    </div>
+
+    <!-- ==================== VIEW: ADMIN PANEL ==================== -->
+    <div class="view" id="viewAdmin">
+        <h3 style="margin-bottom:16px; color:var(--pink-glow);"><i class="fas fa-crown"></i> لوحة تحكم الإدارة</h3>
+        <div class="frosted-card" style="margin-bottom:16px;">
+            <!-- Maintenance Toggle -->
+            <div class="admin-section">
+                <h4><i class="fas fa-power-off"></i> وضع الصيانة</h4>
+                <div style="display:flex; align-items:center; gap:14px; flex-wrap:wrap;">
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="maintenanceToggle">
+                        <span class="toggle-slider"></span>
+                    </label>
+                    <span id="maintenanceStatusText" style="font-size:0.9rem; color:var(--text-secondary);">غير مفعل</span>
                 </div>
-                <a href="https://t.me/l_17g" target="_blank" style="text-decoration: none;">
-                    <button style="background: var(--primary-gradient); color: white; border: none; padding: 10px 20px; border-radius: 15px; font-weight: bold; cursor: pointer;"><i class="fas fa-plus-circle" style="margin-left: 5px;"></i>شحن رصيد</button>
-                </a>
+            </div>
+
+            <!-- Manual Wallet Charging -->
+            <div class="admin-section">
+                <h4><i class="fas fa-coins"></i> شحن رصيد يدوي</h4>
+                <div class="form-group">
+                    <label>اسم المستخدم المستهدف</label>
+                    <input type="text" class="form-input" id="adminTargetUsername" placeholder="username (بدون @)" dir="ltr">
+                </div>
+                <div class="form-group">
+                    <label>المبلغ (د.ع)</label>
+                    <input type="number" class="form-input" id="adminChargeAmount" placeholder="المبلغ" min="1" dir="ltr">
+                </div>
+                <div class="error-block" id="adminChargeError"></div>
+                <div class="success-block" id="adminChargeSuccess"></div>
+                <button class="btn-primary btn-sm" id="btnAdminCharge" style="background:var(--success); box-shadow:none;">
+                    <i class="fas fa-check"></i> تأكيد الشحن
+                </button>
             </div>
         </div>
-
-        <div style="padding: 0 20px;">
-            <div style="background: linear-gradient(135deg, #1c1a3a, #301437); padding: 15px; border-radius: 20px; text-align: center; border: 1px solid #da44bb40;">
-                <span style="background-color: #da44bb; font-size: 11px; padding: 3px 10px; border-radius: 10px; font-weight: bold; color: white;">🔥 تنويه هام</span>
-                <h4 style="margin: 8px 0 0 0; color: #fff;">تأكد من جعل الحساب عاماً قبل إرسال أي طلب رشق!</h4>
-            </div>
-        </div>
-
-        <div style="padding: 20px;">
-            <div style="background-color: var(--card-bg); padding: 20px; border-radius: 20px;">
-                <h3 style="margin-top: 0; margin-bottom: 20px; font-size: 18px;"><i class="fas fa-shopping-cart" style="margin-left: 8px; color:#da44bb;"></i>صناعة طلب رشق جديد</h3>
-                
-                <div class="input-group">
-                    <label>اختر نوع الخدمة المطلوب:</label>
-                    <select id="serviceSelect" onchange="calculatePrice()">
-                        <option value="100" data-price="1500">📸 متابعين إنستغرام ثبات عالي [1,500 د.ع لكل 1000]</option>
-                        <option value="101" data-price="500">📸 لايكات إنستغرام سريعة [500 د.ع لكل 1000]</option>
-                        <option value="200" data-price="2000">🎵 متابعين تيك توك حقيقيين [2,000 د.ع لكل 1000]</option>
-                        <option value="300" data-price="1800">✈️ أعضاء قنوات تيليجرام [1,800 د.ع لكل 1000]</option>
-                    </select>
-                </div>
-
-                <div class="input-group">
-                    <label>رابط الحساب أو المنشور:</label>
-                    <input type="url" id="orderLink" placeholder="https://instagram.com/...">
-                </div>
-
-                <div class="input-group">
-                    <label>الكمية المطلوبة:</label>
-                    <input type="number" id="orderQuantity" placeholder="الحد الأدنى 100" min="100" value="100" oninput="calculatePrice()">
-                </div>
-
-                <div style="background-color: #1c2431; padding: 12px; border-radius: 10px; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center;">
-                    <span style="font-size: 14px; color: var(--text-muted);">التكلفة الإجمالية للطلب:</span>
-                    <span style="font-weight: bold; color: #da44bb;"><span id="totalCost">0</span> د.ع</span>
-                </div>
-
-                <button class="btn-primary" onclick="submitOrder()">تأكيد وإرسال الطلب الآن 🚀</button>
-            </div>
-        </div>
+        <button class="btn-outline" id="btnBackToProfile" style="border-color:var(--text-muted); color:var(--text-muted);">
+            <i class="fas fa-arrow-right"></i> العودة للحساب
+        </button>
     </div>
 
-    <div id="ordersPage" class="page">
-        <h2 style="padding: 20px; margin-bottom: 5px;"><i class="fas fa-box-open" style="margin-left: 10px; color:#da44bb;"></i>سجل طلباتي</h2>
-        <div id="ordersList" style="padding: 0 20px;">
-            <p style="color: var(--text-muted); text-align: center; margin-top: 40px;">لا توجد طلبات سابقة في حسابك حالياً.</p>
-        </div>
-    </div>
+    <!-- ==================== BOTTOM NAVIGATION ==================== -->
+    <nav class="bottom-nav" id="bottomNav">
+        <button class="nav-item active" data-nav="home" id="navHome">
+            <i class="fas fa-home"></i>
+            <span>الرئيسية</span>
+        </button>
+        <button class="nav-item" data-nav="orders" id="navOrders">
+            <i class="fas fa-list-alt"></i>
+            <span>طلباتي</span>
+        </button>
+        <button class="nav-item" data-nav="profile" id="navProfile">
+            <i class="fas fa-user-circle"></i>
+            <span>حسابي</span>
+        </button>
+    </nav>
 
-    <div id="profilePage" class="page">
-        <div style="text-align: center; padding: 40px 20px;">
-            <div style="width: 90px; height: 90px; background-color: var(--card-bg); border-radius: 50%; display: flex; justify-content: center; align-items: center; margin: 0 auto; font-size: 40px; border: 2px solid #da44bb;"><i class="fas fa-user-astronaut" style="color: #da44bb;"></i></div>
-            <h2 id="profileName" style="margin-top: 15px; margin-bottom: 2px;">جاري التحميل...</h2>
-            <p id="profileUser" style="color: var(--text-muted); margin-top: 0;">@username</p>
-            
-            <div style="margin: 25px auto; max-width: 300px;">
-                <a href="https://t.me/l_17g" target="_blank" style="text-decoration: none;">
-                    <button class="btn-primary" style="background: #1d9ff2; box-shadow: none; margin-bottom: 10px;"><i class="fab fa-telegram-plane" style="margin-left: 8px;"></i>قناة التطبيق الرسمية</button>
-                </a>
-                
-                <button id="adminPanelBtn" class="btn-primary" style="background: #e67e22; box-shadow: none; display:none; margin-bottom: 10px;" onclick="navigate('adminPage')"><i class="fas fa-user-shield" style="margin-left: 8px;"></i>لوحة تحكم الإدارة 🛠️</button>
-                <button class="btn-primary" style="background: var(--danger); box-shadow: none;" onclick="handleLogout()"><i class="fas fa-sign-out-alt" style="margin-left: 8px;"></i>تسجيل الخروج</button>
-            </div>
-        </div>
-    </div>
-
-    <div id="adminPage" class="page">
-        <h2 style="padding: 20px;"><i class="fas fa-shield-alt" style="margin-left: 10px; color:#e67e22;"></i>لوحة التحكم العليا</h2>
-        
-        <div style="margin: 20px; background-color: var(--card-bg); padding: 20px; border-radius: 15px; display: flex; justify-content: space-between; align-items: center;">
-            <span>تفعيل وضع صيانة التطبيق العام ⚙️</span>
-            <input type="checkbox" id="maintenanceToggle" onchange="toggleMaintenanceMode(this.checked)" style="transform: scale(1.6); cursor: pointer;">
-        </div>
-
-        <div style="margin: 20px; background-color: var(--card-bg); padding: 20px; border-radius: 15px;">
-            <h3 style="margin-top: 0;"><i class="fas fa-coins" style="margin-left: 8px; color:#2ecc71;"></i>شحن رصيد مستخدم يدوياً</h3>
-            <div class="input-group"><input type="text" id="targetUser" placeholder="اسم المستخدم (اليوزر بدون @)"></div>
-            <div class="input-group"><input type="number" id="chargeAmount" placeholder="المبلغ المراد إضافته (د.ع)"></div>
-            <button class="btn-primary" style="background: #2ecc71; box-shadow: none;" onclick="adminChargeWallet()">شحن الرصيد للحساب الآن</button>
-        </div>
-        <button class="btn-primary" style="margin: 20px; width: calc(100% - 40px); background: #2d3748; box-shadow: none;" onclick="navigate('homePage')">العودة للرئيسية</button>
-    </div>
-
-    <div id="globalNav" class="bottom-nav" style="display: none;">
-        <div class="nav-item active" onclick="switchTab('homePage', this)"><i class="fas fa-home"></i>الرئيسية</div>
-        <div class="nav-item" onclick="switchTab('ordersPage', this)"><i class="fas fa-history"></i>طلباتي</div>
-        <div class="nav-item" onclick="switchTab('profilePage', this)"><i class="fas fa-user"></i>حسابي</div>
-    </div>
-
+    <!-- ==================== SCRIPTS ==================== -->
     <script>
-        // إعدادات وبيانات مشروع الـ Firebase الخاصة بك
-        const firebaseConfig = {
-            apiKey: "AIzaSyCBbRaAuYo6KhH7K6-byjp4SCou0DS4IXc",
-            authDomain: "surtur-5d667.firebaseapp.com",
-            databaseURL: "https://surtur-5d667-default-rtdb.firebaseio.com",
-            projectId: "surtur-5d667",
-            storageBucket: "surtur-5d667.firebasestorage.app",
-            messagingSenderId: "360949474558",
-            appId: "1:360949474558:web:fd347c48006098957631af",
-            measurementId: "G-55X08DPKMJ"
-        };
-        
-        // مفتاح الـ API لسيرفر الرشق
-        const RASHQ_API_KEY = "bnt_af0b56277a9f7d177797731b4d670c44b16aec11";
+        (function() {
+            // ========== FIREBASE INITIALIZATION ==========
+            const firebaseConfig = {
+                apiKey: "AIzaSyB9MrraeowEexYMnrrkHXmVbScoeD7O9AA",
+                authDomain: "mtger-9637a.firebaseapp.com",
+                databaseURL: "https://mtger-9637a-default-rtdb.firebaseio.com",
+                projectId: "mtger-9637a",
+                storageBucket: "mtger-9637a.firebasestorage.app",
+                messagingSenderId: "104286639251",
+                appId: "1:104286639251:web:14171df5adb31f6fc6a966",
+                measurementId: "G-BK3S8V4Y0J"
+            };
 
-        // إطلاق مكتبة الـ Firebase
-        if (!firebase.apps.length) {
             firebase.initializeApp(firebaseConfig);
-        }
-        const auth = firebase.auth();
-        const db = firebase.database();
-        let currentUserData = null;
+            const auth = firebase.auth();
+            const db = firebase.database();
 
-        // التحقق اللحظي التلقائي من حالة "وضع الصيانة" وتوسيط الصفحة
-        db.ref('maintenance_mode').on('value', (snapshot) => {
-            const isMaintenance = snapshot.val();
-            const toggleElement = document.getElementById('maintenanceToggle');
-            if(toggleElement) toggleElement.checked = isMaintenance;
-            
-            if(isMaintenance && auth.currentUser?.email !== 'admin@mtger.iq') {
-                navigate('maintenancePage');
-                document.getElementById('globalNav').style.display = 'none';
-            }
-        });
+            // ========== SMM API CREDENTIALS ==========
+            const RASHQ_API_KEY = "bnt_af0b56277a9f7d177797731b4d670c44b16aec11";
 
-        function navigate(pageId) {
-            document.querySelectorAll('.page').forEach(p => p.classList.remove('active-page'));
-            document.getElementById(pageId).classList.add('active-page');
-        }
+            // ========== GLOBAL STATE ==========
+            let currentUser = null;
+            let isAdmin = false;
+            let userData = null;
+            let maintenanceModeActive = false;
+            let maintenanceListenerUnsub = null;
+            let balanceListenerUnsub = null;
 
-        function switchTab(pageId, element) {
-            navigate(pageId);
-            document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
-            element.classList.add('active');
-        }
+            // ========== DOM REFERENCES ==========
+            const views = {
+                maintenance: document.getElementById('viewMaintenance'),
+                login: document.getElementById('viewLogin'),
+                register: document.getElementById('viewRegister'),
+                home: document.getElementById('viewHome'),
+                orders: document.getElementById('viewOrders'),
+                profile: document.getElementById('viewProfile'),
+                admin: document.getElementById('viewAdmin'),
+            };
+            const bottomNav = document.getElementById('bottomNav');
+            const toastContainer = document.getElementById('toastContainer');
+            const btnAdminAccess = document.getElementById('btnAdminAccess');
+            const navItems = document.querySelectorAll('.bottom-nav .nav-item');
 
-        function calculatePrice() {
-            const select = document.getElementById('serviceSelect');
-            const pricePerThousand = parseFloat(select.options[select.selectedIndex].getAttribute('data-price'));
-            const qty = parseInt(document.getElementById('orderQuantity').value) || 0;
-            const total = Math.ceil((qty / 1000) * pricePerThousand);
-            document.getElementById('totalCost').innerText = total;
-        }
-
-        function handleLogin() {
-            const email = document.getElementById('loginEmail').value;
-            const pass = document.getElementById('loginPassword').value;
-            const errDiv = document.getElementById('loginError');
-            errDiv.style.display = 'none';
-
-            auth.signInWithEmailAndPassword(email, pass).then((userCredential) => {
-                loginSuccess(userCredential.user);
-            }).catch((error) => {
-                errDiv.innerText = "فشل الدخول: تحقق من صحة البيانات.";
-                errDiv.style.display = 'block';
-            });
-        }
-
-        function handleRegister() {
-            const name = document.getElementById('regName').value;
-            const user = document.getElementById('regUser').value.trim().replace('@', '');
-            const email = document.getElementById('regEmail').value;
-            const pass = document.getElementById('regPassword').value;
-            const errDiv = document.getElementById('registerError');
-            errDiv.style.display = 'none';
-
-            if(!name || !user || !email || !pass) {
-                errDiv.innerText = "يرجى ملء كافة الخانات المطلوبة.";
-                errDiv.style.display = 'block';
-                return;
+            // ========== UTILITY FUNCTIONS ==========
+            function showToast(message, type = 'info') {
+                const toast = document.createElement('div');
+                toast.className = `toast toast-${type}`;
+                toast.textContent = message;
+                toastContainer.appendChild(toast);
+                setTimeout(() => {
+                    if (toast.parentNode) toast.parentNode.removeChild(toast);
+                }, 3200);
             }
 
-            auth.createUserWithEmailAndPassword(email, pass).then((userCredential) => {
-                const uid = userCredential.user.uid;
-                db.ref('users/' + uid).set({
-                    fullName: name,
-                    username: user,
-                    email: email,
-                    balance: 0,
-                    role: 'user'
-                }).then(() => {
-                    loginSuccess(userCredential.user);
+            function showError(blockId, message) {
+                const block = document.getElementById(blockId);
+                if (block) {
+                    block.textContent = message;
+                    block.classList.add('visible');
+                    setTimeout(() => block.classList.remove('visible'), 5000);
+                }
+            }
+
+            function showSuccess(blockId, message) {
+                const block = document.getElementById(blockId);
+                if (block) {
+                    block.textContent = message;
+                    block.classList.add('visible');
+                    setTimeout(() => block.classList.remove('visible'), 5000);
+                }
+            }
+
+            function hideAllViews() {
+                Object.values(views).forEach(v => v.classList.remove('active'));
+            }
+
+            function showView(viewId) {
+                hideAllViews();
+                const view = views[viewId];
+                if (view) view.classList.add('active');
+                // Update bottom nav active state
+                navItems.forEach(item => {
+                    item.classList.remove('active');
+                    if (item.dataset.nav === viewId) item.classList.add('active');
                 });
-            }).catch((error) => {
-                errDiv.innerText = error.message;
-                errDiv.style.display = 'block';
-            });
-        }
+                // Special cases
+                if (viewId === 'admin') {
+                    navItems.forEach(item => item.classList.remove('active'));
+                }
+            }
 
-        function loginSuccess(user) {
-            document.getElementById('globalNav').style.display = 'flex';
-            navigate('homePage');
-            calculatePrice();
-            
-            db.ref('users/' + user.uid).on('value', (snapshot) => {
-                currentUserData = snapshot.val();
-                if(currentUserData) {
-                    document.getElementById('profileName').innerText = currentUserData.fullName;
-                    document.getElementById('profileUser').innerText = '@' + currentUserData.username;
-                    document.getElementById('userWalletBalance').innerText = currentUserData.balance;
+            function showBottomNav() {
+                bottomNav.classList.add('visible');
+                document.body.style.paddingBottom = 'calc(var(--bottom-nav-height) + 20px)';
+            }
+
+            function hideBottomNav() {
+                bottomNav.classList.remove('visible');
+                document.body.style.paddingBottom = '0px';
+            }
+
+            function formatDate(dateStr) {
+                try {
+                    const d = new Date(dateStr);
+                    return d.toLocaleDateString('ar-IQ', { year: 'numeric', month: 'short', day: 'numeric',
+                        hour: '2-digit', minute: '2-digit' });
+                } catch (e) {
+                    return dateStr || '---';
+                }
+            }
+
+            function getStatusClass(status) {
+                if (!status) return 'status-progress';
+                if (status.includes('جاري') || status.includes('قيد')) return 'status-progress';
+                if (status.includes('مراجعة') || status.includes('يدوي')) return 'status-review';
+                if (status.includes('مكتمل') || status.includes('ناجح') || status.includes('Done') || status.includes(
+                        'Complete')) return 'status-done';
+                if (status.includes('فشل') || status.includes('خطأ')) return 'status-failed';
+                return 'status-progress';
+            }
+
+            // ========== MAINTENANCE MODE LISTENER ==========
+            function setupMaintenanceListener() {
+                if (maintenanceListenerUnsub) maintenanceListenerUnsub();
+                maintenanceListenerUnsub = db.ref('maintenance_mode').on('value', (snapshot) => {
+                    const val = snapshot.val();
+                    maintenanceModeActive = (val === true || val === 'true');
+                    handleMaintenanceRedirect();
+                }, (error) => {
+                    console.warn('تعذر قراءة وضع الصيانة من قاعدة البيانات:', error.message);
+                    maintenanceModeActive = false;
+                    handleMaintenanceRedirect();
+                });
+            }
+
+            function handleMaintenanceRedirect() {
+                if (maintenanceModeActive && !isAdmin) {
+                    // Show maintenance for all non-admin users
+                    hideAllViews();
+                    views.maintenance.classList.add('active');
+                    hideBottomNav();
+                } else if (maintenanceModeActive && isAdmin) {
+                    // Admin can navigate freely, but ensure maintenance view isn't forced
+                    if (views.maintenance.classList.contains('active') && !views.admin.classList.contains(
+                            'active') && !views.home.classList.contains('active') && !views.profile.classList
+                        .contains('active') && !views.orders.classList.contains('active')) {
+                        showView('home');
+                    }
+                    showBottomNav();
+                } else {
+                    // Maintenance off - normal operation
+                    if (views.maintenance.classList.contains('active')) {
+                        if (currentUser) {
+                            showView('home');
+                            showBottomNav();
+                        } else {
+                            showView('login');
+                            hideBottomNav();
+                        }
+                    }
+                }
+            }
+
+            // ========== NAVIGATION ==========
+            function navigateTo(viewId) {
+                if (viewId === 'admin' && !isAdmin) {
+                    showToast('غير مصرح لك بالوصول إلى لوحة التحكم', 'error');
+                    return;
+                }
+                if (maintenanceModeActive && !isAdmin && viewId !== 'maintenance') {
+                    showView('maintenance');
+                    hideBottomNav();
+                    return;
+                }
+                if (!currentUser && viewId !== 'login' && viewId !== 'register' && viewId !== 'maintenance') {
+                    showView('login');
+                    hideBottomNav();
+                    return;
+                }
+                showView(viewId);
+                if (currentUser && viewId !== 'login' && viewId !== 'register' && viewId !== 'maintenance') {
+                    showBottomNav();
+                } else {
+                    hideBottomNav();
+                }
+                // Load data for specific views
+                if (viewId === 'orders' && currentUser) loadOrders();
+                if (viewId === 'profile' && currentUser) loadProfileData();
+                if (viewId === 'admin' && isAdmin) loadAdminData();
+                if (viewId === 'home' && currentUser) refreshBalanceDisplay();
+            }
+
+            // Bottom nav click handlers
+            navItems.forEach(item => {
+                item.addEventListener('click', () => {
+                    const target = item.dataset.nav;
+                    if (target === 'home') navigateTo('home');
+                    if (target === 'orders') navigateTo('orders');
+                    if (target === 'profile') navigateTo('profile');
+                });
+            });
+
+            // Admin hidden access link on maintenance page
+            btnAdminAccess.addEventListener('click', () => {
+                if (maintenanceModeActive) {
+                    showView('login');
+                    hideBottomNav();
                 }
             });
 
-            if(user.email === 'admin@mtger.iq') {
-                document.getElementById('adminPanelBtn').style.display = 'block';
-            }
-
-            loadUserOrders(user.uid);
-        }
-
-        function submitOrder() {
-            const select = document.getElementById('serviceSelect');
-            const serviceId = select.value;
-            const link = document.getElementById('orderLink').value.trim();
-            const qty = parseInt(document.getElementById('orderQuantity').value) || 0;
-            const totalCost = parseFloat(document.getElementById('totalCost').innerText);
-
-            if(!link || qty < 100) {
-                alert('يرجى كتابة رابط صحيح وتحديد كمية لا تقل عن 100.');
-                return;
-            }
-
-            if(!currentUserData || currentUserData.balance < totalCost) {
-                alert('رصيدك غير كافٍ، يرجى شحن الرصيد أولاً.');
-                return;
-            }
-
-            const uid = auth.currentUser.uid;
-            const newBalance = currentUserData.balance - totalCost;
-
-            db.ref('users/' + uid).update({ balance: newBalance }).then(() => {
-                
-                const apiEndpoint = `https://bnt-shb.com/api/v2?key=${RASHQ_API_KEY}&action=add&service=${serviceId}&link=${encodeURIComponent(link)}&quantity=${qty}`;
-
-                fetch(apiEndpoint, { method: 'POST' })
-                .then(res => res.json())
-                .then(data => {
-                    const orderId = data.order || "تحت المعالجة";
-                    
-                    db.ref('orders/' + uid).push({
-                        serviceName: select.options[select.selectedIndex].text.split('[')[0],
-                        link: link,
-                        quantity: qty,
-                        cost: totalCost,
-                        status: 'جاري البدء',
-                        remoteOrderId: orderId,
-                        date: new Date().toLocaleString('ar-IQ')
-                    });
-
-                    alert(`تم إرسال الطلب بنجاح! رقم الطلب: ${orderId}`);
-                    document.getElementById('orderLink').value = '';
-                })
-                .catch(err => {
-                    db.ref('orders/' + uid).push({
-                        serviceName: select.options[select.selectedIndex].text.split('[')[0],
-                        link: link,
-                        quantity: qty,
-                        cost: totalCost,
-                        status: 'مراجعة يدوية',
-                        date: new Date().toLocaleString('ar-IQ')
-                    });
-                    alert('تم قيد الطلب بنجاح وسيقوم المسؤول بتأكيده خلال دقائق.');
-                });
+            // Login/Register link toggles
+            document.getElementById('linkToRegister').addEventListener('click', (e) => {
+                e.preventDefault();
+                navigateTo('register');
             });
-        }
+            document.getElementById('linkToLogin').addEventListener('click', (e) => {
+                e.preventDefault();
+                navigateTo('login');
+            });
 
-        function loadUserOrders(uid) {
-            db.ref('orders/' + uid).on('value', (snapshot) => {
-                const listDiv = document.getElementById('ordersList');
-                listDiv.innerHTML = '';
-                if(snapshot.exists()) {
-                    snapshot.forEach(child => {
-                        const order = child.val();
-                        listDiv.innerHTML += `
-                            <div class="order-item">
-                                <div style="font-weight:bold; color:#fff;">${order.serviceName}</div>
-                                <div style="font-size:13px; color:var(--text-muted); margin-top:4px; word-break:break-all;">الرابط: ${order.link}</div>
-                                <div style="font-size:13px; margin-top:4px;">الكمية: <b>${order.quantity}</b> | التكلفة: <b style="color:#2ecc71;">${order.cost} د.ع</b></div>
-                                <div style="font-size:12px; margin-top:6px; color:var(--text-muted); display:flex; justify-content:space-between;">
-                                    <span>${order.date}</span>
-                                    <span style="color:#da44bb; font-weight:bold;">${order.status}</span>
+            // ========== AUTH FUNCTIONS ==========
+            async function handleLogin() {
+                const email = document.getElementById('loginEmail').value.trim();
+                const password = document.getElementById('loginPassword').value.trim();
+                const errorBlock = document.getElementById('loginError');
+                errorBlock.classList.remove('visible');
+
+                if (!email || !password) {
+                    showError('loginError', 'يرجى إدخال البريد الإلكتروني وكلمة المرور.');
+                    return;
+                }
+
+                // Check for admin credentials
+                const isAdminLogin = (email.toLowerCase() === 'admin@mtger.iq' && password === 'Admin123');
+
+                try {
+                    const btnLogin = document.getElementById('btnLogin');
+                    btnLogin.disabled = true;
+                    btnLogin.textContent = 'جاري الدخول...';
+
+                    const userCredential = await auth.signInWithEmailAndPassword(email, password);
+                    const user = userCredential.user;
+
+                    if (isAdminLogin) {
+                        isAdmin = true;
+                        // Ensure admin data exists in DB
+                        await db.ref('users/' + user.uid).update({
+                            email: email,
+                            role: 'admin',
+                            fullName: 'المشرف العام',
+                            username: 'admin',
+                        }).catch(() => {});
+                        // Also set balance to 0 if not exists
+                        const adminSnap = await db.ref('users/' + user.uid + '/balance').once('value');
+                        if (!adminSnap.exists()) {
+                            await db.ref('users/' + user.uid + '/balance').set(0);
+                        }
+                    } else {
+                        isAdmin = false;
+                    }
+
+                    currentUser = user;
+                    document.getElementById('loginEmail').value = '';
+                    document.getElementById('loginPassword').value = '';
+                    btnLogin.disabled = false;
+                    btnLogin.textContent = 'دخول';
+                    showToast('تم تسجيل الدخول بنجاح', 'success');
+                    setupBalanceListener();
+                    handleMaintenanceRedirect();
+                    if (!maintenanceModeActive || isAdmin) {
+                        navigateTo('home');
+                    }
+                } catch (error) {
+                    document.getElementById('btnLogin').disabled = false;
+                    document.getElementById('btnLogin').textContent = 'دخول';
+                    let msg = 'فشل تسجيل الدخول.';
+                    if (error.code === 'auth/user-not-found') msg = 'المستخدم غير موجود.';
+                    else if (error.code === 'auth/wrong-password') msg = 'كلمة المرور غير صحيحة.';
+                    else if (error.code === 'auth/invalid-email') msg = 'صيغة البريد الإلكتروني غير صالحة.';
+                    else if (error.code === 'auth/too-many-requests') msg = 'محاولات كثيرة جداً. يرجى المحاولة لاحقاً.';
+                    else msg = error.message;
+                    showError('loginError', msg);
+                }
+            }
+
+            async function handleRegister() {
+                const fullName = document.getElementById('regFullName').value.trim();
+                let username = document.getElementById('regUsername').value.trim();
+                const email = document.getElementById('regEmail').value.trim();
+                const password = document.getElementById('regPassword').value.trim();
+                const errorBlock = document.getElementById('registerError');
+                errorBlock.classList.remove('visible');
+
+                // Strip '@' from username
+                username = username.replace(/@/g, '');
+
+                if (!fullName || !username || !email || !password) {
+                    showError('registerError', 'يرجى ملء جميع الحقول.');
+                    return;
+                }
+                if (password.length < 6) {
+                    showError('registerError', 'كلمة المرور يجب أن تكون 6 أحرف على الأقل.');
+                    return;
+                }
+                if (email.toLowerCase() === 'admin@mtger.iq') {
+                    showError('registerError', 'هذا البريد الإلكتروني محجوز للنظام.');
+                    return;
+                }
+                if (username.toLowerCase() === 'admin') {
+                    showError('registerError', 'اسم المستخدم "admin" محجوز للنظام.');
+                    return;
+                }
+
+                try {
+                    const btnReg = document.getElementById('btnRegister');
+                    btnReg.disabled = true;
+                    btnReg.textContent = 'جاري الإنشاء...';
+
+                    const userCredential = await auth.createUserWithEmailAndPassword(email, password);
+                    const user = userCredential.user;
+
+                    // Save user data to Realtime Database
+                    await db.ref('users/' + user.uid).set({
+                        fullName: fullName,
+                        username: username,
+                        email: email,
+                        balance: 0,
+                        role: 'user',
+                        createdAt: new Date().toISOString(),
+                    });
+
+                    currentUser = user;
+                    isAdmin = false;
+                    userData = { fullName, username, email, balance: 0, role: 'user' };
+
+                    document.getElementById('regFullName').value = '';
+                    document.getElementById('regUsername').value = '';
+                    document.getElementById('regEmail').value = '';
+                    document.getElementById('regPassword').value = '';
+                    btnReg.disabled = false;
+                    btnReg.textContent = 'إنشاء الحساب';
+                    showToast('تم إنشاء الحساب بنجاح!', 'success');
+                    setupBalanceListener();
+                    handleMaintenanceRedirect();
+                    if (!maintenanceModeActive) {
+                        navigateTo('home');
+                    }
+                } catch (error) {
+                    document.getElementById('btnRegister').disabled = false;
+                    document.getElementById('btnRegister').textContent = 'إنشاء الحساب';
+                    let msg = 'فشل إنشاء الحساب.';
+                    if (error.code === 'auth/email-already-in-use') msg = 'البريد الإلكتروني مستخدم بالفعل.';
+                    else if (error.code === 'auth/invalid-email') msg = 'صيغة البريد الإلكتروني غير صالحة.';
+                    else if (error.code === 'auth/weak-password') msg = 'كلمة المرور ضعيفة جداً.';
+                    else msg = error.message;
+                    showError('registerError', msg);
+                }
+            }
+
+            async function handleLogout() {
+                try {
+                    if (balanceListenerUnsub) balanceListenerUnsub();
+                    await auth.signOut();
+                } catch (e) {
+                    console.warn('Logout error:', e);
+                }
+                currentUser = null;
+                isAdmin = false;
+                userData = null;
+                hideBottomNav();
+                hideAllViews();
+                if (maintenanceModeActive) {
+                    showView('maintenance');
+                } else {
+                    showView('login');
+                }
+                showToast('تم تسجيل الخروج.', 'info');
+            }
+
+            // ========== BALANCE LISTENER ==========
+            function setupBalanceListener() {
+                if (balanceListenerUnsub) balanceListenerUnsub();
+                if (!currentUser) return;
+                balanceListenerUnsub = db.ref('users/' + currentUser.uid + '/balance').on('value', (snapshot) => {
+                    const bal = snapshot.val();
+                    const balance = (typeof bal === 'number') ? bal : 0;
+                    if (userData) userData.balance = balance;
+                    refreshBalanceDisplay();
+                }, (error) => {
+                    console.warn('Balance listener error:', error.message);
+                });
+            }
+
+            function refreshBalanceDisplay() {
+                const balanceEl = document.getElementById('walletBalance');
+                if (balanceEl && userData) {
+                    balanceEl.innerHTML = userData.balance.toLocaleString('ar-IQ') + ' <span>د.ع</span>';
+                } else if (balanceEl && currentUser) {
+                    // Fetch once
+                    db.ref('users/' + currentUser.uid + '/balance').once('value').then(snap => {
+                        const bal = snap.val() || 0;
+                        if (userData) userData.balance = bal;
+                        balanceEl.innerHTML = bal.toLocaleString('ar-IQ') + ' <span>د.ع</span>';
+                    }).catch(() => {
+                        balanceEl.innerHTML = '0 <span>د.ع</span>';
+                    });
+                }
+            }
+
+            // ========== LOAD PROFILE DATA ==========
+            function loadProfileData() {
+                if (!currentUser) return;
+                db.ref('users/' + currentUser.uid).once('value').then(snap => {
+                    const data = snap.val();
+                    if (data) {
+                        userData = data;
+                        document.getElementById('profileFullName').textContent = data.fullName || '---';
+                        document.getElementById('profileUsername').textContent = '@' + (data.username ||
+                            '---');
+                        document.getElementById('profileEmail').textContent = data.email || '---';
+                        if (isAdmin || (data.email && data.email.toLowerCase() === 'admin@mtger.iq')) {
+                            document.getElementById('btnAdminPanel').style.display = 'block';
+                            isAdmin = true;
+                        } else {
+                            document.getElementById('btnAdminPanel').style.display = 'none';
+                        }
+                    }
+                }).catch(err => {
+                    console.warn('Profile load error:', err.message);
+                });
+            }
+
+            // ========== LOAD ORDERS ==========
+            function loadOrders() {
+                if (!currentUser) return;
+                const container = document.getElementById('ordersContainer');
+                container.innerHTML =
+                    '<p style="text-align:center; color:var(--text-muted); padding:30px 0;"><i class="fas fa-spinner fa-spin"></i> جاري تحميل الطلبات...</p>';
+
+                db.ref('orders/' + currentUser.uid).once('value').then(snap => {
+                    const orders = snap.val();
+                    if (!orders) {
+                        container.innerHTML =
+                            '<p style="text-align:center; color:var(--text-muted); padding:40px 0;">لا توجد طلبات حالياً.</p>';
+                        return;
+                    }
+                    let html = '';
+                    // Sort by date descending
+                    const orderEntries = Object.entries(orders).sort((a, b) => {
+                        const dateA = a[1].date || '';
+                        const dateB = b[1].date || '';
+                        return dateB.localeCompare(dateA);
+                    });
+                    orderEntries.forEach(([orderId, order]) => {
+                        const statusClass = getStatusClass(order.status);
+                        html += `
+                            <div class="order-box">
+                                <div class="order-row"><strong>الخدمة:</strong> ${order.serviceName || '---'}</div>
+                                <div class="order-row"><strong>الرابط:</strong> <span dir="ltr" style="font-size:0.78rem; word-break:break-all;">${order.link || '---'}</span></div>
+                                <div class="order-row"><strong>الكمية:</strong> ${(order.quantity || 0).toLocaleString('ar-IQ')}</div>
+                                <div class="order-row"><strong>السعر:</strong> ${(order.cost || 0).toLocaleString('ar-IQ')} د.ع</div>
+                                <div class="order-row"><strong>التاريخ:</strong> ${formatDate(order.date)}</div>
+                                <div class="order-row">
+                                    <strong>الحالة:</strong>
+                                    <span class="status-badge ${statusClass}">${order.status || 'جاري البدء'}</span>
                                 </div>
-                            </div>
-                        `;
+                            </div>`;
                     });
-                } else {
-                    listDiv.innerHTML = '<p style="color: var(--text-muted); text-align: center; margin-top: 40px;">لا توجد طلبات سابقة في حسابك.</p>';
-                }
-            });
-        }
-
-        function handleLogout() {
-            auth.signOut().then(() => {
-                document.getElementById('globalNav').style.display = 'none';
-                document.getElementById('adminPanelBtn').style.display = 'none';
-                navigate('loginPage');
-            });
-        }
-
-        function toggleMaintenanceMode(status) {
-            db.ref('maintenance_mode').set(status);
-        }
-
-        function adminChargeWallet() {
-            const target = document.getElementById('targetUser').value.trim().replace('@', '');
-            const amount = parseFloat(document.getElementById('chargeAmount').value);
-
-            if(!target || isNaN(amount)) {
-                alert('يرجى إدخال بيانات صحيحة.');
-                return;
+                    container.innerHTML = html;
+                }).catch(err => {
+                    console.warn('Orders load error:', err.message);
+                    container.innerHTML =
+                        '<p style="text-align:center; color:var(--text-muted); padding:40px 0;">تعذر تحميل الطلبات. حاول مجدداً.</p>';
+                });
             }
 
-            db.ref('users').orderByChild('username').equalTo(target).once('value', snapshot => {
-                if(snapshot.exists()) {
-                    snapshot.forEach(childSnapshot => {
-                        const userKey = childSnapshot.key;
-                        const currentBalance = childSnapshot.val().balance || 0;
-                        db.ref('users/' + userKey).update({
-                            balance: currentBalance + amount
-                        }).then(() => {
-                            alert('تم الشحن بنجاح!');
-                        });
-                    });
+            // ========== LOAD ADMIN DATA ==========
+            function loadAdminData() {
+                if (!isAdmin) return;
+                db.ref('maintenance_mode').once('value').then(snap => {
+                    const val = snap.val();
+                    const toggle = document.getElementById('maintenanceToggle');
+                    const statusText = document.getElementById('maintenanceStatusText');
+                    if (val === true || val === 'true') {
+                        toggle.checked = true;
+                        statusText.textContent = 'مفعل - التطبيق تحت الصيانة';
+                        statusText.style.color = '#f39c12';
+                    } else {
+                        toggle.checked = false;
+                        statusText.textContent = 'غير مفعل';
+                        statusText.style.color = '#a0a5b8';
+                    }
+                }).catch(() => {});
+            }
+
+            // ========== ORDER SUBMISSION ==========
+            async function submitOrder() {
+                if (!currentUser) {
+                    showToast('يرجى تسجيل الدخول أولاً.', 'error');
+                    return;
+                }
+                const serviceSelect = document.getElementById('orderService');
+                const link = document.getElementById('orderLink').value.trim();
+                const qtyInput = document.getElementById('orderQty');
+                const quantity = parseInt(qtyInput.value, 10);
+                const orderError = document.getElementById('orderError');
+                const orderSuccess = document.getElementById('orderSuccess');
+                orderError.classList.remove('visible');
+                orderSuccess.classList.remove('visible');
+
+                // Validate
+                if (!link) {
+                    showError('orderError', 'يرجى إدخال رابط الحساب.');
+                    return;
+                }
+                if (isNaN(quantity) || quantity < 100) {
+                    showError('orderError', 'الحد الأدنى للكمية هو 100.');
+                    return;
+                }
+
+                const [serviceId, priceStr, serviceName] = serviceSelect.value.split('|');
+                const pricePer1k = parseInt(priceStr, 10);
+                const totalCost = Math.ceil(quantity / 1000) * pricePer1k;
+
+                // Get current balance
+                let currentBalance = 0;
+                try {
+                    const balSnap = await db.ref('users/' + currentUser.uid + '/balance').once('value');
+                    currentBalance = balSnap.val() || 0;
+                } catch (e) {
+                    showError('orderError', 'تعذر التحقق من الرصيد. حاول مجدداً.');
+                    return;
+                }
+
+                if (currentBalance < totalCost) {
+                    showError('orderError',
+                        `رصيدك غير كافٍ. الرصيد الحالي: ${currentBalance.toLocaleString('ar-IQ')} د.ع، التكلفة: ${totalCost.toLocaleString('ar-IQ')} د.ع`);
+                    return;
+                }
+
+                // Deduct balance
+                const newBalance = currentBalance - totalCost;
+                const btnSubmit = document.getElementById('btnSubmitOrder');
+                btnSubmit.disabled = true;
+                btnSubmit.textContent = 'جاري المعالجة...';
+
+                try {
+                    await db.ref('users/' + currentUser.uid + '/balance').set(newBalance);
+                    if (userData) userData.balance = newBalance;
+                    refreshBalanceDisplay();
+
+                    // Call SMM API
+                    const apiUrl =
+                        `https://bnt-shb.com/api/v2?key=${encodeURIComponent(RASHQ_API_KEY)}&action=add&service=${encodeURIComponent(serviceId)}&link=${encodeURIComponent(link)}&quantity=${encodeURIComponent(quantity)}`;
+                    let apiSuccess = false;
+                    let apiResponse = null;
+
+                    try {
+                        const response = await fetch(apiUrl, { method: 'POST', mode: 'cors' });
+                        apiResponse = await response.text();
+                        // Check if response indicates success (common SMM API patterns)
+                        if (apiResponse && (apiResponse.includes('order') || apiResponse.includes('success') ||
+                                apiResponse.includes('id') || apiResponse.match(/^\d+$/))) {
+                            apiSuccess = true;
+                        }
+                    } catch (apiErr) {
+                        console.warn('SMM API call failed:', apiErr.message);
+                        apiSuccess = false;
+                    }
+
+                    const orderStatus = apiSuccess ? 'جاري البدء' : 'مراجعة يدوية';
+                    const orderData = {
+                        serviceName: serviceName,
+                        serviceId: serviceId,
+                        link: link,
+                        quantity: quantity,
+                        cost: totalCost,
+                        status: orderStatus,
+                        date: new Date().toISOString(),
+                        apiResponse: apiResponse || 'لا يوجد رد من الخادم',
+                    };
+
+                    await db.ref('orders/' + currentUser.uid).push(orderData);
+
+                    document.getElementById('orderLink').value = '';
+                    document.getElementById('orderQty').value = '100';
+                    document.getElementById('costValue').textContent = '0';
+                    btnSubmit.disabled = false;
+                    btnSubmit.textContent = 'إرسال الطلب';
+
+                    if (apiSuccess) {
+                        showSuccess('orderSuccess', 'تم تقديم الطلب بنجاح! سيبدأ التنفيذ قريباً.');
+                        showToast('تم تقديم الطلب بنجاح!', 'success');
+                    } else {
+                        showSuccess('orderSuccess',
+                            'تم حفظ الطلب للمراجعة اليدوية. سنقوم بمعالجته في أقرب وقت.');
+                        showToast('تم حفظ الطلب للمراجعة اليدوية.', 'info');
+                    }
+                } catch (err) {
+                    console.error('Order submission error:', err);
+                    // Refund on critical failure
+                    try {
+                        await db.ref('users/' + currentUser.uid + '/balance').set(currentBalance);
+                        if (userData) userData.balance = currentBalance;
+                        refreshBalanceDisplay();
+                    } catch (refundErr) {
+                        console.error('Refund failed:', refundErr);
+                    }
+                    btnSubmit.disabled = false;
+                    btnSubmit.textContent = 'إرسال الطلب';
+                    showError('orderError', 'حدث خطأ أثناء معالجة الطلب. تم إعادة الرصيد. حاول مجدداً.');
+                }
+            }
+
+            // ========== ADMIN: MAINTENANCE TOGGLE ==========
+            async function toggleMaintenance(checked) {
+                if (!isAdmin) return;
+                try {
+                    await db.ref('maintenance_mode').set(checked);
+                    const statusText = document.getElementById('maintenanceStatusText');
+                    if (checked) {
+                        statusText.textContent = 'مفعل - التطبيق تحت الصيانة';
+                        statusText.style.color = '#f39c12';
+                    } else {
+                        statusText.textContent = 'غير مفعل';
+                        statusText.style.color = '#a0a5b8';
+                    }
+                    showToast(checked ? 'تم تفعيل وضع الصيانة.' : 'تم إيقاف وضع الصيانة.', 'success');
+                } catch (err) {
+                    showToast('فشل تحديث وضع الصيانة: ' + err.message, 'error');
+                    document.getElementById('maintenanceToggle').checked = !checked;
+                }
+            }
+
+            // ========== ADMIN: MANUAL WALLET CHARGE ==========
+            async function adminChargeWallet() {
+                if (!isAdmin) {
+                    showToast('غير مصرح.', 'error');
+                    return;
+                }
+                const targetUsername = document.getElementById('adminTargetUsername').value.trim().replace(/@/g, '');
+                const chargeAmount = parseInt(document.getElementById('adminChargeAmount').value, 10);
+                const errorBlock = document.getElementById('adminChargeError');
+                const successBlock = document.getElementById('adminChargeSuccess');
+                errorBlock.classList.remove('visible');
+                successBlock.classList.remove('visible');
+
+                if (!targetUsername) {
+                    showError('adminChargeError', 'يرجى إدخال اسم المستخدم المستهدف.');
+                    return;
+                }
+                if (isNaN(chargeAmount) || chargeAmount <= 0) {
+                    showError('adminChargeError', 'يرجى إدخال مبلغ صحيح.');
+                    return;
+                }
+
+                try {
+                    const btnCharge = document.getElementById('btnAdminCharge');
+                    btnCharge.disabled = true;
+                    btnCharge.textContent = 'جاري البحث...';
+
+                    // Query users by username
+                    const querySnap = await db.ref('users').orderByChild('username').equalTo(targetUsername).once(
+                        'value');
+                    const users = querySnap.val();
+
+                    if (!users) {
+                        btnCharge.disabled = false;
+                        btnCharge.textContent = 'تأكيد الشحن';
+                        showError('adminChargeError', 'لم يتم العثور على مستخدم بهذا الاسم.');
+                        return;
+                    }
+
+                    const targetUid = Object.keys(users)[0];
+                    const targetData = users[targetUid];
+                    const currentBal = targetData.balance || 0;
+                    const newBal = currentBal + chargeAmount;
+
+                    btnCharge.textContent = 'جاري الشحن...';
+                    await db.ref('users/' + targetUid + '/balance').set(newBal);
+
+                    document.getElementById('adminTargetUsername').value = '';
+                    document.getElementById('adminChargeAmount').value = '';
+                    btnCharge.disabled = false;
+                    btnCharge.textContent = 'تأكيد الشحن';
+                    showSuccess('adminChargeSuccess',
+                        `تم شحن ${chargeAmount.toLocaleString('ar-IQ')} د.ع للمستخدم @${targetUsername}. الرصيد الجديد: ${newBal.toLocaleString('ar-IQ')} د.ع`
+                        );
+                    showToast('تم الشحن بنجاح!', 'success');
+                } catch (err) {
+                    document.getElementById('btnAdminCharge').disabled = false;
+                    document.getElementById('btnAdminCharge').textContent = 'تأكيد الشحن';
+                    showError('adminChargeError', 'حدث خطأ: ' + err.message);
+                }
+            }
+
+            // ========== COST CALCULATOR (LIVE) ==========
+            function updateCostDisplay() {
+                const serviceSelect = document.getElementById('orderService');
+                const qtyInput = document.getElementById('orderQty');
+                const costSpan = document.getElementById('costValue');
+                const quantity = parseInt(qtyInput.value, 10) || 0;
+                const [, priceStr] = serviceSelect.value.split('|');
+                const pricePer1k = parseInt(priceStr, 10);
+                const totalCost = Math.ceil(quantity / 1000) * pricePer1k;
+                costSpan.textContent = totalCost.toLocaleString('ar-IQ');
+            }
+
+            // ========== EVENT LISTENERS ==========
+            document.getElementById('btnLogin').addEventListener('click', handleLogin);
+            document.getElementById('btnRegister').addEventListener('click', handleRegister);
+            document.getElementById('btnLogout').addEventListener('click', handleLogout);
+            document.getElementById('btnSubmitOrder').addEventListener('click', submitOrder);
+            document.getElementById('btnAdminPanel').addEventListener('click', () => navigateTo('admin'));
+            document.getElementById('btnBackToProfile').addEventListener('click', () => navigateTo('profile'));
+            document.getElementById('btnAdminCharge').addEventListener('click', adminChargeWallet);
+            document.getElementById('maintenanceToggle').addEventListener('change', function() {
+                toggleMaintenance(this.checked);
+            });
+            document.getElementById('orderService').addEventListener('change', updateCostDisplay);
+            document.getElementById('orderQty').addEventListener('input', updateCostDisplay);
+
+            // Enter key support for login
+            document.getElementById('loginPassword').addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') handleLogin();
+            });
+            document.getElementById('regPassword').addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') handleRegister();
+            });
+
+            // ========== AUTH STATE LISTENER ==========
+            auth.onAuthStateChanged(async (user) => {
+                if (user) {
+                    currentUser = user;
+                    // Check if admin
+                    if (user.email && user.email.toLowerCase() === 'admin@mtger.iq') {
+                        isAdmin = true;
+                    }
+                    // Load user data
+                    try {
+                        const snap = await db.ref('users/' + user.uid).once('value');
+                        const data = snap.val();
+                        if (data) {
+                            userData = data;
+                            if (data.role === 'admin' || (data.email && data.email.toLowerCase() ===
+                                    'admin@mtger.iq')) {
+                                isAdmin = true;
+                            }
+                        } else {
+                            // Create minimal user data if missing
+                            userData = {
+                                fullName: user.displayName || 'مستخدم',
+                                username: (user.email || '').split('@')[0] || 'user',
+                                email: user.email || '',
+                                balance: 0,
+                                role: 'user',
+                            };
+                            await db.ref('users/' + user.uid).set(userData).catch(() => {});
+                        }
+                    } catch (e) {
+                        console.warn('User data fetch error:', e.message);
+                        userData = { fullName: 'مستخدم', username: 'user', email: user.email || '', balance: 0,
+                            role: 'user' };
+                    }
+                    setupBalanceListener();
+                    if (!maintenanceModeActive || isAdmin) {
+                        navigateTo('home');
+                        showBottomNav();
+                    } else {
+                        showView('maintenance');
+                        hideBottomNav();
+                    }
+                    // Update admin button visibility
+                    if (isAdmin) {
+                        document.getElementById('btnAdminPanel').style.display = 'block';
+                    }
                 } else {
-                    alert('المستخدم غير موجود.');
+                    currentUser = null;
+                    isAdmin = false;
+                    userData = null;
+                    if (balanceListenerUnsub) balanceListenerUnsub();
+                    hideBottomNav();
+                    if (maintenanceModeActive) {
+                        showView('maintenance');
+                    } else {
+                        showView('login');
+                    }
+                    document.getElementById('btnAdminPanel').style.display = 'none';
                 }
             });
-        }
+
+            // ========== INITIAL SETUP ==========
+            function initApp() {
+                setupMaintenanceListener();
+                updateCostDisplay();
+                // Default view - will be overridden by auth state listener or maintenance check
+                hideAllViews();
+                // Show login initially while Firebase initializes
+                views.login.classList.add('active');
+                hideBottomNav();
+            }
+
+            initApp();
+            console.log('🚀 MTGER SPA initialized successfully.');
+            console.log('🔐 Admin: admin@mtger.iq / Admin123');
+            console.log('🛠️ Maintenance mode listener active.');
+            console.log('💳 SMM API: bnt-shb.com/api/v2');
+        })();
     </script>
 </body>
 </html>
