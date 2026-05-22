@@ -261,7 +261,7 @@
             </div>
             <button class="btn-outline" id="btnEditProfile" style="margin-bottom:10px;"><i class="fas fa-edit"></i> تعديل الحساب</button>
             <button class="btn-outline" id="btnAdminPanel" style="margin-bottom:10px; display:none; border-color:var(--pink); color:var(--pink-glow);"><i class="fas fa-crown"></i> لوحة تحكم الإدارة</button>
-            <button class="btn-primary" id="btnLogout" style="background:rgba(231,76,60,0.8); box-shadow:none;"><i class="fas fa-sign-out-alt"></i> تسجيل الخروج</button>
+            <button class="btn-primary" id="btnLogoutProfile" style="background:rgba(231,76,60,0.8); box-shadow:none;" onclick="handleLogout()"><i class="fas fa-sign-out-alt"></i> تسجيل الخروج</button>
         </div>
     </div>
 
@@ -286,6 +286,7 @@
             </div>
         </div>
         <button class="btn-outline" id="btnBackToProfile"><i class="fas fa-arrow-right"></i> العودة للحساب</button>
+        <button class="btn-primary" id="btnLogoutAdmin" style="background:rgba(231,76,60,0.8); box-shadow:none; margin-top:12px;" onclick="handleLogout()"><i class="fas fa-sign-out-alt"></i> تسجيل الخروج</button>
     </div>
 
     <!-- Edit Profile Modal (without image) -->
@@ -464,12 +465,29 @@
                 if(userData) $('walletBalance').innerHTML = `${(userData.balance||0).toLocaleString('ar-IQ')} <span>د.ع</span>`;
             };
 
-            const logout = async () => {
-                if(unsubBalance) unsubBalance();
-                await auth.signOut();
-                currentUser = null; isAdmin = false; userData = null;
-                hideBottomNav();
-                maintenanceModeActive ? showView('maintenance') : showView('login');
+            // ========== FIXED LOGOUT FUNCTION ==========
+            const handleLogout = () => {
+                auth.signOut()
+                    .then(() => {
+                        // Hide bottom navigation
+                        bottomNav.classList.remove('visible');
+                        // Clear cached user data
+                        currentUser = null;
+                        isAdmin = false;
+                        userData = null;
+                        // Switch to login view
+                        hideAllViews();
+                        views.login.classList.add('active');
+                        // Remove active state from all nav items
+                        document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+                        // Stop balance listener
+                        if(unsubBalance) unsubBalance();
+                        console.log('✅ تم تسجيل الخروج بنجاح');
+                    })
+                    .catch(error => {
+                        console.error('❌ خطأ في تسجيل الخروج:', error.message);
+                        toast('حدث خطأ أثناء تسجيل الخروج، حاول مرة أخرى', 'error');
+                    });
             };
 
             // Orders
@@ -494,10 +512,9 @@
                 }).catch(() => container.innerHTML = '<p>تعذر تحميل الطلبات</p>');
             };
 
-            // Order submission with updated service list and hidden prices
             const submitOrder = async () => {
                 const [serviceId, pricePer1k] = $('orderService').value.split('|');
-                const serviceName = $('orderService').selectedOptions[0].text; // full text
+                const serviceName = $('orderService').selectedOptions[0].text;
                 const link = $('orderLink').value.trim();
                 const qty = parseInt($('orderQty').value,10);
                 if(!link || qty < 100) return showError('orderError', 'تأكد من الرابط والكمية (أدنى 100)');
@@ -521,7 +538,6 @@
                     showError('orderError', 'فشل: ' + e.message);
                 }
             };
-
             const updateCost = () => {
                 const [_, price] = $('orderService').value.split('|');
                 const qty = parseInt($('orderQty').value,10) || 0;
@@ -581,13 +597,13 @@
                 } catch(e) { showError('editProfileError', 'فشل: ' + e.message); }
             };
 
-            // Settings: open Telegram channel securely
+            // Settings: open Telegram channel
             const openSettingsChannel = () => window.open('https://t.me/I_17g', '_blank');
 
             // Event Listeners
             $('btnLogin').addEventListener('click', handleLogin);
             $('btnRegister').addEventListener('click', handleRegister);
-            $('btnLogout').addEventListener('click', logout);
+            // Logout buttons now use onclick="handleLogout()" directly in HTML
             $('btnSubmitOrder').addEventListener('click', submitOrder);
             $('btnAdminPanel').addEventListener('click', ()=> navigateTo('admin'));
             $('btnBackToProfile').addEventListener('click', ()=> navigateTo('profile'));
@@ -615,18 +631,25 @@
                 });
             });
 
-            // Auth State
-            auth.onAuthStateChanged(async user => {
-                if(user) {
+            // Auth State (Session Guard)
+            auth.onAuthStateChanged(user => {
+                if (user) {
                     currentUser = user;
-                    await loadUserData();
+                    loadUserData();
                     setupBalanceListener();
-                    if(!maintenanceModeActive || isAdmin) navigateTo('home'); else showView('maintenance');
+                    if(!maintenanceModeActive || isAdmin) navigateTo('home');
+                    else showView('maintenance');
                 } else {
-                    currentUser = null; isAdmin = false; userData = null;
+                    // User signed out – ensure UI resets
+                    currentUser = null;
+                    isAdmin = false;
+                    userData = null;
                     if(unsubBalance) unsubBalance();
                     hideBottomNav();
-                    maintenanceModeActive ? showView('maintenance') : showView('login');
+                    hideAllViews();
+                    if(maintenanceModeActive) showView('maintenance');
+                    else showView('login');
+                    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
                 }
             });
 
@@ -638,4 +661,4 @@
         })();
     </script>
 </body>
-</html>
+                    </html>
