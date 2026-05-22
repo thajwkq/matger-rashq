@@ -200,7 +200,8 @@
         <div class="wallet-card">
             <div class="wallet-label"><i class="fas fa-wallet"></i> رصيدك الحالي</div>
             <div class="wallet-balance" id="walletBalance">0 <span>د.ع</span></div>
-            <a href="https://t.me/th2f6" class="btn-charge">شحن الرصيد ↗</a>
+            <!-- زر شحن الرصيد - يفتح محادثة مع حساب الدعم على تيليجرام -->
+            <a href="https://t.me/l_17g" target="_blank" class="btn-charge">شحن الرصيد ↗</a>
         </div>
         <div class="attention-banner">⚠️ تنبيه هام جداً: تأكد من جعل حسابك عاماً (Public) قبل طلب أي عملية رشق لتجنب فشل الطلب وضياع الرصيد!</div>
         <div class="frosted-card" style="margin-bottom:16px;">
@@ -327,6 +328,11 @@
 
     <script>
         (() => {
+            // ===== إعدادات التيليجرام - قم بتغيير المعرفات هنا حسب رغبتك =====
+            const TELEGRAM_SUPPORT_USERNAME = "th2f6";     // حسابك الشخصي (لفتح محادثة الشحن)
+            const TELEGRAM_OFFICIAL_CHANNEL = "I_17g";     // قناة التطبيق الرسمية
+            // =================================================================
+
             const firebaseConfig = {
                 apiKey: "AIzaSyB9MrraeowEexYMnrrkHXmVbScoeD7O9AA",
                 authDomain: "mtger-9637a.firebaseapp.com",
@@ -675,7 +681,10 @@
                 } catch(e) { showError('editProfileError', 'فشل: ' + e.message); }
             };
 
-            const openSettingsChannel = () => window.open('https://t.me/I_17g', '_blank');
+            // فتح قناة التطبيق الرسمية على تيليجرام
+            const openSettingsChannel = () => {
+                window.open(`https://t.me/${TELEGRAM_OFFICIAL_CHANNEL}`, '_blank');
+            };
 
             $('btnLogin').addEventListener('click', handleLogin);
             $('btnRegister').addEventListener('click', handleRegister);
@@ -738,6 +747,11 @@
 
             setupMaintenanceListener();
             updateCost();
+
+            // تعديل رابط زر الشحن لاستخدام المتغير (تم تعديله يدوياً في الـ HTML)
+            // لكن أيضاً نضمن تعديله عبر DOM للتأكد
+            const chargeBtn = document.querySelector('.btn-charge');
+            if(chargeBtn) chargeBtn.href = `https://t.me/${TELEGRAM_SUPPORT_USERNAME}`;
         })();
     </script>
 </body>
