@@ -2,16 +2,14 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>MTGER - منصة الرشق الذكية</title>
 
     <!-- Firebase SDKs (Compat v9) -->
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js">
-    </script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js">
-    </script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js">
-    </script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-storage-compat.js"></script>
 
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -63,24 +61,14 @@
             padding-bottom: calc(var(--bottom-nav-height) + 20px);
             background-image:
                 radial-gradient(ellipse at 20% 15%, rgba(138, 43, 226, 0.08) 0%, transparent 55%),
-                radial-gradient(ellipse at 80% 75%, rgba(218, 68, 187, 0.06) 0%, transparent 55%),
-                radial-gradient(ellipse at 50% 50%, rgba(11, 14, 20, 1) 0%, rgba(11, 14, 20, 1) 100%);
+                radial-gradient(ellipse at 80% 75%, rgba(218, 68, 187, 0.06) 0%, transparent 55%);
             background-attachment: fixed;
         }
 
-        /* Scrollbar */
-        ::-webkit-scrollbar {
-            width: 4px;
-        }
-        ::-webkit-scrollbar-track {
-            background: var(--bg-deep);
-        }
-        ::-webkit-scrollbar-thumb {
-            background: var(--purple);
-            border-radius: 10px;
-        }
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-track { background: var(--bg-deep); }
+        ::-webkit-scrollbar-thumb { background: var(--purple); border-radius: 10px; }
 
-        /* View container */
         .view {
             display: none;
             width: 100%;
@@ -89,77 +77,31 @@
             padding: 16px;
             animation: fadeSlideIn 0.4s ease;
         }
-        .view.active {
-            display: block;
-        }
+        .view.active { display: block; }
 
         @keyframes fadeSlideIn {
-            from {
-                opacity: 0;
-                transform: translateY(16px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-        @keyframes pulseGlow {
-            0%,
-            100% {
-                box-shadow: 0 0 8px rgba(138, 43, 226, 0.4), 0 0 20px rgba(138, 43, 226, 0.15);
-            }
-            50% {
-                box-shadow: 0 0 18px rgba(138, 43, 226, 0.7), 0 0 40px rgba(218, 68, 187, 0.3);
-            }
+            from { opacity: 0; transform: translateY(16px); }
+            to { opacity: 1; transform: translateY(0); }
         }
         @keyframes pulseWrench {
-            0%,
-            100% {
-                transform: scale(1);
-                opacity: 0.85;
-                text-shadow: 0 0 20px rgba(138, 43, 226, 0.7);
-            }
-            50% {
-                transform: scale(1.12);
-                opacity: 1;
-                text-shadow: 0 0 40px rgba(138, 43, 226, 1), 0 0 70px rgba(218, 68, 187, 0.6);
-            }
-        }
-        @keyframes spinSlow {
-            from {
-                transform: rotate(0deg);
-            }
-            to {
-                transform: rotate(360deg);
-            }
+            0%, 100% { transform: scale(1); opacity: 0.85; text-shadow: 0 0 20px rgba(138, 43, 226, 0.7); }
+            50% { transform: scale(1.12); opacity: 1; text-shadow: 0 0 40px rgba(138, 43, 226, 1), 0 0 70px rgba(218, 68, 187, 0.6); }
         }
         @keyframes pulseBanner {
-            0%,
-            100% {
-                border-color: rgba(243, 156, 18, 0.5);
-                box-shadow: 0 0 10px rgba(243, 156, 18, 0.2);
-            }
-            50% {
-                border-color: rgba(243, 156, 18, 0.9);
-                box-shadow: 0 0 24px rgba(243, 156, 18, 0.45);
-            }
+            0%, 100% { border-color: rgba(243, 156, 18, 0.5); box-shadow: 0 0 10px rgba(243, 156, 18, 0.2); }
+            50% { border-color: rgba(243, 156, 18, 0.9); box-shadow: 0 0 24px rgba(243, 156, 18, 0.45); }
         }
         @keyframes shimmer {
-            0% {
-                background-position: -200px 0;
-            }
-            100% {
-                background-position: 200px 0;
-            }
+            0% { background-position: -200px 0; }
+            100% { background-position: 200px 0; }
         }
 
-        /* ========== MAINTENANCE PAGE ========== */
+        /* Maintenance */
         .maintenance-wrapper {
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
-            width: 100%;
             padding: 20px;
         }
         .maintenance-card {
@@ -175,21 +117,8 @@
         .maintenance-card .wrench-icon {
             font-size: 64px;
             color: var(--purple);
-            display: inline-block;
             animation: pulseWrench 2s ease-in-out infinite;
             margin-bottom: 20px;
-        }
-        .maintenance-card h2 {
-            font-size: 1.5rem;
-            color: var(--text-primary);
-            margin-bottom: 12px;
-            font-weight: 700;
-        }
-        .maintenance-card p {
-            color: var(--text-secondary);
-            font-size: 0.95rem;
-            line-height: 1.7;
-            margin-bottom: 24px;
         }
         .btn-reload {
             background: linear-gradient(135deg, var(--purple), var(--pink));
@@ -197,38 +126,17 @@
             border: none;
             padding: 13px 32px;
             border-radius: 30px;
-            font-size: 1rem;
             font-weight: 600;
             cursor: pointer;
-            transition: var(--transition-smooth);
             box-shadow: var(--shadow-purple);
             font-family: var(--font-main);
         }
         .btn-reload:hover {
             transform: translateY(-2px);
-            box-shadow: 0 0 30px rgba(138, 43, 226, 0.55), 0 0 50px rgba(218, 68, 187, 0.3);
-        }
-        .btn-reload:active {
-            transform: scale(0.96);
-        }
-        .admin-hidden-link {
-            display: block;
-            margin-top: 20px;
-            color: var(--text-muted);
-            font-size: 0.75rem;
-            cursor: pointer;
-            text-decoration: none;
-            transition: var(--transition-fast);
-            border: none;
-            background: none;
-            font-family: var(--font-main);
-        }
-        .admin-hidden-link:hover {
-            color: var(--purple-glow);
-            text-decoration: underline;
+            box-shadow: 0 0 30px rgba(138, 43, 226, 0.55);
         }
 
-        /* ========== FROSTED GLASS CARDS ========== */
+        /* Cards & Forms */
         .frosted-card {
             background: rgba(19, 25, 36, 0.75);
             backdrop-filter: blur(16px);
@@ -238,11 +146,7 @@
             padding: 28px 22px;
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
         }
-
-        /* ========== FORM ELEMENTS ========== */
-        .form-group {
-            margin-bottom: 16px;
-        }
+        .form-group { margin-bottom: 16px; }
         .form-group label {
             display: block;
             margin-bottom: 6px;
@@ -257,120 +161,52 @@
             border: 1.5px solid var(--border-subtle);
             border-radius: var(--radius-sm);
             color: var(--text-primary);
-            font-size: 0.95rem;
             font-family: var(--font-main);
-            transition: var(--transition-smooth);
             outline: none;
+            transition: var(--transition-smooth);
         }
         .form-input:focus {
             border-color: var(--purple);
             box-shadow: 0 0 14px rgba(138, 43, 226, 0.3);
-            background: rgba(11, 14, 20, 0.9);
         }
-        .form-input::placeholder {
-            color: var(--text-muted);
-            opacity: 0.7;
-        }
-        select.form-input {
-            appearance: none;
-            -webkit-appearance: none;
-            cursor: pointer;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%238a2be2' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
-            background-repeat: no-repeat;
-            background-position: left 14px center;
-            padding-left: 36px;
-        }
-
         .btn-primary {
-            display: inline-block;
             width: 100%;
             padding: 14px 20px;
             background: linear-gradient(135deg, var(--purple), var(--pink));
             color: #fff;
             border: none;
             border-radius: 30px;
-            font-size: 1rem;
             font-weight: 700;
             cursor: pointer;
-            transition: var(--transition-smooth);
             box-shadow: var(--shadow-purple);
             font-family: var(--font-main);
-            text-align: center;
-            letter-spacing: 0.3px;
+            transition: var(--transition-smooth);
         }
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 0 28px rgba(138, 43, 226, 0.55), 0 0 48px rgba(218, 68, 187, 0.25);
-        }
-        .btn-primary:active {
-            transform: scale(0.96);
-        }
-        .btn-primary:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-            transform: none;
-            box-shadow: none;
-        }
+        .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
         .btn-outline {
-            display: inline-block;
             width: 100%;
             padding: 13px 20px;
             background: transparent;
             color: var(--purple-glow);
             border: 2px solid var(--purple);
             border-radius: 30px;
-            font-size: 0.95rem;
             font-weight: 600;
             cursor: pointer;
-            transition: var(--transition-smooth);
             font-family: var(--font-main);
-            text-align: center;
         }
-        .btn-outline:hover {
-            background: rgba(138, 43, 226, 0.1);
-            box-shadow: 0 0 18px rgba(138, 43, 226, 0.3);
-        }
-        .btn-sm {
-            padding: 9px 18px;
-            font-size: 0.85rem;
-            border-radius: 22px;
-            width: auto;
-            display: inline-block;
-        }
+        .btn-sm { padding: 9px 18px; font-size: 0.85rem; border-radius: 22px; width: auto; }
 
-        /* ========== ERROR / SUCCESS BLOCKS ========== */
-        .error-block {
-            background: rgba(231, 76, 60, 0.15);
-            border: 1px solid rgba(231, 76, 60, 0.5);
-            border-radius: var(--radius-sm);
+        .error-block, .success-block {
             padding: 12px 16px;
-            color: #f8716b;
-            font-size: 0.88rem;
+            border-radius: var(--radius-sm);
             margin-top: 10px;
             display: none;
             text-align: center;
         }
-        .error-block.visible {
-            display: block;
-            animation: fadeSlideIn 0.3s ease;
-        }
-        .success-block {
-            background: rgba(46, 204, 113, 0.15);
-            border: 1px solid rgba(46, 204, 113, 0.5);
-            border-radius: var(--radius-sm);
-            padding: 12px 16px;
-            color: #5deca0;
-            font-size: 0.88rem;
-            margin-top: 10px;
-            display: none;
-            text-align: center;
-        }
-        .success-block.visible {
-            display: block;
-            animation: fadeSlideIn 0.3s ease;
-        }
+        .error-block { background: rgba(231, 76, 60, 0.15); border: 1px solid rgba(231, 76, 60, 0.5); color: #f8716b; }
+        .success-block { background: rgba(46, 204, 113, 0.15); border: 1px solid rgba(46, 204, 113, 0.5); color: #5deca0; }
+        .visible { display: block; animation: fadeSlideIn 0.3s ease; }
 
-        /* ========== WALLET CARD ========== */
         .wallet-card {
             background: linear-gradient(145deg, #1a1030, #131924);
             border: 1.5px solid var(--border-glow);
@@ -381,58 +217,18 @@
             overflow: hidden;
             box-shadow: var(--shadow-purple);
         }
-        .wallet-card::before {
-            content: '';
-            position: absolute;
-            top: -40px;
-            right: -40px;
-            width: 100px;
-            height: 100px;
-            background: rgba(138, 43, 226, 0.2);
-            border-radius: 50%;
-            filter: blur(40px);
-            pointer-events: none;
-        }
-        .wallet-balance {
-            font-size: 2rem;
-            font-weight: 800;
-            color: #2ecc71;
-            letter-spacing: 0.5px;
-        }
-        .wallet-balance span {
-            font-size: 1rem;
-            font-weight: 500;
-            color: var(--text-secondary);
-            margin-right: 4px;
-        }
-        .wallet-label {
-            font-size: 0.82rem;
-            color: var(--text-muted);
-            margin-bottom: 4px;
-        }
+        .wallet-balance { font-size: 2rem; font-weight: 800; color: #2ecc71; }
         .btn-charge {
             display: inline-block;
             margin-top: 12px;
             padding: 10px 22px;
             background: var(--success);
             color: #000;
-            border: none;
             border-radius: 25px;
             font-weight: 700;
-            cursor: pointer;
-            font-family: var(--font-main);
-            font-size: 0.9rem;
-            transition: var(--transition-smooth);
             text-decoration: none;
-            text-align: center;
-        }
-        .btn-charge:hover {
-            background: #3be082;
-            box-shadow: 0 0 20px rgba(46, 204, 113, 0.5);
-            transform: translateY(-2px);
         }
 
-        /* ========== ATTENTION BANNER ========== */
         .attention-banner {
             background: rgba(243, 156, 18, 0.1);
             border: 1.5px solid rgba(243, 156, 18, 0.5);
@@ -442,12 +238,9 @@
             animation: pulseBanner 2s ease-in-out infinite;
             font-weight: 600;
             color: #f7c464;
-            font-size: 0.9rem;
             text-align: center;
-            line-height: 1.5;
         }
 
-        /* ========== COST CALCULATOR ========== */
         .cost-box {
             background: rgba(138, 43, 226, 0.1);
             border: 1px dashed var(--purple);
@@ -457,11 +250,8 @@
             text-align: center;
             font-weight: 700;
             color: var(--purple-glow);
-            font-size: 1.1rem;
-            transition: var(--transition-smooth);
         }
 
-        /* ========== PLATFORMS GRID ========== */
         .platforms-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -475,69 +265,15 @@
             padding: 18px 10px;
             text-align: center;
             transition: var(--transition-smooth);
-            cursor: pointer;
-            position: relative;
-            overflow: hidden;
         }
-        .platform-card:hover {
-            border-color: var(--purple);
-            box-shadow: 0 0 16px rgba(138, 43, 226, 0.25);
-            transform: translateY(-3px);
-        }
-        .platform-card.disabled {
-            opacity: 0.45;
-            cursor: not-allowed;
-            filter: grayscale(40%);
-        }
-        .platform-card.disabled:hover {
-            transform: none;
-            border-color: var(--border-subtle);
-            box-shadow: none;
-        }
-        .platform-card i {
-            font-size: 2rem;
-            color: var(--purple-glow);
-            margin-bottom: 8px;
-            display: block;
-        }
-        .platform-card .platform-name {
-            font-weight: 600;
-            font-size: 0.85rem;
-            color: var(--text-primary);
-        }
-        .platform-card .platform-badge {
-            font-size: 0.7rem;
-            color: var(--text-muted);
-            background: rgba(255, 255, 255, 0.05);
-            padding: 3px 8px;
-            border-radius: 12px;
-            display: inline-block;
-            margin-top: 4px;
-        }
+        .platform-card.disabled { opacity: 0.45; filter: grayscale(40%); }
 
-        /* ========== ORDERS LIST ========== */
         .order-box {
             background: var(--bg-card);
             border: 1px solid var(--border-subtle);
             border-radius: var(--radius-md);
             padding: 16px;
             margin-bottom: 12px;
-            transition: var(--transition-fast);
-        }
-        .order-box:hover {
-            border-color: var(--border-glow);
-        }
-        .order-row {
-            display: flex;
-            justify-content: space-between;
-            flex-wrap: wrap;
-            gap: 6px;
-            font-size: 0.85rem;
-            margin-bottom: 4px;
-            color: var(--text-secondary);
-        }
-        .order-row strong {
-            color: var(--text-primary);
         }
         .status-badge {
             display: inline-block;
@@ -546,24 +282,11 @@
             font-size: 0.78rem;
             font-weight: 600;
         }
-        .status-progress {
-            background: rgba(52, 152, 219, 0.2);
-            color: #5dade2;
-        }
-        .status-review {
-            background: rgba(243, 156, 18, 0.2);
-            color: #f7c464;
-        }
-        .status-done {
-            background: rgba(46, 204, 113, 0.2);
-            color: #5deca0;
-        }
-        .status-failed {
-            background: rgba(231, 76, 60, 0.2);
-            color: #f8716b;
-        }
+        .status-progress { background: rgba(52, 152, 219, 0.2); color: #5dade2; }
+        .status-review { background: rgba(243, 156, 18, 0.2); color: #f7c464; }
+        .status-done { background: rgba(46, 204, 113, 0.2); color: #5deca0; }
+        .status-failed { background: rgba(231, 76, 60, 0.2); color: #f8716b; }
 
-        /* ========== PROFILE ========== */
         .profile-avatar {
             width: 80px;
             height: 80px;
@@ -576,22 +299,14 @@
             font-size: 2.5rem;
             color: #fff;
             box-shadow: var(--shadow-purple);
+            overflow: hidden;
         }
-        .profile-info {
-            text-align: center;
-            margin-bottom: 20px;
-        }
-        .profile-info h3 {
-            font-size: 1.3rem;
-            color: var(--text-primary);
-        }
-        .profile-info .username-display {
-            color: var(--purple-glow);
-            font-weight: 600;
-            font-size: 0.95rem;
+        .profile-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
         }
 
-        /* ========== ADMIN PANEL ========== */
         .admin-section {
             background: rgba(218, 68, 187, 0.08);
             border: 1px dashed var(--pink);
@@ -599,29 +314,16 @@
             padding: 18px;
             margin-bottom: 16px;
         }
-        .admin-section h4 {
-            color: var(--pink-glow);
-            margin-bottom: 10px;
-            font-size: 1rem;
-        }
         .toggle-switch {
             position: relative;
             display: inline-block;
             width: 56px;
             height: 30px;
-            cursor: pointer;
         }
-        .toggle-switch input {
-            opacity: 0;
-            width: 0;
-            height: 0;
-        }
+        .toggle-switch input { opacity: 0; width: 0; height: 0; }
         .toggle-slider {
             position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
+            top: 0; left: 0; right: 0; bottom: 0;
             background: #3a3d48;
             border-radius: 30px;
             transition: var(--transition-smooth);
@@ -629,29 +331,20 @@
         .toggle-slider::before {
             content: '';
             position: absolute;
-            height: 24px;
-            width: 24px;
-            left: 3px;
-            bottom: 3px;
+            height: 24px; width: 24px;
+            left: 3px; bottom: 3px;
             background: #fff;
             border-radius: 50%;
             transition: var(--transition-smooth);
         }
-        input:checked+.toggle-slider {
-            background: var(--purple);
-            box-shadow: 0 0 14px rgba(138, 43, 226, 0.5);
-        }
-        input:checked+.toggle-slider::before {
-            transform: translateX(26px);
-        }
+        input:checked + .toggle-slider { background: var(--purple); }
+        input:checked + .toggle-slider::before { transform: translateX(26px); }
 
-        /* ========== BOTTOM NAV ========== */
+        /* Bottom Nav */
         .bottom-nav {
             display: none;
             position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
+            bottom: 0; left: 0; right: 0;
             z-index: 1000;
             background: rgba(19, 25, 36, 0.82);
             backdrop-filter: blur(20px);
@@ -665,49 +358,53 @@
             justify-content: space-around;
             align-items: center;
         }
-        .bottom-nav .nav-item {
+        .nav-item {
             display: flex;
             flex-direction: column;
             align-items: center;
             gap: 4px;
             cursor: pointer;
             padding: 6px 14px;
-            border-radius: var(--radius-md);
-            transition: var(--transition-smooth);
-            color: var(--text-muted);
-            font-size: 0.72rem;
-            font-weight: 500;
             border: none;
             background: none;
+            color: var(--text-muted);
             font-family: var(--font-main);
+            font-size: 0.72rem;
         }
-        .bottom-nav .nav-item i {
-            font-size: 1.3rem;
-            transition: var(--transition-smooth);
-        }
-        .bottom-nav .nav-item.active {
-            color: var(--purple-glow);
-        }
-        .bottom-nav .nav-item.active i {
-            text-shadow: 0 0 14px rgba(138, 43, 226, 0.7);
-        }
-        .bottom-nav .nav-item:hover {
-            color: var(--text-primary);
-        }
+        .nav-item.active { color: var(--purple-glow); }
 
-        /* ========== TOAST ========== */
+        /* Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(6px);
+            z-index: 2000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            animation: fadeIn 0.3s ease;
+        }
+        .modal-content {
+            background: var(--bg-card);
+            border: 1px solid var(--border-glow);
+            border-radius: var(--radius-lg);
+            padding: 24px;
+            width: 90%;
+            max-width: 400px;
+            box-shadow: var(--shadow-purple);
+        }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
         .toast-container {
             position: fixed;
             top: 20px;
             left: 50%;
             transform: translateX(-50%);
-            z-index: 2000;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            pointer-events: none;
+            z-index: 3000;
             width: 90%;
             max-width: 450px;
+            pointer-events: none;
         }
         .toast {
             padding: 13px 18px;
@@ -718,68 +415,25 @@
             animation: fadeSlideIn 0.4s ease, fadeOut 0.4s ease 2.6s forwards;
             pointer-events: auto;
             box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+            margin-bottom: 8px;
         }
-        .toast-error {
-            background: #e74c3c;
-            color: #fff;
-        }
-        .toast-success {
-            background: #2ecc71;
-            color: #000;
-        }
-        .toast-info {
-            background: var(--purple);
-            color: #fff;
-        }
-        @keyframes fadeOut {
-            to {
-                opacity: 0;
-                transform: translateY(-12px);
-            }
-        }
+        .toast-error { background: #e74c3c; color: #fff; }
+        .toast-success { background: #2ecc71; color: #000; }
+        .toast-info { background: var(--purple); color: #fff; }
+        @keyframes fadeOut { to { opacity: 0; transform: translateY(-12px); } }
 
-        /* ========== RESPONSIVE ========== */
         @media (max-width: 480px) {
-            .view {
-                padding: 10px;
-            }
-            .frosted-card {
-                padding: 20px 14px;
-            }
-            .platforms-grid {
-                grid-template-columns: repeat(2, 1fr);
-                gap: 8px;
-            }
-            .wallet-balance {
-                font-size: 1.6rem;
-            }
-            .maintenance-card {
-                padding: 28px 16px;
-            }
-            .maintenance-card .wrench-icon {
-                font-size: 48px;
-            }
-            .bottom-nav .nav-item {
-                padding: 4px 10px;
-                font-size: 0.68rem;
-            }
-            .bottom-nav .nav-item i {
-                font-size: 1.1rem;
-            }
-        }
-        @media (min-width: 768px) {
-            .platforms-grid {
-                grid-template-columns: repeat(3, 1fr);
-            }
+            .platforms-grid { grid-template-columns: repeat(2, 1fr); }
+            .wallet-balance { font-size: 1.6rem; }
         }
     </style>
 </head>
 <body>
 
-    <!-- ==================== TOAST CONTAINER ==================== -->
+    <!-- Toast Container -->
     <div class="toast-container" id="toastContainer"></div>
 
-    <!-- ==================== VIEW: MAINTENANCE ==================== -->
+    <!-- Maintenance View -->
     <div class="view" id="viewMaintenance">
         <div class="maintenance-wrapper">
             <div class="maintenance-card">
@@ -789,24 +443,21 @@
                 <button class="btn-reload" onclick="window.location.reload()">
                     <i class="fas fa-sync-alt"></i> تحديث الصفحة
                 </button>
-                <button class="admin-hidden-link" id="btnAdminAccess" title="دخول المشرفين">
+                <button class="admin-hidden-link" id="btnAdminAccess" style="margin-top:16px; background:none; border:none; color:var(--text-muted); cursor:pointer;">
                     دخول المشرفين
                 </button>
             </div>
         </div>
     </div>
 
-    <!-- ==================== VIEW: LOGIN ==================== -->
+    <!-- Login View -->
     <div class="view" id="viewLogin">
-        <div style="text-align:center; padding-top: 30px; margin-bottom: 10px;">
-            <div style="font-size:3rem; color:var(--purple-glow); text-shadow:0 0 30px rgba(138,43,226,0.7);">
-                <i class="fas fa-bolt"></i>
-            </div>
-            <h2 style="font-weight:800; letter-spacing:1px; margin-top:4px;">MTGER</h2>
-            <p style="color:var(--text-muted); font-size:0.85rem;">منصة الرشق الذكية</p>
+        <div style="text-align:center; padding-top: 30px;">
+            <div style="font-size:3rem; color:var(--purple-glow);"><i class="fas fa-bolt"></i></div>
+            <h2>MTGER</h2>
+            <p style="color:var(--text-muted);">منصة الرشق الذكية</p>
         </div>
         <div class="frosted-card" style="max-width:420px; margin:0 auto;">
-            <h3 style="text-align:center; margin-bottom:18px; color:var(--text-primary);">تسجيل الدخول</h3>
             <div class="form-group">
                 <label>البريد الإلكتروني</label>
                 <input type="email" class="form-input" id="loginEmail" placeholder="example@email.com" dir="ltr">
@@ -816,66 +467,39 @@
                 <input type="password" class="form-input" id="loginPassword" placeholder="••••••••" dir="ltr">
             </div>
             <div class="error-block" id="loginError"></div>
-            <button class="btn-primary" id="btnLogin" style="margin-top:12px;">
-                <i class="fas fa-sign-in-alt"></i> دخول
-            </button>
+            <button class="btn-primary" id="btnLogin"><i class="fas fa-sign-in-alt"></i> دخول</button>
             <p style="text-align:center; margin-top:14px; font-size:0.85rem; color:var(--text-muted);">
-                ليس لديك حساب؟ <a href="#" id="linkToRegister" style="color:var(--purple-glow); font-weight:600; text-decoration:none;">إنشاء حساب جديد</a>
+                ليس لديك حساب؟ <a href="#" id="linkToRegister" style="color:var(--purple-glow);">إنشاء حساب جديد</a>
             </p>
         </div>
     </div>
 
-    <!-- ==================== VIEW: REGISTER ==================== -->
+    <!-- Register View -->
     <div class="view" id="viewRegister">
-        <div style="text-align:center; padding-top: 20px; margin-bottom: 8px;">
-            <h2 style="font-weight:800; color:var(--purple-glow);">إنشاء حساب</h2>
-        </div>
+        <div style="text-align:center; padding-top:20px;"><h2 style="color:var(--purple-glow);">إنشاء حساب</h2></div>
         <div class="frosted-card" style="max-width:420px; margin:0 auto;">
-            <div class="form-group">
-                <label>الاسم الكامل</label>
-                <input type="text" class="form-input" id="regFullName" placeholder="الاسم الكامل">
-            </div>
-            <div class="form-group">
-                <label>اسم المستخدم</label>
-                <input type="text" class="form-input" id="regUsername" placeholder="username (بدون @)" dir="ltr">
-            </div>
-            <div class="form-group">
-                <label>البريد الإلكتروني</label>
-                <input type="email" class="form-input" id="regEmail" placeholder="example@email.com" dir="ltr">
-            </div>
-            <div class="form-group">
-                <label>كلمة المرور</label>
-                <input type="password" class="form-input" id="regPassword" placeholder="••••••••" dir="ltr">
-            </div>
+            <div class="form-group"><label>الاسم الكامل</label><input type="text" class="form-input" id="regFullName" placeholder="الاسم الكامل"></div>
+            <div class="form-group"><label>اسم المستخدم</label><input type="text" class="form-input" id="regUsername" placeholder="username (بدون @)" dir="ltr"></div>
+            <div class="form-group"><label>البريد الإلكتروني</label><input type="email" class="form-input" id="regEmail" placeholder="example@email.com" dir="ltr"></div>
+            <div class="form-group"><label>كلمة المرور</label><input type="password" class="form-input" id="regPassword" placeholder="••••••••" dir="ltr"></div>
             <div class="error-block" id="registerError"></div>
-            <button class="btn-primary" id="btnRegister">
-                <i class="fas fa-user-plus"></i> إنشاء الحساب
-            </button>
+            <button class="btn-primary" id="btnRegister"><i class="fas fa-user-plus"></i> إنشاء الحساب</button>
             <p style="text-align:center; margin-top:14px; font-size:0.85rem; color:var(--text-muted);">
-                لديك حساب بالفعل؟ <a href="#" id="linkToLogin" style="color:var(--purple-glow); font-weight:600; text-decoration:none;">تسجيل الدخول</a>
+                لديك حساب بالفعل؟ <a href="#" id="linkToLogin" style="color:var(--purple-glow);">تسجيل الدخول</a>
             </p>
         </div>
     </div>
 
-    <!-- ==================== VIEW: HOME ==================== -->
+    <!-- Home View -->
     <div class="view" id="viewHome">
-        <!-- Wallet Card -->
-        <div class="wallet-card" id="walletCard">
+        <div class="wallet-card">
             <div class="wallet-label"><i class="fas fa-wallet"></i> رصيدك الحالي</div>
             <div class="wallet-balance" id="walletBalance">0 <span>د.ع</span></div>
-            <a href="https://t.me/th2f6" target="_blank" rel="noopener noreferrer" class="btn-charge">
-                شحن الرصيد ↗ <i class="fas fa-external-link-alt"></i>
-            </a>
+            <a href="https://t.me/th2f6" target="_blank" rel="noopener noreferrer" class="btn-charge">شحن الرصيد ↗</a>
         </div>
-
-        <!-- Attention Banner -->
-        <div class="attention-banner">
-            ⚠️ تنبيه هام جداً: تأكد من جعل حسابك عاماً (Public) قبل طلب أي عملية رشق لتجنب فشل الطلب وضياع الرصيد!
-        </div>
-
-        <!-- Order Form -->
+        <div class="attention-banner">⚠️ تنبيه هام جداً: تأكد من جعل حسابك عاماً (Public) قبل طلب أي عملية رشق لتجنب فشل الطلب وضياع الرصيد!</div>
         <div class="frosted-card" style="margin-bottom:16px;">
-            <h4 style="margin-bottom:14px; color:var(--text-primary);"><i class="fas fa-shopping-cart"></i> طلب رشق جديد</h4>
+            <h4 style="margin-bottom:14px;"><i class="fas fa-shopping-cart"></i> طلب رشق جديد</h4>
             <div class="form-group">
                 <label>الخدمة</label>
                 <select class="form-input" id="orderService">
@@ -885,78 +509,44 @@
                     <option value="300|1800|اعضاء تيليجرام">✈️ تيليجرام - اعضاء (1,800 د.ع لكل 1k)</option>
                 </select>
             </div>
-            <div class="form-group">
-                <label>الرابط / لينك الحساب</label>
-                <input type="text" class="form-input" id="orderLink" placeholder="https://..." dir="ltr">
-            </div>
-            <div class="form-group">
-                <label>الكمية (الحد الأدنى: 100)</label>
-                <input type="number" class="form-input" id="orderQty" placeholder="100" min="100" value="100" dir="ltr">
-            </div>
-            <div class="cost-box" id="costBox">
-                التكلفة التقديرية: <span id="costValue">0</span> د.ع
-            </div>
+            <div class="form-group"><label>الرابط / لينك الحساب</label><input type="text" class="form-input" id="orderLink" placeholder="https://..." dir="ltr"></div>
+            <div class="form-group"><label>الكمية (الحد الأدنى: 100)</label><input type="number" class="form-input" id="orderQty" placeholder="100" min="100" value="100"></div>
+            <div class="cost-box">التكلفة التقديرية: <span id="costValue">0</span> د.ع</div>
             <div class="error-block" id="orderError"></div>
             <div class="success-block" id="orderSuccess"></div>
-            <button class="btn-primary" id="btnSubmitOrder" style="margin-top:12px;">
-                <i class="fas fa-paper-plane"></i> إرسال الطلب
-            </button>
+            <button class="btn-primary" id="btnSubmitOrder" style="margin-top:12px;"><i class="fas fa-paper-plane"></i> إرسال الطلب</button>
         </div>
-
-        <!-- Platforms Grid -->
-        <h4 style="margin-bottom:8px; color:var(--text-primary);"><i class="fas fa-th-large"></i> المنصات المتاحة</h4>
+        <h4 style="margin-bottom:8px;"><i class="fas fa-th-large"></i> المنصات المتاحة</h4>
         <div class="platforms-grid">
-            <div class="platform-card">
-                <i class="fab fa-instagram"></i>
-                <div class="platform-name">انستغرام</div>
-                <div class="platform-badge">متاح</div>
-            </div>
-            <div class="platform-card">
-                <i class="fab fa-tiktok"></i>
-                <div class="platform-name">تيك توك</div>
-                <div class="platform-badge">متاح</div>
-            </div>
-            <div class="platform-card">
-                <i class="fab fa-telegram-plane"></i>
-                <div class="platform-name">تيليجرام</div>
-                <div class="platform-badge">متاح</div>
-            </div>
-            <div class="platform-card disabled">
-                <i class="fab fa-facebook"></i>
-                <div class="platform-name">فيسبوك</div>
-                <div class="platform-badge">قريباً...</div>
-            </div>
-            <div class="platform-card disabled">
-                <i class="fab fa-youtube"></i>
-                <div class="platform-name">يوتيوب</div>
-                <div class="platform-badge">قريباً...</div>
-            </div>
-            <div class="platform-card disabled">
-                <i class="fab fa-x-twitter"></i>
-                <div class="platform-name">X</div>
-                <div class="platform-badge">قريباً...</div>
-            </div>
+            <div class="platform-card"><i class="fab fa-instagram"></i><div>انستغرام</div><span class="platform-badge">متاح</span></div>
+            <div class="platform-card"><i class="fab fa-tiktok"></i><div>تيك توك</div><span class="platform-badge">متاح</span></div>
+            <div class="platform-card"><i class="fab fa-telegram-plane"></i><div>تيليجرام</div><span class="platform-badge">متاح</span></div>
+            <div class="platform-card disabled"><i class="fab fa-facebook"></i><div>فيسبوك</div><span>قريباً...</span></div>
+            <div class="platform-card disabled"><i class="fab fa-youtube"></i><div>يوتيوب</div><span>قريباً...</span></div>
+            <div class="platform-card disabled"><i class="fab fa-x-twitter"></i><div>X</div><span>قريباً...</span></div>
         </div>
     </div>
 
-    <!-- ==================== VIEW: ORDERS ==================== -->
+    <!-- Orders View -->
     <div class="view" id="viewOrders">
-        <h3 style="margin-bottom:16px; color:var(--text-primary);"><i class="fas fa-list-alt"></i> أرشيف الطلبات</h3>
-        <div id="ordersContainer">
-            <p style="text-align:center; color:var(--text-muted); padding:40px 0;">لا توجد طلبات حالياً.</p>
-        </div>
+        <h3 style="margin-bottom:16px;"><i class="fas fa-list-alt"></i> أرشيف الطلبات</h3>
+        <div id="ordersContainer"><p style="text-align:center; color:var(--text-muted); padding:40px 0;">لا توجد طلبات حالياً.</p></div>
     </div>
 
-    <!-- ==================== VIEW: PROFILE ==================== -->
+    <!-- Profile View -->
     <div class="view" id="viewProfile">
         <div class="frosted-card" style="text-align:center;">
-            <div class="profile-avatar"><i class="fas fa-user"></i></div>
+            <div class="profile-avatar" id="profileAvatarContainer">
+                <i class="fas fa-user" id="profileAvatarIcon"></i>
+                <img id="profileAvatarImg" style="display:none;" alt="صورتك الشخصية">
+            </div>
             <div class="profile-info">
                 <h3 id="profileFullName">---</h3>
                 <p class="username-display" id="profileUsername">@---</p>
                 <p style="color:var(--text-muted); font-size:0.8rem;" id="profileEmail">---</p>
             </div>
-            <a href="https://t.me/I_17g" target="_blank" rel="noopener noreferrer" class="btn-outline" style="margin-bottom:10px; display:block; text-decoration:none;">
+            <button class="btn-outline" id="btnEditProfile" style="margin-bottom:10px;"><i class="fas fa-edit"></i> تعديل الحساب</button>
+            <a href="https://t.me/I_17g" target="_blank" rel="noopener noreferrer" class="btn-outline" style="margin-bottom:10px; text-decoration:none; display:block;">
                 <i class="fab fa-telegram-plane"></i> قناة التطبيق الرسمية
             </a>
             <button class="btn-outline" id="btnAdminPanel" style="margin-bottom:10px; display:none; border-color:var(--pink); color:var(--pink-glow);">
@@ -968,14 +558,13 @@
         </div>
     </div>
 
-    <!-- ==================== VIEW: ADMIN PANEL ==================== -->
+    <!-- Admin Panel View -->
     <div class="view" id="viewAdmin">
         <h3 style="margin-bottom:16px; color:var(--pink-glow);"><i class="fas fa-crown"></i> لوحة تحكم الإدارة</h3>
         <div class="frosted-card" style="margin-bottom:16px;">
-            <!-- Maintenance Toggle -->
             <div class="admin-section">
                 <h4><i class="fas fa-power-off"></i> وضع الصيانة</h4>
-                <div style="display:flex; align-items:center; gap:14px; flex-wrap:wrap;">
+                <div style="display:flex; align-items:center; gap:14px;">
                     <label class="toggle-switch">
                         <input type="checkbox" id="maintenanceToggle">
                         <span class="toggle-slider"></span>
@@ -983,23 +572,13 @@
                     <span id="maintenanceStatusText" style="font-size:0.9rem; color:var(--text-secondary);">غير مفعل</span>
                 </div>
             </div>
-
-            <!-- Manual Wallet Charging -->
             <div class="admin-section">
                 <h4><i class="fas fa-coins"></i> شحن رصيد يدوي</h4>
-                <div class="form-group">
-                    <label>اسم المستخدم المستهدف</label>
-                    <input type="text" class="form-input" id="adminTargetUsername" placeholder="username (بدون @)" dir="ltr">
-                </div>
-                <div class="form-group">
-                    <label>المبلغ (د.ع)</label>
-                    <input type="number" class="form-input" id="adminChargeAmount" placeholder="المبلغ" min="1" dir="ltr">
-                </div>
+                <div class="form-group"><label>اسم المستخدم المستهدف</label><input type="text" class="form-input" id="adminTargetUsername" placeholder="username (بدون @)" dir="ltr"></div>
+                <div class="form-group"><label>المبلغ (د.ع)</label><input type="number" class="form-input" id="adminChargeAmount" placeholder="المبلغ" min="1"></div>
                 <div class="error-block" id="adminChargeError"></div>
                 <div class="success-block" id="adminChargeSuccess"></div>
-                <button class="btn-primary btn-sm" id="btnAdminCharge" style="background:var(--success); box-shadow:none;">
-                    <i class="fas fa-check"></i> تأكيد الشحن
-                </button>
+                <button class="btn-primary btn-sm" id="btnAdminCharge" style="background:var(--success);"><i class="fas fa-check"></i> تأكيد الشحن</button>
             </div>
         </div>
         <button class="btn-outline" id="btnBackToProfile" style="border-color:var(--text-muted); color:var(--text-muted);">
@@ -1007,26 +586,40 @@
         </button>
     </div>
 
-    <!-- ==================== BOTTOM NAVIGATION ==================== -->
+    <!-- Bottom Navigation -->
     <nav class="bottom-nav" id="bottomNav">
-        <button class="nav-item active" data-nav="home" id="navHome">
-            <i class="fas fa-home"></i>
-            <span>الرئيسية</span>
-        </button>
-        <button class="nav-item" data-nav="orders" id="navOrders">
-            <i class="fas fa-list-alt"></i>
-            <span>طلباتي</span>
-        </button>
-        <button class="nav-item" data-nav="profile" id="navProfile">
-            <i class="fas fa-user-circle"></i>
-            <span>حسابي</span>
-        </button>
+        <button class="nav-item active" data-nav="home"><i class="fas fa-home"></i><span>الرئيسية</span></button>
+        <button class="nav-item" data-nav="orders"><i class="fas fa-list-alt"></i><span>طلباتي</span></button>
+        <button class="nav-item" data-nav="profile"><i class="fas fa-user-circle"></i><span>حسابي</span></button>
     </nav>
 
-    <!-- ==================== SCRIPTS ==================== -->
+    <!-- Edit Profile Modal (Hidden by default) -->
+    <div id="editProfileModal" class="modal-overlay" style="display:none;">
+        <div class="modal-content">
+            <h3 style="color:var(--purple-glow); margin-bottom:16px;">تعديل الملف الشخصي</h3>
+            <div class="form-group">
+                <label>الاسم الكامل</label>
+                <input type="text" class="form-input" id="editFullName">
+            </div>
+            <div class="form-group">
+                <label>اسم المستخدم</label>
+                <input type="text" class="form-input" id="editUsername" dir="ltr">
+            </div>
+            <div class="form-group">
+                <label>الصورة الشخصية</label>
+                <input type="file" class="form-input" id="editAvatar" accept="image/*" style="padding:8px;">
+            </div>
+            <div class="error-block" id="editProfileError"></div>
+            <div style="display:flex; gap:10px; margin-top:16px;">
+                <button class="btn-primary btn-sm" id="btnSaveProfile" style="flex:1;">حفظ التغييرات</button>
+                <button class="btn-outline btn-sm" id="btnCancelEdit" style="flex:1;">إلغاء</button>
+            </div>
+        </div>
+    </div>
+
     <script>
         (function() {
-            // ========== FIREBASE INITIALIZATION ==========
+            // Firebase Config
             const firebaseConfig = {
                 apiKey: "AIzaSyB9MrraeowEexYMnrrkHXmVbScoeD7O9AA",
                 authDomain: "mtger-9637a.firebaseapp.com",
@@ -1037,15 +630,14 @@
                 appId: "1:104286639251:web:14171df5adb31f6fc6a966",
                 measurementId: "G-BK3S8V4Y0J"
             };
-
             firebase.initializeApp(firebaseConfig);
             const auth = firebase.auth();
             const db = firebase.database();
+            const storage = firebase.storage();
 
-            // ========== SMM API CREDENTIALS ==========
             const RASHQ_API_KEY = "bnt_af0b56277a9f7d177797731b4d670c44b16aec11";
 
-            // ========== GLOBAL STATE ==========
+            // State
             let currentUser = null;
             let isAdmin = false;
             let userData = null;
@@ -1053,7 +645,7 @@
             let maintenanceListenerUnsub = null;
             let balanceListenerUnsub = null;
 
-            // ========== DOM REFERENCES ==========
+            // DOM Elements
             const views = {
                 maintenance: document.getElementById('viewMaintenance'),
                 login: document.getElementById('viewLogin'),
@@ -1065,773 +657,377 @@
             };
             const bottomNav = document.getElementById('bottomNav');
             const toastContainer = document.getElementById('toastContainer');
-            const btnAdminAccess = document.getElementById('btnAdminAccess');
-            const navItems = document.querySelectorAll('.bottom-nav .nav-item');
 
-            // ========== UTILITY FUNCTIONS ==========
-            function showToast(message, type = 'info') {
+            // Helpers
+            function showToast(msg, type='info') {
                 const toast = document.createElement('div');
                 toast.className = `toast toast-${type}`;
-                toast.textContent = message;
+                toast.textContent = msg;
                 toastContainer.appendChild(toast);
-                setTimeout(() => {
-                    if (toast.parentNode) toast.parentNode.removeChild(toast);
-                }, 3200);
+                setTimeout(() => { if(toast.parentNode) toast.remove(); }, 3200);
+            }
+            function showError(id, msg) {
+                const el = document.getElementById(id);
+                if(el) { el.textContent = msg; el.classList.add('visible'); setTimeout(() => el.classList.remove('visible'), 5000); }
+            }
+            function showSuccess(id, msg) {
+                const el = document.getElementById(id);
+                if(el) { el.textContent = msg; el.classList.add('visible'); setTimeout(() => el.classList.remove('visible'), 5000); }
             }
 
-            function showError(blockId, message) {
-                const block = document.getElementById(blockId);
-                if (block) {
-                    block.textContent = message;
-                    block.classList.add('visible');
-                    setTimeout(() => block.classList.remove('visible'), 5000);
-                }
-            }
-
-            function showSuccess(blockId, message) {
-                const block = document.getElementById(blockId);
-                if (block) {
-                    block.textContent = message;
-                    block.classList.add('visible');
-                    setTimeout(() => block.classList.remove('visible'), 5000);
-                }
-            }
-
-            function hideAllViews() {
-                Object.values(views).forEach(v => v.classList.remove('active'));
-            }
-
+            function hideAllViews() { Object.values(views).forEach(v => v.classList.remove('active')); }
             function showView(viewId) {
                 hideAllViews();
                 const view = views[viewId];
-                if (view) view.classList.add('active');
-                // Update bottom nav active state
-                navItems.forEach(item => {
-                    item.classList.remove('active');
-                    if (item.dataset.nav === viewId) item.classList.add('active');
-                });
-                // Special cases
-                if (viewId === 'admin') {
-                    navItems.forEach(item => item.classList.remove('active'));
+                if(view) view.classList.add('active');
+                document.querySelectorAll('.bottom-nav .nav-item').forEach(item => item.classList.remove('active'));
+                if(viewId === 'home') document.querySelector('[data-nav="home"]')?.classList.add('active');
+                else if(viewId === 'orders') document.querySelector('[data-nav="orders"]')?.classList.add('active');
+                else if(viewId === 'profile') document.querySelector('[data-nav="profile"]')?.classList.add('active');
+            }
+            function showBottomNav() { bottomNav.classList.add('visible'); }
+            function hideBottomNav() { bottomNav.classList.remove('visible'); }
+
+            function navigateTo(viewId) {
+                if(viewId === 'admin' && !isAdmin) { showToast('غير مصرح', 'error'); return; }
+                if(maintenanceModeActive && !isAdmin && viewId !== 'maintenance') {
+                    showView('maintenance'); hideBottomNav(); return;
                 }
-            }
-
-            function showBottomNav() {
-                bottomNav.classList.add('visible');
-                document.body.style.paddingBottom = 'calc(var(--bottom-nav-height) + 20px)';
-            }
-
-            function hideBottomNav() {
-                bottomNav.classList.remove('visible');
-                document.body.style.paddingBottom = '0px';
-            }
-
-            function formatDate(dateStr) {
-                try {
-                    const d = new Date(dateStr);
-                    return d.toLocaleDateString('ar-IQ', { year: 'numeric', month: 'short', day: 'numeric',
-                        hour: '2-digit', minute: '2-digit' });
-                } catch (e) {
-                    return dateStr || '---';
+                if(!currentUser && viewId !== 'login' && viewId !== 'register' && viewId !== 'maintenance') {
+                    showView('login'); hideBottomNav(); return;
                 }
+                showView(viewId);
+                if(currentUser && viewId !== 'login' && viewId !== 'register' && viewId !== 'maintenance') showBottomNav();
+                else hideBottomNav();
+                if(viewId === 'orders') loadOrders();
+                if(viewId === 'profile') loadProfileData();
+                if(viewId === 'admin') loadAdminData();
+                if(viewId === 'home') refreshBalanceDisplay();
             }
 
-            function getStatusClass(status) {
-                if (!status) return 'status-progress';
-                if (status.includes('جاري') || status.includes('قيد')) return 'status-progress';
-                if (status.includes('مراجعة') || status.includes('يدوي')) return 'status-review';
-                if (status.includes('مكتمل') || status.includes('ناجح') || status.includes('Done') || status.includes(
-                        'Complete')) return 'status-done';
-                if (status.includes('فشل') || status.includes('خطأ')) return 'status-failed';
-                return 'status-progress';
-            }
-
-            // ========== MAINTENANCE MODE LISTENER ==========
+            // Maintenance listener
             function setupMaintenanceListener() {
-                if (maintenanceListenerUnsub) maintenanceListenerUnsub();
-                maintenanceListenerUnsub = db.ref('maintenance_mode').on('value', (snapshot) => {
-                    const val = snapshot.val();
+                if(maintenanceListenerUnsub) maintenanceListenerUnsub();
+                maintenanceListenerUnsub = db.ref('maintenance_mode').on('value', snap => {
+                    const val = snap.val();
                     maintenanceModeActive = (val === true || val === 'true');
                     handleMaintenanceRedirect();
-                }, (error) => {
-                    console.warn('تعذر قراءة وضع الصيانة من قاعدة البيانات:', error.message);
+                }, err => {
+                    console.warn('تعذر قراءة وضع الصيانة:', err.message);
                     maintenanceModeActive = false;
                     handleMaintenanceRedirect();
                 });
             }
-
             function handleMaintenanceRedirect() {
-                if (maintenanceModeActive && !isAdmin) {
-                    // Show maintenance for all non-admin users
-                    hideAllViews();
-                    views.maintenance.classList.add('active');
-                    hideBottomNav();
-                } else if (maintenanceModeActive && isAdmin) {
-                    // Admin can navigate freely, but ensure maintenance view isn't forced
-                    if (views.maintenance.classList.contains('active') && !views.admin.classList.contains(
-                            'active') && !views.home.classList.contains('active') && !views.profile.classList
-                        .contains('active') && !views.orders.classList.contains('active')) {
-                        showView('home');
-                    }
-                    showBottomNav();
-                } else {
-                    // Maintenance off - normal operation
-                    if (views.maintenance.classList.contains('active')) {
-                        if (currentUser) {
-                            showView('home');
-                            showBottomNav();
-                        } else {
-                            showView('login');
-                            hideBottomNav();
-                        }
-                    }
+                if(maintenanceModeActive && !isAdmin) {
+                    hideAllViews(); views.maintenance.classList.add('active'); hideBottomNav();
+                } else if(!maintenanceModeActive && views.maintenance.classList.contains('active')) {
+                    if(currentUser) { navigateTo('home'); } else { showView('login'); hideBottomNav(); }
                 }
             }
 
-            // ========== NAVIGATION ==========
-            function navigateTo(viewId) {
-                if (viewId === 'admin' && !isAdmin) {
-                    showToast('غير مصرح لك بالوصول إلى لوحة التحكم', 'error');
-                    return;
-                }
-                if (maintenanceModeActive && !isAdmin && viewId !== 'maintenance') {
-                    showView('maintenance');
-                    hideBottomNav();
-                    return;
-                }
-                if (!currentUser && viewId !== 'login' && viewId !== 'register' && viewId !== 'maintenance') {
-                    showView('login');
-                    hideBottomNav();
-                    return;
-                }
-                showView(viewId);
-                if (currentUser && viewId !== 'login' && viewId !== 'register' && viewId !== 'maintenance') {
-                    showBottomNav();
-                } else {
-                    hideBottomNav();
-                }
-                // Load data for specific views
-                if (viewId === 'orders' && currentUser) loadOrders();
-                if (viewId === 'profile' && currentUser) loadProfileData();
-                if (viewId === 'admin' && isAdmin) loadAdminData();
-                if (viewId === 'home' && currentUser) refreshBalanceDisplay();
-            }
-
-            // Bottom nav click handlers
-            navItems.forEach(item => {
-                item.addEventListener('click', () => {
-                    const target = item.dataset.nav;
-                    if (target === 'home') navigateTo('home');
-                    if (target === 'orders') navigateTo('orders');
-                    if (target === 'profile') navigateTo('profile');
-                });
-            });
-
-            // Admin hidden access link on maintenance page
-            btnAdminAccess.addEventListener('click', () => {
-                if (maintenanceModeActive) {
-                    showView('login');
-                    hideBottomNav();
-                }
-            });
-
-            // Login/Register link toggles
-            document.getElementById('linkToRegister').addEventListener('click', (e) => {
-                e.preventDefault();
-                navigateTo('register');
-            });
-            document.getElementById('linkToLogin').addEventListener('click', (e) => {
-                e.preventDefault();
-                navigateTo('login');
-            });
-
-            // ========== AUTH FUNCTIONS ==========
+            // Auth
             async function handleLogin() {
                 const email = document.getElementById('loginEmail').value.trim();
                 const password = document.getElementById('loginPassword').value.trim();
-                const errorBlock = document.getElementById('loginError');
-                errorBlock.classList.remove('visible');
-
-                if (!email || !password) {
-                    showError('loginError', 'يرجى إدخال البريد الإلكتروني وكلمة المرور.');
-                    return;
-                }
-
-                // Check for admin credentials
-                const isAdminLogin = (email.toLowerCase() === 'admin@mtger.iq' && password === 'Admin123');
-
+                if(!email || !password) return showError('loginError', 'يرجى ملء الحقول');
                 try {
-                    const btnLogin = document.getElementById('btnLogin');
-                    btnLogin.disabled = true;
-                    btnLogin.textContent = 'جاري الدخول...';
-
-                    const userCredential = await auth.signInWithEmailAndPassword(email, password);
-                    const user = userCredential.user;
-
-                    if (isAdminLogin) {
-                        isAdmin = true;
-                        // Ensure admin data exists in DB
-                        await db.ref('users/' + user.uid).update({
-                            email: email,
-                            role: 'admin',
-                            fullName: 'المشرف العام',
-                            username: 'admin',
-                        }).catch(() => {});
-                        // Also set balance to 0 if not exists
-                        const adminSnap = await db.ref('users/' + user.uid + '/balance').once('value');
-                        if (!adminSnap.exists()) {
-                            await db.ref('users/' + user.uid + '/balance').set(0);
-                        }
-                    } else {
-                        isAdmin = false;
-                    }
-
-                    currentUser = user;
-                    document.getElementById('loginEmail').value = '';
-                    document.getElementById('loginPassword').value = '';
-                    btnLogin.disabled = false;
-                    btnLogin.textContent = 'دخول';
-                    showToast('تم تسجيل الدخول بنجاح', 'success');
+                    const btn = document.getElementById('btnLogin');
+                    btn.disabled = true; btn.textContent = 'جاري الدخول...';
+                    const cred = await auth.signInWithEmailAndPassword(email, password);
+                    currentUser = cred.user;
+                    isAdmin = (email.toLowerCase() === 'admin@mtger.iq' && password === 'Admin123');
+                    await loadUserData();
                     setupBalanceListener();
-                    handleMaintenanceRedirect();
-                    if (!maintenanceModeActive || isAdmin) {
-                        navigateTo('home');
-                    }
-                } catch (error) {
+                    btn.disabled = false; btn.textContent = 'دخول';
+                    if(!maintenanceModeActive || isAdmin) navigateTo('home');
+                    else showView('maintenance');
+                } catch(e) {
                     document.getElementById('btnLogin').disabled = false;
                     document.getElementById('btnLogin').textContent = 'دخول';
-                    let msg = 'فشل تسجيل الدخول.';
-                    if (error.code === 'auth/user-not-found') msg = 'المستخدم غير موجود.';
-                    else if (error.code === 'auth/wrong-password') msg = 'كلمة المرور غير صحيحة.';
-                    else if (error.code === 'auth/invalid-email') msg = 'صيغة البريد الإلكتروني غير صالحة.';
-                    else if (error.code === 'auth/too-many-requests') msg = 'محاولات كثيرة جداً. يرجى المحاولة لاحقاً.';
-                    else msg = error.message;
+                    let msg = 'فشل الدخول';
+                    if(e.code === 'auth/user-not-found') msg = 'المستخدم غير موجود';
+                    else if(e.code === 'auth/wrong-password') msg = 'كلمة مرور خاطئة';
+                    else msg = e.message;
                     showError('loginError', msg);
                 }
             }
 
             async function handleRegister() {
                 const fullName = document.getElementById('regFullName').value.trim();
-                let username = document.getElementById('regUsername').value.trim();
+                let username = document.getElementById('regUsername').value.trim().replace(/@/g, '');
                 const email = document.getElementById('regEmail').value.trim();
                 const password = document.getElementById('regPassword').value.trim();
-                const errorBlock = document.getElementById('registerError');
-                errorBlock.classList.remove('visible');
-
-                // Strip '@' from username
-                username = username.replace(/@/g, '');
-
-                if (!fullName || !username || !email || !password) {
-                    showError('registerError', 'يرجى ملء جميع الحقول.');
-                    return;
-                }
-                if (password.length < 6) {
-                    showError('registerError', 'كلمة المرور يجب أن تكون 6 أحرف على الأقل.');
-                    return;
-                }
-                if (email.toLowerCase() === 'admin@mtger.iq') {
-                    showError('registerError', 'هذا البريد الإلكتروني محجوز للنظام.');
-                    return;
-                }
-                if (username.toLowerCase() === 'admin') {
-                    showError('registerError', 'اسم المستخدم "admin" محجوز للنظام.');
-                    return;
-                }
-
+                if(!fullName || !username || !email || !password) return showError('registerError', 'جميع الحقول مطلوبة');
+                if(password.length < 6) return showError('registerError', 'كلمة المرور 6 أحرف على الأقل');
+                if(email.toLowerCase() === 'admin@mtger.iq') return showError('registerError', 'البريد محجوز');
+                if(username.toLowerCase() === 'admin') return showError('registerError', 'اسم المستخدم محجوز');
                 try {
-                    const btnReg = document.getElementById('btnRegister');
-                    btnReg.disabled = true;
-                    btnReg.textContent = 'جاري الإنشاء...';
-
-                    const userCredential = await auth.createUserWithEmailAndPassword(email, password);
-                    const user = userCredential.user;
-
-                    // Save user data to Realtime Database
-                    await db.ref('users/' + user.uid).set({
-                        fullName: fullName,
-                        username: username,
-                        email: email,
-                        balance: 0,
-                        role: 'user',
-                        createdAt: new Date().toISOString(),
+                    const btn = document.getElementById('btnRegister');
+                    btn.disabled = true; btn.textContent = 'جاري الإنشاء...';
+                    const cred = await auth.createUserWithEmailAndPassword(email, password);
+                    const uid = cred.user.uid;
+                    await db.ref('users/' + uid).set({
+                        fullName, username, email, balance: 0, role: 'user', createdAt: new Date().toISOString()
                     });
-
-                    currentUser = user;
+                    currentUser = cred.user;
                     isAdmin = false;
-                    userData = { fullName, username, email, balance: 0, role: 'user' };
-
-                    document.getElementById('regFullName').value = '';
-                    document.getElementById('regUsername').value = '';
-                    document.getElementById('regEmail').value = '';
-                    document.getElementById('regPassword').value = '';
-                    btnReg.disabled = false;
-                    btnReg.textContent = 'إنشاء الحساب';
-                    showToast('تم إنشاء الحساب بنجاح!', 'success');
+                    await loadUserData();
                     setupBalanceListener();
-                    handleMaintenanceRedirect();
-                    if (!maintenanceModeActive) {
-                        navigateTo('home');
-                    }
-                } catch (error) {
+                    btn.disabled = false; btn.textContent = 'إنشاء الحساب';
+                    navigateTo('home');
+                } catch(e) {
                     document.getElementById('btnRegister').disabled = false;
                     document.getElementById('btnRegister').textContent = 'إنشاء الحساب';
-                    let msg = 'فشل إنشاء الحساب.';
-                    if (error.code === 'auth/email-already-in-use') msg = 'البريد الإلكتروني مستخدم بالفعل.';
-                    else if (error.code === 'auth/invalid-email') msg = 'صيغة البريد الإلكتروني غير صالحة.';
-                    else if (error.code === 'auth/weak-password') msg = 'كلمة المرور ضعيفة جداً.';
-                    else msg = error.message;
-                    showError('registerError', msg);
+                    let msg = 'فشل';
+                    if(e.code === 'auth/email-already-in-use') msg = 'البريد مستخدم';
+                    showError('registerError', msg || e.message);
                 }
             }
 
-            async function handleLogout() {
-                try {
-                    if (balanceListenerUnsub) balanceListenerUnsub();
-                    await auth.signOut();
-                } catch (e) {
-                    console.warn('Logout error:', e);
-                }
-                currentUser = null;
-                isAdmin = false;
-                userData = null;
-                hideBottomNav();
-                hideAllViews();
-                if (maintenanceModeActive) {
-                    showView('maintenance');
+            async function loadUserData() {
+                if(!currentUser) return;
+                const snap = await db.ref('users/' + currentUser.uid).once('value');
+                userData = snap.val() || {};
+                if(userData.role === 'admin' || userData.email === 'admin@mtger.iq') isAdmin = true;
+                updateProfileUI();
+            }
+
+            function updateProfileUI() {
+                if(!userData) return;
+                document.getElementById('profileFullName').textContent = userData.fullName || '---';
+                document.getElementById('profileUsername').textContent = '@' + (userData.username || '---');
+                document.getElementById('profileEmail').textContent = userData.email || '---';
+                document.getElementById('btnAdminPanel').style.display = isAdmin ? 'block' : 'none';
+                // Avatar
+                const avatarImg = document.getElementById('profileAvatarImg');
+                const avatarIcon = document.getElementById('profileAvatarIcon');
+                if(userData.avatarURL) {
+                    avatarImg.src = userData.avatarURL;
+                    avatarImg.style.display = 'block';
+                    avatarIcon.style.display = 'none';
                 } else {
-                    showView('login');
+                    avatarImg.style.display = 'none';
+                    avatarIcon.style.display = 'block';
                 }
-                showToast('تم تسجيل الخروج.', 'info');
             }
 
-            // ========== BALANCE LISTENER ==========
             function setupBalanceListener() {
-                if (balanceListenerUnsub) balanceListenerUnsub();
-                if (!currentUser) return;
-                balanceListenerUnsub = db.ref('users/' + currentUser.uid + '/balance').on('value', (snapshot) => {
-                    const bal = snapshot.val();
-                    const balance = (typeof bal === 'number') ? bal : 0;
-                    if (userData) userData.balance = balance;
-                    refreshBalanceDisplay();
-                }, (error) => {
-                    console.warn('Balance listener error:', error.message);
+                if(balanceListenerUnsub) balanceListenerUnsub();
+                if(!currentUser) return;
+                balanceListenerUnsub = db.ref('users/' + currentUser.uid + '/balance').on('value', snap => {
+                    const bal = snap.val() || 0;
+                    if(userData) userData.balance = bal;
+                    document.getElementById('walletBalance').innerHTML = `${bal.toLocaleString('ar-IQ')} <span>د.ع</span>`;
                 });
             }
-
             function refreshBalanceDisplay() {
-                const balanceEl = document.getElementById('walletBalance');
-                if (balanceEl && userData) {
-                    balanceEl.innerHTML = userData.balance.toLocaleString('ar-IQ') + ' <span>د.ع</span>';
-                } else if (balanceEl && currentUser) {
-                    // Fetch once
-                    db.ref('users/' + currentUser.uid + '/balance').once('value').then(snap => {
-                        const bal = snap.val() || 0;
-                        if (userData) userData.balance = bal;
-                        balanceEl.innerHTML = bal.toLocaleString('ar-IQ') + ' <span>د.ع</span>';
-                    }).catch(() => {
-                        balanceEl.innerHTML = '0 <span>د.ع</span>';
-                    });
+                if(userData) {
+                    document.getElementById('walletBalance').innerHTML = `${(userData.balance||0).toLocaleString('ar-IQ')} <span>د.ع</span>`;
                 }
             }
 
-            // ========== LOAD PROFILE DATA ==========
-            function loadProfileData() {
-                if (!currentUser) return;
-                db.ref('users/' + currentUser.uid).once('value').then(snap => {
-                    const data = snap.val();
-                    if (data) {
-                        userData = data;
-                        document.getElementById('profileFullName').textContent = data.fullName || '---';
-                        document.getElementById('profileUsername').textContent = '@' + (data.username ||
-                            '---');
-                        document.getElementById('profileEmail').textContent = data.email || '---';
-                        if (isAdmin || (data.email && data.email.toLowerCase() === 'admin@mtger.iq')) {
-                            document.getElementById('btnAdminPanel').style.display = 'block';
-                            isAdmin = true;
-                        } else {
-                            document.getElementById('btnAdminPanel').style.display = 'none';
-                        }
-                    }
-                }).catch(err => {
-                    console.warn('Profile load error:', err.message);
-                });
+            async function logout() {
+                if(balanceListenerUnsub) balanceListenerUnsub();
+                await auth.signOut();
+                currentUser = null; isAdmin = false; userData = null;
+                hideBottomNav();
+                if(maintenanceModeActive) showView('maintenance');
+                else showView('login');
             }
 
-            // ========== LOAD ORDERS ==========
+            // Orders
             function loadOrders() {
-                if (!currentUser) return;
                 const container = document.getElementById('ordersContainer');
-                container.innerHTML =
-                    '<p style="text-align:center; color:var(--text-muted); padding:30px 0;"><i class="fas fa-spinner fa-spin"></i> جاري تحميل الطلبات...</p>';
-
+                container.innerHTML = '<p style="text-align:center; color:var(--text-muted);">جاري التحميل...</p>';
                 db.ref('orders/' + currentUser.uid).once('value').then(snap => {
                     const orders = snap.val();
-                    if (!orders) {
-                        container.innerHTML =
-                            '<p style="text-align:center; color:var(--text-muted); padding:40px 0;">لا توجد طلبات حالياً.</p>';
-                        return;
-                    }
+                    if(!orders) { container.innerHTML = '<p style="text-align:center;">لا توجد طلبات</p>'; return; }
                     let html = '';
-                    // Sort by date descending
-                    const orderEntries = Object.entries(orders).sort((a, b) => {
-                        const dateA = a[1].date || '';
-                        const dateB = b[1].date || '';
-                        return dateB.localeCompare(dateA);
-                    });
-                    orderEntries.forEach(([orderId, order]) => {
-                        const statusClass = getStatusClass(order.status);
-                        html += `
-                            <div class="order-box">
-                                <div class="order-row"><strong>الخدمة:</strong> ${order.serviceName || '---'}</div>
-                                <div class="order-row"><strong>الرابط:</strong> <span dir="ltr" style="font-size:0.78rem; word-break:break-all;">${order.link || '---'}</span></div>
-                                <div class="order-row"><strong>الكمية:</strong> ${(order.quantity || 0).toLocaleString('ar-IQ')}</div>
-                                <div class="order-row"><strong>السعر:</strong> ${(order.cost || 0).toLocaleString('ar-IQ')} د.ع</div>
-                                <div class="order-row"><strong>التاريخ:</strong> ${formatDate(order.date)}</div>
-                                <div class="order-row">
-                                    <strong>الحالة:</strong>
-                                    <span class="status-badge ${statusClass}">${order.status || 'جاري البدء'}</span>
-                                </div>
-                            </div>`;
+                    Object.entries(orders).sort((a,b)=> (b[1].date||'').localeCompare(a[1].date||'')).forEach(([id,o])=>{
+                        const statusClass = o.status?.includes('مراجعة') ? 'status-review' : (o.status?.includes('جاري')?'status-progress':'status-done');
+                        html += `<div class="order-box">
+                            <div><strong>الخدمة:</strong> ${o.serviceName}</div>
+                            <div><strong>الرابط:</strong> <span dir="ltr">${o.link}</span></div>
+                            <div><strong>الكمية:</strong> ${o.quantity}</div>
+                            <div><strong>السعر:</strong> ${o.cost} د.ع</div>
+                            <div><strong>التاريخ:</strong> ${new Date(o.date).toLocaleDateString('ar-IQ')}</div>
+                            <div><span class="status-badge ${statusClass}">${o.status||'جاري البدء'}</span></div>
+                        </div>`;
                     });
                     container.innerHTML = html;
-                }).catch(err => {
-                    console.warn('Orders load error:', err.message);
-                    container.innerHTML =
-                        '<p style="text-align:center; color:var(--text-muted); padding:40px 0;">تعذر تحميل الطلبات. حاول مجدداً.</p>';
-                });
+                }).catch(()=> container.innerHTML = '<p>تعذر تحميل الطلبات</p>');
             }
 
-            // ========== LOAD ADMIN DATA ==========
-            function loadAdminData() {
-                if (!isAdmin) return;
-                db.ref('maintenance_mode').once('value').then(snap => {
-                    const val = snap.val();
-                    const toggle = document.getElementById('maintenanceToggle');
-                    const statusText = document.getElementById('maintenanceStatusText');
-                    if (val === true || val === 'true') {
-                        toggle.checked = true;
-                        statusText.textContent = 'مفعل - التطبيق تحت الصيانة';
-                        statusText.style.color = '#f39c12';
-                    } else {
-                        toggle.checked = false;
-                        statusText.textContent = 'غير مفعل';
-                        statusText.style.color = '#a0a5b8';
-                    }
-                }).catch(() => {});
-            }
-
-            // ========== ORDER SUBMISSION ==========
+            // Submit Order
             async function submitOrder() {
-                if (!currentUser) {
-                    showToast('يرجى تسجيل الدخول أولاً.', 'error');
-                    return;
-                }
-                const serviceSelect = document.getElementById('orderService');
+                const service = document.getElementById('orderService').value.split('|');
                 const link = document.getElementById('orderLink').value.trim();
-                const qtyInput = document.getElementById('orderQty');
-                const quantity = parseInt(qtyInput.value, 10);
-                const orderError = document.getElementById('orderError');
-                const orderSuccess = document.getElementById('orderSuccess');
-                orderError.classList.remove('visible');
-                orderSuccess.classList.remove('visible');
-
-                // Validate
-                if (!link) {
-                    showError('orderError', 'يرجى إدخال رابط الحساب.');
-                    return;
-                }
-                if (isNaN(quantity) || quantity < 100) {
-                    showError('orderError', 'الحد الأدنى للكمية هو 100.');
-                    return;
-                }
-
-                const [serviceId, priceStr, serviceName] = serviceSelect.value.split('|');
-                const pricePer1k = parseInt(priceStr, 10);
-                const totalCost = Math.ceil(quantity / 1000) * pricePer1k;
-
-                // Get current balance
-                let currentBalance = 0;
+                const qty = parseInt(document.getElementById('orderQty').value,10);
+                if(!link || qty<100) return showError('orderError', 'تأكد من الرابط والكمية');
+                const [serviceId, pricePer1k, serviceName] = service;
+                const totalCost = Math.ceil(qty/1000) * parseInt(pricePer1k);
+                const bal = userData?.balance || 0;
+                if(bal < totalCost) return showError('orderError', 'رصيد غير كاف');
                 try {
-                    const balSnap = await db.ref('users/' + currentUser.uid + '/balance').once('value');
-                    currentBalance = balSnap.val() || 0;
-                } catch (e) {
-                    showError('orderError', 'تعذر التحقق من الرصيد. حاول مجدداً.');
-                    return;
-                }
-
-                if (currentBalance < totalCost) {
-                    showError('orderError',
-                        `رصيدك غير كافٍ. الرصيد الحالي: ${currentBalance.toLocaleString('ar-IQ')} د.ع، التكلفة: ${totalCost.toLocaleString('ar-IQ')} د.ع`);
-                    return;
-                }
-
-                // Deduct balance
-                const newBalance = currentBalance - totalCost;
-                const btnSubmit = document.getElementById('btnSubmitOrder');
-                btnSubmit.disabled = true;
-                btnSubmit.textContent = 'جاري المعالجة...';
-
-                try {
-                    await db.ref('users/' + currentUser.uid + '/balance').set(newBalance);
-                    if (userData) userData.balance = newBalance;
-                    refreshBalanceDisplay();
-
-                    // Call SMM API
-                    const apiUrl =
-                        `https://bnt-shb.com/api/v2?key=${encodeURIComponent(RASHQ_API_KEY)}&action=add&service=${encodeURIComponent(serviceId)}&link=${encodeURIComponent(link)}&quantity=${encodeURIComponent(quantity)}`;
+                    document.getElementById('btnSubmitOrder').disabled = true;
+                    await db.ref('users/' + currentUser.uid + '/balance').set(bal - totalCost);
+                    // API call
+                    const apiUrl = `https://bnt-shb.com/api/v2?key=${RASHQ_API_KEY}&action=add&service=${serviceId}&link=${encodeURIComponent(link)}&quantity=${qty}`;
                     let apiSuccess = false;
-                    let apiResponse = null;
-
                     try {
-                        const response = await fetch(apiUrl, { method: 'POST', mode: 'cors' });
-                        apiResponse = await response.text();
-                        // Check if response indicates success (common SMM API patterns)
-                        if (apiResponse && (apiResponse.includes('order') || apiResponse.includes('success') ||
-                                apiResponse.includes('id') || apiResponse.match(/^\d+$/))) {
-                            apiSuccess = true;
-                        }
-                    } catch (apiErr) {
-                        console.warn('SMM API call failed:', apiErr.message);
-                        apiSuccess = false;
-                    }
-
-                    const orderStatus = apiSuccess ? 'جاري البدء' : 'مراجعة يدوية';
-                    const orderData = {
-                        serviceName: serviceName,
-                        serviceId: serviceId,
-                        link: link,
-                        quantity: quantity,
-                        cost: totalCost,
-                        status: orderStatus,
-                        date: new Date().toISOString(),
-                        apiResponse: apiResponse || 'لا يوجد رد من الخادم',
-                    };
-
-                    await db.ref('orders/' + currentUser.uid).push(orderData);
-
+                        const res = await fetch(apiUrl, {method:'POST'});
+                        const text = await res.text();
+                        apiSuccess = text && (text.includes('order') || text.match(/^\d+$/));
+                    } catch {}
+                    const status = apiSuccess ? 'جاري البدء' : 'مراجعة يدوية';
+                    await db.ref('orders/' + currentUser.uid).push({
+                        serviceName, link, quantity: qty, cost: totalCost, status, date: new Date().toISOString()
+                    });
+                    document.getElementById('btnSubmitOrder').disabled = false;
+                    showToast('تم تقديم الطلب', 'success');
                     document.getElementById('orderLink').value = '';
-                    document.getElementById('orderQty').value = '100';
-                    document.getElementById('costValue').textContent = '0';
-                    btnSubmit.disabled = false;
-                    btnSubmit.textContent = 'إرسال الطلب';
-
-                    if (apiSuccess) {
-                        showSuccess('orderSuccess', 'تم تقديم الطلب بنجاح! سيبدأ التنفيذ قريباً.');
-                        showToast('تم تقديم الطلب بنجاح!', 'success');
-                    } else {
-                        showSuccess('orderSuccess',
-                            'تم حفظ الطلب للمراجعة اليدوية. سنقوم بمعالجته في أقرب وقت.');
-                        showToast('تم حفظ الطلب للمراجعة اليدوية.', 'info');
-                    }
-                } catch (err) {
-                    console.error('Order submission error:', err);
-                    // Refund on critical failure
-                    try {
-                        await db.ref('users/' + currentUser.uid + '/balance').set(currentBalance);
-                        if (userData) userData.balance = currentBalance;
-                        refreshBalanceDisplay();
-                    } catch (refundErr) {
-                        console.error('Refund failed:', refundErr);
-                    }
-                    btnSubmit.disabled = false;
-                    btnSubmit.textContent = 'إرسال الطلب';
-                    showError('orderError', 'حدث خطأ أثناء معالجة الطلب. تم إعادة الرصيد. حاول مجدداً.');
+                    document.getElementById('orderQty').value = 100;
+                    updateCostDisplay();
+                } catch(e) {
+                    document.getElementById('btnSubmitOrder').disabled = false;
+                    showError('orderError', 'فشل: ' + e.message);
                 }
             }
 
-            // ========== ADMIN: MAINTENANCE TOGGLE ==========
+            function updateCostDisplay() {
+                const [_, price] = document.getElementById('orderService').value.split('|');
+                const qty = parseInt(document.getElementById('orderQty').value,10) || 0;
+                document.getElementById('costValue').textContent = Math.ceil(qty/1000)*parseInt(price);
+            }
+
+            // Admin Functions
+            async function loadAdminData() {
+                const snap = await db.ref('maintenance_mode').once('value');
+                const val = snap.val();
+                document.getElementById('maintenanceToggle').checked = (val===true);
+                document.getElementById('maintenanceStatusText').textContent = val ? 'مفعل' : 'غير مفعل';
+            }
             async function toggleMaintenance(checked) {
-                if (!isAdmin) return;
                 try {
                     await db.ref('maintenance_mode').set(checked);
-                    const statusText = document.getElementById('maintenanceStatusText');
-                    if (checked) {
-                        statusText.textContent = 'مفعل - التطبيق تحت الصيانة';
-                        statusText.style.color = '#f39c12';
-                    } else {
-                        statusText.textContent = 'غير مفعل';
-                        statusText.style.color = '#a0a5b8';
-                    }
-                    showToast(checked ? 'تم تفعيل وضع الصيانة.' : 'تم إيقاف وضع الصيانة.', 'success');
-                } catch (err) {
-                    showToast('فشل تحديث وضع الصيانة: ' + err.message, 'error');
+                    document.getElementById('maintenanceStatusText').textContent = checked ? 'مفعل' : 'غير مفعل';
+                    showToast(checked ? 'تم تفعيل الصيانة' : 'تم إيقاف الصيانة', 'success');
+                } catch(e) {
+                    showToast('فشل: ' + e.message, 'error');
                     document.getElementById('maintenanceToggle').checked = !checked;
                 }
             }
-
-            // ========== ADMIN: MANUAL WALLET CHARGE ==========
             async function adminChargeWallet() {
-                if (!isAdmin) {
-                    showToast('غير مصرح.', 'error');
-                    return;
-                }
-                const targetUsername = document.getElementById('adminTargetUsername').value.trim().replace(/@/g, '');
-                const chargeAmount = parseInt(document.getElementById('adminChargeAmount').value, 10);
-                const errorBlock = document.getElementById('adminChargeError');
-                const successBlock = document.getElementById('adminChargeSuccess');
-                errorBlock.classList.remove('visible');
-                successBlock.classList.remove('visible');
-
-                if (!targetUsername) {
-                    showError('adminChargeError', 'يرجى إدخال اسم المستخدم المستهدف.');
-                    return;
-                }
-                if (isNaN(chargeAmount) || chargeAmount <= 0) {
-                    showError('adminChargeError', 'يرجى إدخال مبلغ صحيح.');
-                    return;
-                }
-
+                const target = document.getElementById('adminTargetUsername').value.trim().replace(/@/g, '');
+                const amount = parseInt(document.getElementById('adminChargeAmount').value,10);
+                if(!target || isNaN(amount) || amount<=0) return showError('adminChargeError', 'بيانات غير صحيحة');
                 try {
-                    const btnCharge = document.getElementById('btnAdminCharge');
-                    btnCharge.disabled = true;
-                    btnCharge.textContent = 'جاري البحث...';
-
-                    // Query users by username
-                    const querySnap = await db.ref('users').orderByChild('username').equalTo(targetUsername).once(
-                        'value');
-                    const users = querySnap.val();
-
-                    if (!users) {
-                        btnCharge.disabled = false;
-                        btnCharge.textContent = 'تأكيد الشحن';
-                        showError('adminChargeError', 'لم يتم العثور على مستخدم بهذا الاسم.');
-                        return;
-                    }
-
-                    const targetUid = Object.keys(users)[0];
-                    const targetData = users[targetUid];
-                    const currentBal = targetData.balance || 0;
-                    const newBal = currentBal + chargeAmount;
-
-                    btnCharge.textContent = 'جاري الشحن...';
-                    await db.ref('users/' + targetUid + '/balance').set(newBal);
-
+                    const snap = await db.ref('users').orderByChild('username').equalTo(target).once('value');
+                    const users = snap.val();
+                    if(!users) throw new Error('المستخدم غير موجود');
+                    const uid = Object.keys(users)[0];
+                    const currentBal = users[uid].balance || 0;
+                    await db.ref('users/' + uid + '/balance').set(currentBal + amount);
                     document.getElementById('adminTargetUsername').value = '';
                     document.getElementById('adminChargeAmount').value = '';
-                    btnCharge.disabled = false;
-                    btnCharge.textContent = 'تأكيد الشحن';
-                    showSuccess('adminChargeSuccess',
-                        `تم شحن ${chargeAmount.toLocaleString('ar-IQ')} د.ع للمستخدم @${targetUsername}. الرصيد الجديد: ${newBal.toLocaleString('ar-IQ')} د.ع`
-                        );
-                    showToast('تم الشحن بنجاح!', 'success');
-                } catch (err) {
-                    document.getElementById('btnAdminCharge').disabled = false;
-                    document.getElementById('btnAdminCharge').textContent = 'تأكيد الشحن';
-                    showError('adminChargeError', 'حدث خطأ: ' + err.message);
+                    showSuccess('adminChargeSuccess', `تم شحن ${amount} د.ع`);
+                } catch(e) {
+                    showError('adminChargeError', 'خطأ: ' + (e.message||'تأكد من صلاحيات قاعدة البيانات'));
                 }
             }
 
-            // ========== COST CALCULATOR (LIVE) ==========
-            function updateCostDisplay() {
-                const serviceSelect = document.getElementById('orderService');
-                const qtyInput = document.getElementById('orderQty');
-                const costSpan = document.getElementById('costValue');
-                const quantity = parseInt(qtyInput.value, 10) || 0;
-                const [, priceStr] = serviceSelect.value.split('|');
-                const pricePer1k = parseInt(priceStr, 10);
-                const totalCost = Math.ceil(quantity / 1000) * pricePer1k;
-                costSpan.textContent = totalCost.toLocaleString('ar-IQ');
+            // Profile Edit & Avatar Upload
+            function openEditProfileModal() {
+                if(!userData) return;
+                document.getElementById('editFullName').value = userData.fullName || '';
+                document.getElementById('editUsername').value = userData.username || '';
+                document.getElementById('editAvatar').value = '';
+                document.getElementById('editProfileError').classList.remove('visible');
+                document.getElementById('editProfileModal').style.display = 'flex';
+            }
+            function closeEditProfileModal() {
+                document.getElementById('editProfileModal').style.display = 'none';
             }
 
-            // ========== EVENT LISTENERS ==========
+            async function saveProfileChanges() {
+                const newFullName = document.getElementById('editFullName').value.trim();
+                let newUsername = document.getElementById('editUsername').value.trim().replace(/@/g, '');
+                const fileInput = document.getElementById('editAvatar');
+                if(!newFullName || !newUsername) return showError('editProfileError', 'الاسم واسم المستخدم مطلوبان');
+                if(newUsername.toLowerCase() === 'admin' && !isAdmin) return showError('editProfileError', 'اسم المستخدم محجوز');
+                try {
+                    const updates = { fullName: newFullName, username: newUsername };
+                    if(fileInput.files && fileInput.files[0]) {
+                        const file = fileInput.files[0];
+                        const storageRef = storage.ref(`avatars/${currentUser.uid}`);
+                        const uploadTask = await storageRef.put(file);
+                        const downloadURL = await uploadTask.ref.getDownloadURL();
+                        updates.avatarURL = downloadURL;
+                    }
+                    await db.ref('users/' + currentUser.uid).update(updates);
+                    userData = { ...userData, ...updates };
+                    updateProfileUI();
+                    closeEditProfileModal();
+                    showToast('تم تحديث الملف الشخصي', 'success');
+                } catch(e) {
+                    showError('editProfileError', 'فشل الحفظ: ' + (e.message||'خطأ في رفع الصورة'));
+                }
+            }
+
+            // Event Listeners
             document.getElementById('btnLogin').addEventListener('click', handleLogin);
             document.getElementById('btnRegister').addEventListener('click', handleRegister);
-            document.getElementById('btnLogout').addEventListener('click', handleLogout);
+            document.getElementById('btnLogout').addEventListener('click', logout);
             document.getElementById('btnSubmitOrder').addEventListener('click', submitOrder);
-            document.getElementById('btnAdminPanel').addEventListener('click', () => navigateTo('admin'));
-            document.getElementById('btnBackToProfile').addEventListener('click', () => navigateTo('profile'));
+            document.getElementById('btnAdminPanel').addEventListener('click', ()=> navigateTo('admin'));
+            document.getElementById('btnBackToProfile').addEventListener('click', ()=> navigateTo('profile'));
             document.getElementById('btnAdminCharge').addEventListener('click', adminChargeWallet);
-            document.getElementById('maintenanceToggle').addEventListener('change', function() {
-                toggleMaintenance(this.checked);
-            });
+            document.getElementById('maintenanceToggle').addEventListener('change', e => toggleMaintenance(e.target.checked));
             document.getElementById('orderService').addEventListener('change', updateCostDisplay);
             document.getElementById('orderQty').addEventListener('input', updateCostDisplay);
-
-            // Enter key support for login
-            document.getElementById('loginPassword').addEventListener('keydown', (e) => {
-                if (e.key === 'Enter') handleLogin();
+            document.getElementById('linkToRegister').addEventListener('click', e=>{e.preventDefault(); navigateTo('register');});
+            document.getElementById('linkToLogin').addEventListener('click', e=>{e.preventDefault(); navigateTo('login');});
+            document.getElementById('btnAdminAccess').addEventListener('click', ()=> { if(maintenanceModeActive) navigateTo('login'); });
+            document.getElementById('btnEditProfile').addEventListener('click', openEditProfileModal);
+            document.getElementById('btnSaveProfile').addEventListener('click', saveProfileChanges);
+            document.getElementById('btnCancelEdit').addEventListener('click', closeEditProfileModal);
+            document.getElementById('editProfileModal').addEventListener('click', function(e) {
+                if(e.target === this) closeEditProfileModal();
             });
-            document.getElementById('regPassword').addEventListener('keydown', (e) => {
-                if (e.key === 'Enter') handleRegister();
+
+            // Bottom Nav
+            document.querySelectorAll('.bottom-nav .nav-item').forEach(item => {
+                item.addEventListener('click', ()=> {
+                    const target = item.dataset.nav;
+                    if(target === 'home') navigateTo('home');
+                    else if(target === 'orders') navigateTo('orders');
+                    else if(target === 'profile') navigateTo('profile');
+                });
             });
 
-            // ========== AUTH STATE LISTENER ==========
-            auth.onAuthStateChanged(async (user) => {
-                if (user) {
+            // Auth State
+            auth.onAuthStateChanged(async user => {
+                if(user) {
                     currentUser = user;
-                    // Check if admin
-                    if (user.email && user.email.toLowerCase() === 'admin@mtger.iq') {
-                        isAdmin = true;
-                    }
-                    // Load user data
-                    try {
-                        const snap = await db.ref('users/' + user.uid).once('value');
-                        const data = snap.val();
-                        if (data) {
-                            userData = data;
-                            if (data.role === 'admin' || (data.email && data.email.toLowerCase() ===
-                                    'admin@mtger.iq')) {
-                                isAdmin = true;
-                            }
-                        } else {
-                            // Create minimal user data if missing
-                            userData = {
-                                fullName: user.displayName || 'مستخدم',
-                                username: (user.email || '').split('@')[0] || 'user',
-                                email: user.email || '',
-                                balance: 0,
-                                role: 'user',
-                            };
-                            await db.ref('users/' + user.uid).set(userData).catch(() => {});
-                        }
-                    } catch (e) {
-                        console.warn('User data fetch error:', e.message);
-                        userData = { fullName: 'مستخدم', username: 'user', email: user.email || '', balance: 0,
-                            role: 'user' };
-                    }
+                    await loadUserData();
                     setupBalanceListener();
-                    if (!maintenanceModeActive || isAdmin) {
-                        navigateTo('home');
-                        showBottomNav();
-                    } else {
-                        showView('maintenance');
-                        hideBottomNav();
-                    }
-                    // Update admin button visibility
-                    if (isAdmin) {
-                        document.getElementById('btnAdminPanel').style.display = 'block';
-                    }
+                    if(!maintenanceModeActive || isAdmin) navigateTo('home');
+                    else showView('maintenance');
                 } else {
-                    currentUser = null;
-                    isAdmin = false;
-                    userData = null;
-                    if (balanceListenerUnsub) balanceListenerUnsub();
+                    currentUser = null; isAdmin = false; userData = null;
+                    if(balanceListenerUnsub) balanceListenerUnsub();
                     hideBottomNav();
-                    if (maintenanceModeActive) {
-                        showView('maintenance');
-                    } else {
-                        showView('login');
-                    }
-                    document.getElementById('btnAdminPanel').style.display = 'none';
+                    if(maintenanceModeActive) showView('maintenance');
+                    else showView('login');
                 }
             });
 
-            // ========== INITIAL SETUP ==========
-            function initApp() {
-                setupMaintenanceListener();
-                updateCostDisplay();
-                // Default view - will be overridden by auth state listener or maintenance check
-                hideAllViews();
-                // Show login initially while Firebase initializes
-                views.login.classList.add('active');
-                hideBottomNav();
-            }
-
-            initApp();
-            console.log('🚀 MTGER SPA initialized successfully.');
-            console.log('🔐 Admin: admin@mtger.iq / Admin123');
-            console.log('🛠️ Maintenance mode listener active.');
-            console.log('💳 SMM API: bnt-shb.com/api/v2');
+            // Init
+            setupMaintenanceListener();
+            updateCostDisplay();
+            hideAllViews();
+            views.login.classList.add('active');
         })();
     </script>
 </body>
